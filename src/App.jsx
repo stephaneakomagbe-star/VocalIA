@@ -132,7 +132,9 @@ function AppInterne() {
 
   useEffect(() => {
     if (mode !== 'assistant') {
-      window.speechSynthesis.cancel()
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
     }
   }, [mode])
 
@@ -667,6 +669,7 @@ function AppInterne() {
   }
 
   const lireAVoixHaute = (texte) => {
+    if (!windows.speechSynthesis) return
     const parole = new SpeechSynthesisUtterance(texte)
     parole.lang = 'fr-FR'
     window.speechSynthesis.speak(parole)
