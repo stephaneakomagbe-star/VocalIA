@@ -669,7 +669,7 @@ function AppInterne() {
   }
 
   const lireAVoixHaute = (texte) => {
-    if (!windows.speechSynthesis) return
+    if (!window.speechSynthesis) return
     const parole = new SpeechSynthesisUtterance(texte)
     parole.lang = 'fr-FR'
     window.speechSynthesis.speak(parole)
