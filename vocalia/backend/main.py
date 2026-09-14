@@ -170,12 +170,10 @@ if extra_cors:
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ORIGINES_CORS,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|(\d{1,3}\.){3}\d{1,3})(:\d+)?",
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 def reponse_erreur(message: str, status: int = 400):
     return JSONResponse({"erreur": message}, status_code=status)
