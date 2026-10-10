@@ -13,7 +13,7 @@ function obtenirApiUrl() {
   return 'http://localhost:8000'
 }
 
-const API_URL = obtenirApiUrl()
+export const API_URL = obtenirApiUrl()
 
 function construireEnTeteAuth(token) {
   return token ? { Authorization: `Bearer ${token}` } : {}

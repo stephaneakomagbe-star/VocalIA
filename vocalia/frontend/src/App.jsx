@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, UploadCloud, Circle, CheckCircle2, Cloud, HardDrive, Send, Keyboard, Bell, LogOut, Trash2, Download, AlertTriangle, Link2 } from 'lucide-react'
-import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, API_URL } from './api'import './App.css'
+import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, API_URL } from './api'
+import './App.css'
 
 // --- Filet de sécurité : si un rendu plante quelque part dans l'appli,
 // on affiche un message au lieu de laisser l'écran devenir noir sans explication.
