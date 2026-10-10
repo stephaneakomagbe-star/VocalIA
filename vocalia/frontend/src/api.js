@@ -46,7 +46,9 @@ export async function apiFetch(route, { method = 'GET', body, token, headers } =
       headers: { ...construireEnTeteAuth(token), ...(headers || {}) },
     })
   } catch {
-    throw new Error('Impossible de joindre le serveur VocalIA. Vérifiez qu’il est bien démarré sur votre PC et que l’URL API est correcte. Sur téléphone, utilisez une IP locale du PC comme http://192.168.1.20:8000 via VITE_API_URL ou localStorage.setItem("vocalia_api_url", "...").')
+    throw new Error(
+      'Impossible de joindre le serveur VocalIA. Vérifiez qu’il est bien démarré sur votre PC et que l’URL API est correcte.'
+    )
   }
 
   const donnees = await lireJsonSecurise(reponse)
@@ -76,7 +78,8 @@ export function apiUpload(route, { token, body, onProgress } = {}) {
       resolve({ donnees, status: xhr.status })
     }
 
-    xhr.onerror = () => reject(new Error('Impossible de joindre le serveur VocalIA pendant l’envoi.'))
+    xhr.onerror = () =>
+      reject(new Error('Impossible de joindre le serveur VocalIA pendant l’envoi.'))
     xhr.send(body)
   })
 }
