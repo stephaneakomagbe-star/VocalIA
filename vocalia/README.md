@@ -35,8 +35,14 @@ Les deux services doivent tourner en même temps.
 
 ## Application Android (Capacitor)
 
-Au build, définissez l’URL du backend, par exemple :
+Le téléphone ne peut pas utiliser `localhost` : cela pointe vers le téléphone, pas vers votre PC.
 
-`VITE_API_URL=http://VOTRE_IP_LOCALE:8000 npm run build`
+Le build de production utilise `https://vocalia-ud4o.onrender.com`. Pour recompiler l’APK :
 
-Puis `npx cap sync android`.
+```bash
+cd frontend
+npm run build
+npx cap sync android
+```
+
+Dans l’app, vous pouvez aussi coller l’URL du serveur (Render, ou `http://VOTRE_IP_LOCALE:8000` si le backend tourne sur le PC et que le téléphone est sur le même Wi-Fi).

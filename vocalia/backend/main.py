@@ -4,6 +4,7 @@ import os
 import uuid
 import json
 import re
+import glob
 import sqlite3
 import hashlib
 import secrets
@@ -38,6 +39,9 @@ TAILLE_LOT_UPLOAD = 1024 * 1024
 DOSSIER_AUDIOS = "audios"
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
 FICHIER_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_FILE", "").strip()
+# Ex. dans .env : YOUTUBE_COOKIES_BROWSER=chrome  (ou edge, firefox, opera...)
+# Utile en local : yt-dlp lit les cookies de ton navigateur pour éviter le blocage anti-bot.
+NAVIGATEUR_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_BROWSER", "").strip().lower()
 EXTENSIONS_MEDIA = (
     ".webm", ".wav", ".mp3", ".m4a", ".ogg", ".mpeg", ".mpga",
     ".mp4", ".mov", ".mkv", ".avi", ".m4v", ".mpg", ".aac", ".flac",
@@ -171,6 +175,7 @@ if extra_cors:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_origin_regex=r"https?://.*",
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -288,9 +293,60 @@ def extraire_audio_wav(chemin_source):
     return chemin_wav
 
 
+def version_yt_dlp():
+    try:
+        return yt_dlp.version.__version__
+    except Exception:
+        return "inconnue"
+
+
+def message_erreur_lien(erreur):
+    """Transforme l'erreur technique de yt-dlp en message compréhensible pour l'utilisateur."""
+    texte = str(erreur).lower()
+
+    if "sign in to confirm" in texte or "not a bot" in texte or "cookies" in texte:
+        return (
+            "YouTube bloque cette requête (protection anti-bot). "
+            "Configurez YOUTUBE_COOKIES_BROWSER dans le .env du backend (ex. chrome) puis relancez le serveur."
+        )
+    if "ffmpeg" in texte or "ffprobe" in texte:
+        return "ffmpeg est introuvable sur le serveur. Installez-le puis relancez le backend."
+    if "private video" in texte or "members-only" in texte or "members only" in texte:
+        return "Cette vidéo est privée ou réservée aux membres."
+    if "age" in texte and ("restricted" in texte or "confirm your age" in texte):
+        return "Cette vidéo est soumise à une restriction d'âge. Utilisez les cookies du navigateur."
+    if "unavailable" in texte or "removed" in texte or "not available" in texte:
+        return "Cette vidéo n'est pas disponible (supprimée ou bloquée dans votre région)."
+    if "unsupported url" in texte:
+        return "Ce lien n'est pas pris en charge. Collez le lien direct de la vidéo ou de l'audio."
+    if "javascript" in texte or "js runtime" in texte or "n challenge" in texte or "signature" in texte:
+        return (
+            "YouTube demande un moteur JavaScript. Installez Node.js ou Deno, "
+            "et mettez à jour yt-dlp : pip install -U \"yt-dlp[default]\""
+        )
+    return (
+        "Impossible de récupérer l'audio depuis ce lien. "
+        "Mettez à jour yt-dlp (pip install -U \"yt-dlp[default]\") et regardez le terminal du serveur pour le détail."
+    )
+
+
+def supprimer_residus(base_sans_extension):
+    for chemin in glob.glob(base_sans_extension + ".*"):
+        try:
+            os.remove(chemin)
+        except OSError:
+            pass
+
+
 def telecharger_audio_lien(url):
     """Télécharge l'audio d'un lien (YouTube et autres sites vidéo) via yt-dlp,
     et le convertit en .wav exploitable par Whisper."""
+    if not ffmpeg_disponible():
+        raise HTTPException(
+            status_code=500,
+            detail="ffmpeg est introuvable sur le serveur. Installez-le puis relancez le backend.",
+        )
+
     fd, chemin_temp = tempfile.mkstemp(suffix=".wav")
     os.close(fd)
     os.remove(chemin_temp)
@@ -308,40 +364,41 @@ def telecharger_audio_lien(url):
         "quiet": True,
         "no_warnings": True,
         "socket_timeout": 30,
-        # Options qui aident souvent à contourner les blocages anti-bot récents de YouTube :
-        "extractor_args": {
-            "youtube": {
-                "player_client": ["android", "web"],
-            }
-        },
         "geo_bypass": True,
-        "nocheckcertificate": True,
         "retries": 3,
+        # Les versions récentes de yt-dlp ont besoin d'un moteur JavaScript pour YouTube.
+        # Node.js est déjà installé si tu utilises Vite. Si tu préfères Deno : {"deno": {}}
+        "js_runtimes": {"node": {}, "deno": {}},
     }
 
-    # Si un fichier de cookies YouTube exporté est fourni via la variable
-    # d'environnement YOUTUBE_COOKIES_FILE, on l'utilise — ça résout la
-    # plupart des blocages "Sign in to confirm you're not a bot".
+    # 1) Fichier de cookies exporté (utile sur un serveur)
     if FICHIER_COOKIES_YOUTUBE and os.path.isfile(FICHIER_COOKIES_YOUTUBE):
         options["cookiefile"] = FICHIER_COOKIES_YOUTUBE
+    # 2) Sinon, cookies lus directement dans le navigateur (utile en local)
+    elif NAVIGATEUR_COOKIES_YOUTUBE:
+        options["cookiesfrombrowser"] = (NAVIGATEUR_COOKIES_YOUTUBE,)
 
     try:
         with yt_dlp.YoutubeDL(options) as ydl:
             ydl.download([url])
     except Exception as e:
-        # Message détaillé dans le terminal du serveur pour diagnostiquer précisément
-        # la cause (vidéo privée, âge, blocage anti-bot, yt-dlp obsolète, etc.)
-        print(f"[yt-dlp] Échec du téléchargement pour {url} : {type(e).__name__}: {e}")
-        raise HTTPException(
-            status_code=400,
-            detail="Impossible de récupérer l'audio depuis ce lien. Vérifiez qu'il est valide, public, et accessible.",
-        )
+        # Détail complet dans le terminal du serveur pour diagnostiquer précisément
+        print(f"[yt-dlp {version_yt_dlp()}] Échec du téléchargement pour {url} : {type(e).__name__}: {e}")
+        supprimer_residus(base_sans_extension)
+        raise HTTPException(status_code=400, detail=message_erreur_lien(e))
 
     chemin_wav = base_sans_extension + ".wav"
     if not os.path.isfile(chemin_wav) or os.path.getsize(chemin_wav) == 0:
-        if os.path.isfile(chemin_wav):
-            os.remove(chemin_wav)
+        supprimer_residus(base_sans_extension)
         raise HTTPException(status_code=400, detail="Aucun audio n'a pu être extrait de ce lien.")
+
+    # On supprime d'éventuels fichiers intermédiaires (.webm, .m4a...) restés sur le disque
+    for chemin in glob.glob(base_sans_extension + ".*"):
+        if chemin != chemin_wav:
+            try:
+                os.remove(chemin)
+            except OSError:
+                pass
 
     return chemin_wav
 
@@ -558,7 +615,14 @@ def read_root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "service": "VocalIA", "ffmpeg": ffmpeg_disponible()}
+    return {
+        "status": "ok",
+        "service": "VocalIA",
+        "ffmpeg": ffmpeg_disponible(),
+        "yt_dlp": version_yt_dlp(),
+        "node": shutil.which("node") is not None,
+        "deno": shutil.which("deno") is not None,
+    }
 
 
 @app.get("/config")

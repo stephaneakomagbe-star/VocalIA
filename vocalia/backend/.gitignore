@@ -1,1 +1,4 @@
 .env
+vocalia.db
+audios/
+__pycache__/

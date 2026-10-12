@@ -1,5 +1,12 @@
 {
   "appId": "com.vocalia.app",
   "appName": "vocalIA",
-  "webDir": "dist"
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
 }

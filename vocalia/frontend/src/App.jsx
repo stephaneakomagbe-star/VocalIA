@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, UploadCloud, Circle, CheckCircle2, Cloud, HardDrive, Send, Keyboard, Bell, LogOut, Trash2, Download, AlertTriangle, Link2 } from 'lucide-react'
-import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, API_URL } from './api'
+import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, obtenirApiUrl, definirApiUrl } from './api'
 import './App.css'
 
 // --- Filet de sécurité : si un rendu plante quelque part dans l'appli,
@@ -54,6 +54,9 @@ function AppInterne() {
   const [erreurAuth, setErreurAuth] = useState('')
   const [authEnCours, setAuthEnCours] = useState(false)
   const [serveurJoignable, setServeurJoignable] = useState(null)
+  const [urlApi, setUrlApi] = useState(() => obtenirApiUrl())
+  const [urlApiSaisie, setUrlApiSaisie] = useState(() => obtenirApiUrl())
+  const [verificationServeur, setVerificationServeur] = useState(true)
   const [googleClientId, setGoogleClientId] = useState('')
   const [driveConnecte, setDriveConnecte] = useState(() => Boolean(localStorage.getItem('vocalia_drive_token')))
   const [sauvegardeCloudAuto, setSauvegardeCloudAuto] = useState(
@@ -119,15 +122,21 @@ function AppInterne() {
     }
   }, [])
 
+  const testerServeur = async () => {
+    setVerificationServeur(true)
+    setServeurJoignable(null)
+    const ok = await verifierServeur()
+    setServeurJoignable(ok)
+    setVerificationServeur(false)
+    if (ok) {
+      const config = await chargerConfig()
+      setGoogleClientId(config.google_client_id || '')
+    }
+    return ok
+  }
+
   useEffect(() => {
-    let ignore = false
-    verifierServeur().then((ok) => {
-      if (!ignore) setServeurJoignable(ok)
-    })
-    chargerConfig().then((config) => {
-      if (!ignore) setGoogleClientId(config.google_client_id || '')
-    })
-    return () => { ignore = true }
+    testerServeur()
   }, [])
 
   useEffect(() => {
@@ -161,8 +170,15 @@ function AppInterne() {
     }
   }
 
-  const estErreurSession = (message) =>
-    typeof message === 'string' && message.toLowerCase().includes('session')
+  // Détecte une erreur de session. Quand c'est le cas, on prépare aussi un message
+  // visible sur l'écran de connexion (au lieu d'une déconnexion silencieuse).
+  const estErreurSession = (message) => {
+    const estSession = typeof message === 'string' && message.toLowerCase().includes('session')
+    if (estSession) {
+      setErreurAuth('Votre session a expiré. Reconnectez-vous, puis réessayez.')
+    }
+    return estSession
+  }
 
   // --- Authentification : connexion / inscription ---
   const enregistrerSession = (donnees) => {
@@ -845,6 +861,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
+          setAnalyseEnCours(false)
           seDeconnecter()
           return
         }
@@ -912,13 +929,42 @@ function AppInterne() {
         <div className="ambient-glow ambient-glow-2"></div>
         <h1 className="app-title">VocalIA</h1>
 
-  {serveurJoignable === false && (
-    <p className="status-text serveur-alerte">
-      Le serveur VocalIA n'est pas joignable. Dans un terminal, lancez le backend :
-      uvicorn main:app --reload --host 0.0.0.0 --port 8000
-      <br />
-      <strong>URL utilisée : {API_URL}</strong>
-    </p>
+  {(verificationServeur || serveurJoignable === false) && (
+    <div className={`serveur-alerte ${serveurJoignable === false ? '' : 'serveur-info'}`}>
+      {verificationServeur ? (
+        <p className="status-text">
+          Connexion au serveur VocalIA… Le serveur distant peut mettre quelques secondes à se réveiller.
+        </p>
+      ) : (
+        <p className="status-text">
+          Le serveur n’est pas joignable depuis ce téléphone. Sur mobile, <strong>localhost</strong> désigne le téléphone, pas votre PC.
+        </p>
+      )}
+      <label className="field-label" htmlFor="url-api-login">Adresse du serveur</label>
+      <input
+        id="url-api-login"
+        className="input-field"
+        type="url"
+        value={urlApiSaisie}
+        onChange={(e) => setUrlApiSaisie(e.target.value)}
+        placeholder="https://vocalia-ud4o.onrender.com"
+      />
+      <button
+        type="button"
+        className="btn-secondary"
+        style={{ width: '100%', marginTop: '10px' }}
+        disabled={verificationServeur}
+        onClick={async () => {
+          const url = definirApiUrl(urlApiSaisie)
+          setUrlApi(url)
+          setUrlApiSaisie(url)
+          await testerServeur()
+        }}
+      >
+        {verificationServeur ? 'Vérification…' : 'Enregistrer et réessayer'}
+      </button>
+      <p className="status-text" style={{ marginTop: '8px' }}>URL actuelle : {urlApi}</p>
+    </div>
   )}
         <div className="card">
           <div className="assistant-toggle">
@@ -1172,7 +1218,7 @@ function AppInterne() {
                 </div>
 
                 <div className="link-import-box">
-                  <label className="field-label">Coller un lien (n'importe quelle source audio ou vidéo)</label>
+                  <label className="field-label">Coller un lien de vidéo ou d'audio</label>
                   <div className="link-import-row">
                     <input
                       type="url"
@@ -1199,7 +1245,7 @@ function AppInterne() {
                     </button>
                   </div>
                   <p className="status-text" style={{ marginTop: '8px', marginBottom: 0, fontSize: '12px', textAlign: 'left' }}>
-                    YouTube, Facebook, Instagram, Google Drive, Dropbox, ou tout autre lien direct vers un fichier audio ou vidéo.
+                    YouTube, Facebook, Instagram, TikTok ou tout lien direct vers un fichier audio ou vidéo. Les liens de partage Google Drive et Dropbox ne sont pas pris en charge : téléchargez plutôt le fichier puis importez-le.
                   </p>
                 </div>
               </div>
@@ -1220,12 +1266,14 @@ function AppInterne() {
               {analyseEnCours && (
                 <>
                   <p className="status-text">
-                    {progressionImport < 100
-                      ? `Envoi du fichier… ${progressionImport} %`
-                      : 'Extraction audio et transcription en cours, cela peut être long sur les gros fichiers…'}
+                    {fichierImporte
+                      ? (progressionImport < 100
+                        ? `Envoi du fichier… ${progressionImport} %`
+                        : 'Extraction audio et transcription en cours, cela peut être long sur les gros fichiers…')
+                      : 'Téléchargement de l’audio du lien puis transcription en cours, cela peut prendre quelques minutes…'}
                   </p>
                   <div className="progress-track">
-                    <div className="progress-fill" style={{ width: `${Math.max(progressionImport, progressionImport < 100 ? progressionImport : 100)}%` }}></div>
+                    <div className="progress-fill" style={{ width: `${fichierImporte ? Math.max(progressionImport, progressionImport < 100 ? progressionImport : 100) : 100}%` }}></div>
                   </div>
                 </>
               )}
@@ -1453,6 +1501,42 @@ function AppInterne() {
 
       {mode === 'reglages' && (
         <div className="card settings-card">
+          <p className="settings-section-title">Serveur</p>
+          <div style={{ marginBottom: '28px', textAlign: 'left' }}>
+            <label className="field-label" htmlFor="url-api-reglages">Adresse du backend</label>
+            <input
+              id="url-api-reglages"
+              className="input-field"
+              type="url"
+              value={urlApiSaisie}
+              onChange={(e) => setUrlApiSaisie(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ width: '100%', marginTop: '10px' }}
+              disabled={verificationServeur}
+              onClick={async () => {
+                const url = definirApiUrl(urlApiSaisie)
+                setUrlApi(url)
+                setUrlApiSaisie(url)
+                await testerServeur()
+              }}
+            >
+              {verificationServeur ? 'Vérification…' : 'Enregistrer l’adresse'}
+            </button>
+            {serveurJoignable === true && (
+              <p className="status-text" style={{ textAlign: 'left', marginTop: '8px' }}>
+                Serveur joignable : {urlApi}
+              </p>
+            )}
+            {serveurJoignable === false && (
+              <p className="status-text" style={{ textAlign: 'left', marginTop: '8px' }}>
+                Serveur injoignable : {urlApi}
+              </p>
+            )}
+          </div>
+
           <p className="settings-section-title">Compte</p>
           {prenomUtilisateur && (
             <p className="status-text" style={{ textAlign: 'left', marginBottom: '16px' }}>

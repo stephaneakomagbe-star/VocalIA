@@ -352,12 +352,21 @@ select.input-field {
 
 .serveur-alerte {
   max-width: 420px;
+  width: 100%;
   color: #fca5a5;
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.serveur-alerte.serveur-info {
+  color: #cbd5e1;
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.25);
 }
 
 /* --- Animation pulsation autour du micro (façon Siri) --- */
