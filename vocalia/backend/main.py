@@ -37,18 +37,22 @@ FENETRE_BLOCAGE_MINUTES = 15
 MAX_AUDIO_OCTETS = 80 * 1024 * 1024
 TAILLE_LOT_UPLOAD = 1024 * 1024
 DOSSIER_AUDIOS = "audios"
+DUREE_CONSERVATION_TRAVAUX = timedelta(hours=6)
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
 FICHIER_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_FILE", "").strip()
-# Ex. dans .env : YOUTUBE_COOKIES_BROWSER=chrome  (ou edge, firefox, opera...)
-# Utile en local : yt-dlp lit les cookies de ton navigateur pour éviter le blocage anti-bot.
 NAVIGATEUR_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_BROWSER", "").strip().lower()
 EXTENSIONS_MEDIA = (
     ".webm", ".wav", ".mp3", ".m4a", ".ogg", ".mpeg", ".mpga",
     ".mp4", ".mov", ".mkv", ".avi", ".m4v", ".mpg", ".aac", ".flac",
 )
 REGEX_TELEPHONE = re.compile(r"^[0-9+\s().-]{6,20}$")
+REGEX_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
 audio_temporaires = {}
 verrou_temporaires = threading.Lock()
+travaux = {}
+verrou_travaux = threading.Lock()
+verrou_transcription = threading.Lock()
 
 PROMPT_SYSTEME = (
     "Tu es VocalIA, un assistant vocal et écrit intégré à une application de transcription "
@@ -67,8 +71,6 @@ PROMPTS_TRANSCRIPTION = {
     "fr": "Transcription d'une prédication ou d'un message en français, avec des termes comme Seigneur, Évangile, prière, église, Togo.",
     "en": "Transcription of a sermon or message in English.",
 }
-
-REGEX_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 modele_whisper = None
 verrou_modele = threading.Lock()
@@ -180,6 +182,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def reponse_erreur(message: str, status: int = 400):
     return JSONResponse({"erreur": message}, status_code=status)
 
@@ -200,14 +203,20 @@ def ffmpeg_disponible():
     return shutil.which("ffmpeg") is not None
 
 
+def supprimer_fichier(chemin):
+    if chemin and os.path.isfile(chemin):
+        try:
+            os.remove(chemin)
+        except OSError:
+            pass
+
+
 def nettoyer_audio_temporaires():
     maintenant = datetime.now()
     with verrou_temporaires:
         expires = [cle for cle, info in audio_temporaires.items() if info["expiration"] < maintenant]
         for cle in expires:
-            chemin = audio_temporaires.pop(cle)["chemin"]
-            if os.path.isfile(chemin):
-                os.remove(chemin)
+            supprimer_fichier(audio_temporaires.pop(cle)["chemin"])
 
 
 def enregistrer_audio_temporaire(user_id, chemin_wav):
@@ -254,8 +263,7 @@ async def enregistrer_upload_sur_disque(fichier: UploadFile, suffixe: str, limit
                     )
                 sortie.write(lot)
     except Exception:
-        if os.path.isfile(chemin):
-            os.remove(chemin)
+        supprimer_fichier(chemin)
         raise
     return chemin, taille
 
@@ -284,8 +292,7 @@ def extraire_audio_wav(chemin_source):
     ]
     resultat = subprocess.run(commande, capture_output=True, timeout=4 * 3600)
     if resultat.returncode != 0 or not os.path.isfile(chemin_wav) or os.path.getsize(chemin_wav) == 0:
-        if os.path.isfile(chemin_wav):
-            os.remove(chemin_wav)
+        supprimer_fichier(chemin_wav)
         raise HTTPException(
             status_code=400,
             detail="Impossible d’extraire l’audio de ce fichier. Vérifiez le format.",
@@ -301,7 +308,6 @@ def version_yt_dlp():
 
 
 def message_erreur_lien(erreur):
-    """Transforme l'erreur technique de yt-dlp en message compréhensible pour l'utilisateur."""
     texte = str(erreur).lower()
 
     if "sign in to confirm" in texte or "not a bot" in texte or "cookies" in texte:
@@ -332,15 +338,10 @@ def message_erreur_lien(erreur):
 
 def supprimer_residus(base_sans_extension):
     for chemin in glob.glob(base_sans_extension + ".*"):
-        try:
-            os.remove(chemin)
-        except OSError:
-            pass
+        supprimer_fichier(chemin)
 
 
 def telecharger_audio_lien(url):
-    """Télécharge l'audio d'un lien (YouTube et autres sites vidéo) via yt-dlp,
-    et le convertit en .wav exploitable par Whisper."""
     if not ffmpeg_disponible():
         raise HTTPException(
             status_code=500,
@@ -366,15 +367,11 @@ def telecharger_audio_lien(url):
         "socket_timeout": 30,
         "geo_bypass": True,
         "retries": 3,
-        # Les versions récentes de yt-dlp ont besoin d'un moteur JavaScript pour YouTube.
-        # Node.js est déjà installé si tu utilises Vite. Si tu préfères Deno : {"deno": {}}
         "js_runtimes": {"node": {}, "deno": {}},
     }
 
-    # 1) Fichier de cookies exporté (utile sur un serveur)
     if FICHIER_COOKIES_YOUTUBE and os.path.isfile(FICHIER_COOKIES_YOUTUBE):
         options["cookiefile"] = FICHIER_COOKIES_YOUTUBE
-    # 2) Sinon, cookies lus directement dans le navigateur (utile en local)
     elif NAVIGATEUR_COOKIES_YOUTUBE:
         options["cookiesfrombrowser"] = (NAVIGATEUR_COOKIES_YOUTUBE,)
 
@@ -382,7 +379,6 @@ def telecharger_audio_lien(url):
         with yt_dlp.YoutubeDL(options) as ydl:
             ydl.download([url])
     except Exception as e:
-        # Détail complet dans le terminal du serveur pour diagnostiquer précisément
         print(f"[yt-dlp {version_yt_dlp()}] Échec du téléchargement pour {url} : {type(e).__name__}: {e}")
         supprimer_residus(base_sans_extension)
         raise HTTPException(status_code=400, detail=message_erreur_lien(e))
@@ -392,13 +388,9 @@ def telecharger_audio_lien(url):
         supprimer_residus(base_sans_extension)
         raise HTTPException(status_code=400, detail="Aucun audio n'a pu être extrait de ce lien.")
 
-    # On supprime d'éventuels fichiers intermédiaires (.webm, .m4a...) restés sur le disque
     for chemin in glob.glob(base_sans_extension + ".*"):
         if chemin != chemin_wav:
-            try:
-                os.remove(chemin)
-            except OSError:
-                pass
+            supprimer_fichier(chemin)
 
     return chemin_wav
 
@@ -579,17 +571,46 @@ def construire_messages(historique_json, nouveau_message):
 def transcrire_avec_langue(chemin_temp, langue):
     modele = get_modele()
     prompt = PROMPTS_TRANSCRIPTION.get(langue)
-    try:
-        resultat = modele.transcribe(chemin_temp, language=langue, initial_prompt=prompt)
-        return resultat, langue, False
-    except Exception:
-        resultat = modele.transcribe(chemin_temp)
-        langue_detectee = resultat.get("language")
-        return resultat, langue_detectee, True
+    with verrou_transcription:
+        try:
+            resultat = modele.transcribe(chemin_temp, language=langue, initial_prompt=prompt)
+            return resultat, langue, False
+        except Exception:
+            resultat = modele.transcribe(chemin_temp)
+            langue_detectee = resultat.get("language")
+            return resultat, langue_detectee, True
 
 
 def transcrire_francais(chemin_temp):
-    return get_modele().transcribe(chemin_temp, language="fr")
+    modele = get_modele()
+    with verrou_transcription:
+        return modele.transcribe(chemin_temp, language="fr")
+
+
+def analyser_resultat(resultat, langue, langue_utilisee, repli_auto):
+    segments = resultat.get("segments", [])
+
+    if not segments:
+        return None, None, "Aucune parole détectée dans cet audio."
+
+    moyenne_no_speech = sum(s["no_speech_prob"] for s in segments) / len(segments)
+
+    if moyenne_no_speech > 0.6:
+        return None, None, "Aucune parole claire détectée (silence probable)."
+
+    texte = resultat["text"].strip()
+
+    if not texte:
+        return None, None, "Aucune parole claire détectée dans cet audio."
+
+    note = None
+    if repli_auto:
+        note = (
+            f"Langue « {langue} » non reconnue, détection automatique utilisée "
+            f"(langue détectée : {langue_utilisee})."
+        )
+
+    return texte, note, None
 
 
 def appeler_groq(messages):
@@ -606,6 +627,89 @@ def nom_fichier_sur(nom: str) -> bool:
         return False
     nom_min = nom.lower()
     return nom_min.endswith(EXTENSIONS_MEDIA)
+
+
+def nettoyer_travaux():
+    limite = datetime.now() - DUREE_CONSERVATION_TRAVAUX
+    with verrou_travaux:
+        for cle in [c for c, t in travaux.items() if t["creation"] < limite]:
+            travaux.pop(cle, None)
+
+
+def creer_travail(user_id, etape):
+    nettoyer_travaux()
+    identifiant = str(uuid.uuid4())
+    with verrou_travaux:
+        travaux[identifiant] = {
+            "user_id": user_id,
+            "statut": "en_cours",
+            "etape": etape,
+            "creation": datetime.now(),
+        }
+    return identifiant
+
+
+def maj_travail(identifiant, **champs):
+    with verrou_travaux:
+        if identifiant in travaux:
+            travaux[identifiant].update(champs)
+
+
+def message_exception(erreur):
+    if isinstance(erreur, HTTPException):
+        return erreur.detail if isinstance(erreur.detail, str) else "Requête invalide."
+    return "Une erreur est survenue pendant le traitement."
+
+
+def transcrire_travail(identifiant, user_id, chemin_wav, nom, langue, conserver):
+    if verrou_transcription.locked():
+        maj_travail(identifiant, etape="En attente d’une transcription précédente…")
+    else:
+        maj_travail(identifiant, etape="Transcription en cours…")
+
+    resultat, langue_utilisee, repli_auto = transcrire_avec_langue(chemin_wav, langue)
+    texte, note, erreur = analyser_resultat(resultat, langue, langue_utilisee, repli_auto)
+
+    if erreur:
+        maj_travail(identifiant, statut="erreur", message=erreur)
+        return
+
+    audio_temporaire = enregistrer_audio_temporaire(user_id, chemin_wav) if conserver else None
+    maj_travail(
+        identifiant,
+        statut="termine",
+        texte=texte,
+        note=note or "",
+        audio_temporaire=audio_temporaire,
+        nom_fichier=nom,
+    )
+
+
+def executer_travail_fichier(identifiant, user_id, chemin_source, nom, langue, conserver):
+    chemin_wav = None
+    try:
+        maj_travail(identifiant, etape="Extraction de l’audio…")
+        chemin_wav = extraire_audio_wav(chemin_source)
+        transcrire_travail(identifiant, user_id, chemin_wav, nom, langue, conserver)
+    except Exception as e:
+        print(f"[travail {identifiant}] {type(e).__name__}: {e}")
+        maj_travail(identifiant, statut="erreur", message=message_exception(e))
+    finally:
+        supprimer_fichier(chemin_source)
+        supprimer_fichier(chemin_wav)
+
+
+def executer_travail_lien(identifiant, user_id, url, langue, conserver):
+    chemin_wav = None
+    try:
+        maj_travail(identifiant, etape="Téléchargement de l’audio du lien…")
+        chemin_wav = telecharger_audio_lien(url)
+        transcrire_travail(identifiant, user_id, chemin_wav, url, langue, conserver)
+    except Exception as e:
+        print(f"[travail {identifiant}] {type(e).__name__}: {e}")
+        maj_travail(identifiant, statut="erreur", message=message_exception(e))
+    finally:
+        supprimer_fichier(chemin_wav)
 
 
 @app.get("/")
@@ -797,42 +901,45 @@ async def transcrire_audio(
         if conserver_audio in ("1", "true", "True"):
             audio_temporaire = await asyncio.to_thread(enregistrer_audio_temporaire, user_id, chemin_wav)
     finally:
-        for chemin in (chemin_source, chemin_wav):
-            if chemin and os.path.exists(chemin):
-                os.remove(chemin)
+        supprimer_fichier(chemin_source)
+        supprimer_fichier(chemin_wav)
 
-    segments = resultat.get("segments", [])
-
-    if not segments:
-        return reponse_erreur("Aucune parole détectée dans cet audio.")
-
-    moyenne_no_speech = sum(s["no_speech_prob"] for s in segments) / len(segments)
-
-    if moyenne_no_speech > 0.6:
-        return reponse_erreur("Aucune parole claire détectée (silence probable).")
-
-    texte = resultat["text"].strip()
-
-    if not texte:
-        return reponse_erreur("Aucune parole claire détectée dans cet audio.")
+    texte, note, erreur = analyser_resultat(resultat, langue, langue_utilisee, repli_auto)
+    if erreur:
+        return reponse_erreur(erreur)
 
     reponse = {
         "texte": texte,
         "nom_fichier": fichier.filename,
         "audio_temporaire": audio_temporaire,
     }
-
-    if repli_auto:
-        reponse["note"] = (
-            f"Langue « {langue} » non reconnue, détection automatique utilisée "
-            f"(langue détectée : {langue_utilisee})."
-        )
+    if note:
+        reponse["note"] = note
 
     return reponse
 
 
-@app.post("/transcription-lien")
-async def transcrire_lien(
+@app.post("/travaux/fichier")
+async def lancer_travail_fichier(
+    user_id: Annotated[int, Depends(utilisateur_connecte)],
+    fichier: UploadFile = File(...),
+    langue: str = Form("fr"),
+    conserver_audio: str = Form("0"),
+):
+    extension = os.path.splitext(fichier.filename or "")[1].lower() or ".webm"
+    chemin_source, _taille = await enregistrer_upload_sur_disque(fichier, extension)
+    identifiant = creer_travail(user_id, "Préparation du fichier…")
+    conserver = conserver_audio in ("1", "true", "True")
+    threading.Thread(
+        target=executer_travail_fichier,
+        args=(identifiant, user_id, chemin_source, fichier.filename, langue, conserver),
+        daemon=True,
+    ).start()
+    return {"id_travail": identifiant}
+
+
+@app.post("/travaux/lien")
+async def lancer_travail_lien(
     user_id: Annotated[int, Depends(utilisateur_connecte)],
     url: str = Form(...),
     langue: str = Form("fr"),
@@ -842,48 +949,39 @@ async def transcrire_lien(
     if not url.startswith(("http://", "https://")):
         return reponse_erreur("Lien invalide.")
 
-    chemin_wav = None
-    audio_temporaire = None
+    identifiant = creer_travail(user_id, "Préparation du lien…")
+    conserver = conserver_audio in ("1", "true", "True")
+    threading.Thread(
+        target=executer_travail_lien,
+        args=(identifiant, user_id, url, langue, conserver),
+        daemon=True,
+    ).start()
+    return {"id_travail": identifiant}
 
-    try:
-        chemin_wav = await asyncio.to_thread(telecharger_audio_lien, url)
-        resultat, langue_utilisee, repli_auto = await asyncio.to_thread(
-            transcrire_avec_langue, chemin_wav, langue
-        )
-        if conserver_audio in ("1", "true", "True"):
-            audio_temporaire = await asyncio.to_thread(enregistrer_audio_temporaire, user_id, chemin_wav)
-    finally:
-        if chemin_wav and os.path.exists(chemin_wav):
-            os.remove(chemin_wav)
 
-    segments = resultat.get("segments", [])
+@app.get("/travaux/{identifiant}")
+def etat_travail(identifiant: str, user_id: Annotated[int, Depends(utilisateur_connecte)]):
+    with verrou_travaux:
+        travail = dict(travaux.get(identifiant) or {})
 
-    if not segments:
-        return reponse_erreur("Aucune parole détectée dans cet audio.")
+    if not travail or travail["user_id"] != user_id:
+        return reponse_erreur("Travail introuvable (le serveur a peut-être redémarré).", 404)
 
-    moyenne_no_speech = sum(s["no_speech_prob"] for s in segments) / len(segments)
+    statut = travail["statut"]
 
-    if moyenne_no_speech > 0.6:
-        return reponse_erreur("Aucune parole claire détectée (silence probable).")
+    if statut == "en_cours":
+        return {"statut": statut, "etape": travail.get("etape", "")}
 
-    texte = resultat["text"].strip()
+    if statut == "erreur":
+        return {"statut": statut, "message": travail.get("message", "Une erreur est survenue.")}
 
-    if not texte:
-        return reponse_erreur("Aucune parole claire détectée dans cet audio.")
-
-    reponse = {
-        "texte": texte,
-        "nom_fichier": url,
-        "audio_temporaire": audio_temporaire,
+    return {
+        "statut": statut,
+        "texte": travail.get("texte", ""),
+        "note": travail.get("note", ""),
+        "audio_temporaire": travail.get("audio_temporaire"),
+        "nom_fichier": travail.get("nom_fichier", ""),
     }
-
-    if repli_auto:
-        reponse["note"] = (
-            f"Langue « {langue} » non reconnue, détection automatique utilisée "
-            f"(langue détectée : {langue_utilisee})."
-        )
-
-    return reponse
 
 
 @app.post("/assistant")
@@ -900,8 +998,7 @@ async def assistant_vocal(
         )
         resultat = await asyncio.to_thread(transcrire_francais, chemin_source)
     finally:
-        if chemin_source and os.path.exists(chemin_source):
-            os.remove(chemin_source)
+        supprimer_fichier(chemin_source)
 
     segments = resultat.get("segments", [])
 
@@ -967,8 +1064,7 @@ async def sauvegarder_transcription(
             nom_audio = f"{uuid.uuid4()}.wav"
             os.replace(chemin_wav, os.path.join(DOSSIER_AUDIOS, nom_audio))
         finally:
-            if os.path.isfile(chemin_source):
-                os.remove(chemin_source)
+            supprimer_fichier(chemin_source)
 
     conn = get_db()
     conn.execute(
@@ -1088,10 +1184,8 @@ def supprimer_transcription(item_id: int, user_id: Annotated[int, Depends(utilis
     conn.commit()
     conn.close()
 
-    if nom_audio:
-        chemin = os.path.join(DOSSIER_AUDIOS, nom_audio)
-        if os.path.isfile(chemin) and nom_fichier_sur(nom_audio):
-            os.remove(chemin)
+    if nom_audio and nom_fichier_sur(nom_audio):
+        supprimer_fichier(os.path.join(DOSSIER_AUDIOS, nom_audio))
 
     return {"status": "ok"}
 

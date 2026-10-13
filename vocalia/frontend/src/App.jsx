@@ -3,8 +3,26 @@ import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, 
 import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, obtenirApiUrl, definirApiUrl } from './api'
 import './App.css'
 
-// --- Filet de sécurité : si un rendu plante quelque part dans l'appli,
-// on affiche un message au lieu de laisser l'écran devenir noir sans explication.
+const CLE_ETAT = 'vocalia_etat'
+const CLE_TRAVAIL = 'vocalia_travail'
+
+const lireEtatSauvegarde = () => {
+  try {
+    const etat = JSON.parse(localStorage.getItem(CLE_ETAT)) || {}
+    return etat.proprietaire && etat.proprietaire === localStorage.getItem('vocalia_email') ? etat : {}
+  } catch {
+    return {}
+  }
+}
+
+const lireTravailSauvegarde = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CLE_TRAVAIL))
+  } catch {
+    return null
+  }
+}
+
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
@@ -40,11 +58,12 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppInterne() {
-  // --- Authentification ---
+  const etatInitial = useRef(lireEtatSauvegarde()).current
+
   const [token, setToken] = useState(() => localStorage.getItem('vocalia_token'))
   const [emailUtilisateur, setEmailUtilisateur] = useState(() => localStorage.getItem('vocalia_email'))
   const [prenomUtilisateur, setPrenomUtilisateur] = useState(() => localStorage.getItem('vocalia_prenom') || '')
-  const [modeAuth, setModeAuth] = useState('connexion') // 'connexion' ou 'inscription'
+  const [modeAuth, setModeAuth] = useState('connexion')
   const [emailSaisi, setEmailSaisi] = useState('')
   const [mdpSaisi, setMdpSaisi] = useState('')
   const [mdpConfirm, setMdpConfirm] = useState('')
@@ -64,30 +83,30 @@ function AppInterne() {
   )
   const [messageDrive, setMessageDrive] = useState('')
 
-  // --- Navigation principale : 'accueil' (Live + Import fusionnés), 'assistant', 'historique', 'reglages' ---
-  const [mode, setMode] = useState('accueil')
-  // --- Sous-onglet de l'écran Accueil : 'direct' (enregistrement live) ou 'importer' (fichier/lien) ---
-  const [sousModeAccueil, setSousModeAccueil] = useState('direct')
+  const [mode, setMode] = useState(etatInitial.mode || 'accueil')
+  const [sousModeAccueil, setSousModeAccueil] = useState(etatInitial.sousModeAccueil || 'direct')
 
   const [enregistrement, setEnregistrement] = useState(false)
-  const [transcriptionComplete, setTranscriptionComplete] = useState('')
+  const [transcriptionComplete, setTranscriptionComplete] = useState(etatInitial.transcriptionComplete || '')
   const [envoiEnCours, setEnvoiEnCours] = useState(false)
   const [heureProgrammee, setHeureProgrammee] = useState('')
   const [programmationActive, setProgrammationActive] = useState(false)
   const [audioUrl, setAudioUrl] = useState(null)
-  const [dureeChoisie, setDureeChoisie] = useState(60)
+  const [dureeChoisie, setDureeChoisie] = useState(etatInitial.dureeChoisie || 60)
   const streamRef = useRef(null)
   const mediaRecorderRef = useRef(null)
   const timeoutArretRef = useRef(null)
   const tranchesAudioRef = useRef([])
 
-  const [modeAssistant, setModeAssistant] = useState('vocal')
+  const [modeAssistant, setModeAssistant] = useState(etatInitial.modeAssistant || 'vocal')
   const [enregistrementAssistant, setEnregistrementAssistant] = useState(false)
-  const [conversation, setConversation] = useState([])
+  const [conversation, setConversation] = useState(
+    () => (Array.isArray(etatInitial.conversation) ? etatInitial.conversation : []),
+  )
   const [messageTexte, setMessageTexte] = useState('')
   const [assistantEnCours, setAssistantEnCours] = useState(false)
   const assistantRecorderRef = useRef(null)
-  const salutationFaiteRef = useRef(false)
+  const salutationFaiteRef = useRef(Array.isArray(etatInitial.conversation) && etatInitial.conversation.length > 0)
   const finConversationRef = useRef(null)
   const [messageSauvegardeConversation, setMessageSauvegardeConversation] = useState('')
 
@@ -97,24 +116,69 @@ function AppInterne() {
   const [messageSauvegarde, setMessageSauvegarde] = useState('')
   const [rechercheHistorique, setRechercheHistorique] = useState('')
 
-  const [langue, setLangue] = useState('fr')
-  const [dureeTrancheMinutes, setDureeTrancheMinutes] = useState(5)
+  const [langue, setLangue] = useState(etatInitial.langue || 'fr')
+  const [dureeTrancheMinutes, setDureeTrancheMinutes] = useState(etatInitial.dureeTrancheMinutes || 5)
   const dureeTranche = dureeTrancheMinutes * 60 * 1000
-  const [inclureAudio, setInclureAudio] = useState(true)
+  const [inclureAudio, setInclureAudio] = useState(
+    typeof etatInitial.inclureAudio === 'boolean' ? etatInitial.inclureAudio : true,
+  )
 
   const [fichierImporte, setFichierImporte] = useState(null)
-  const [lienImporte, setLienImporte] = useState('')
+  const [nomImporte, setNomImporte] = useState(etatInitial.nomImporte || '')
+  const [lienImporte, setLienImporte] = useState(etatInitial.lienImporte || '')
   const [apercuImporte, setApercuImporte] = useState(null)
-  const [texteImporte, setTexteImporte] = useState('')
-  const [noteImportee, setNoteImportee] = useState('')
+  const [texteImporte, setTexteImporte] = useState(etatInitial.texteImporte || '')
+  const [noteImportee, setNoteImportee] = useState(etatInitial.noteImportee || '')
   const [analyseEnCours, setAnalyseEnCours] = useState(false)
+  const [phaseImport, setPhaseImport] = useState('')
+  const [etapeImport, setEtapeImport] = useState('')
   const [progressionImport, setProgressionImport] = useState(0)
-  const [idAudioTemporaire, setIdAudioTemporaire] = useState(null)
+  const [idAudioTemporaire, setIdAudioTemporaire] = useState(etatInitial.idAudioTemporaire || null)
   const [messageSauvegardeFichier, setMessageSauvegardeFichier] = useState('')
+  const suiviRef = useRef(null)
+  const emailPrecedentRef = useRef(localStorage.getItem('vocalia_email'))
 
   const [permissionNotif, setPermissionNotif] = useState(
     typeof Notification !== 'undefined' ? Notification.permission : 'unsupported'
   )
+
+  useEffect(() => {
+    if (!token) return
+    try {
+      localStorage.setItem(CLE_ETAT, JSON.stringify({
+        proprietaire: emailUtilisateur,
+        mode,
+        sousModeAccueil,
+        modeAssistant,
+        transcriptionComplete,
+        texteImporte,
+        noteImportee,
+        lienImporte,
+        nomImporte,
+        idAudioTemporaire,
+        conversation,
+        langue,
+        dureeChoisie,
+        dureeTrancheMinutes,
+        inclureAudio,
+      }))
+    } catch {}
+  }, [
+    token, emailUtilisateur, mode, sousModeAccueil, modeAssistant, transcriptionComplete,
+    texteImporte, noteImportee, lienImporte, nomImporte, idAudioTemporaire, conversation,
+    langue, dureeChoisie, dureeTrancheMinutes, inclureAudio,
+  ])
+
+  useEffect(() => {
+    const avertir = (event) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    if (enregistrement || envoiEnCours || phaseImport === 'envoi') {
+      window.addEventListener('beforeunload', avertir)
+    }
+    return () => window.removeEventListener('beforeunload', avertir)
+  }, [enregistrement, envoiEnCours, phaseImport])
 
   useEffect(() => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
@@ -159,6 +223,17 @@ function AppInterne() {
     }
   }, [apercuImporte])
 
+  useEffect(() => {
+    if (!token) return
+    const enregistre = lireTravailSauvegarde()
+    if (enregistre?.id) {
+      suivreTravail(enregistre.id)
+    }
+    return () => {
+      suiviRef.current = null
+    }
+  }, [token])
+
   const demanderPermissionNotification = () => {
     if (typeof Notification === 'undefined') return
     Notification.requestPermission().then(setPermissionNotif)
@@ -170,18 +245,41 @@ function AppInterne() {
     }
   }
 
-  // Détecte une erreur de session. Quand c'est le cas, on prépare aussi un message
-  // visible sur l'écran de connexion (au lieu d'une déconnexion silencieuse).
-  const estErreurSession = (message) => {
-    const estSession = typeof message === 'string' && message.toLowerCase().includes('session')
-    if (estSession) {
-      setErreurAuth('Votre session a expiré. Reconnectez-vous, puis réessayez.')
-    }
-    return estSession
+  const estErreurSession = (message) =>
+    typeof message === 'string' && message.toLowerCase().includes('session')
+
+  const sessionExpiree = () => {
+    suiviRef.current = null
+    setAnalyseEnCours(false)
+    setPhaseImport('')
+    setErreurAuth('Votre session a expiré. Reconnectez-vous, puis réessayez.')
+    localStorage.removeItem('vocalia_token')
+    setToken(null)
   }
 
-  // --- Authentification : connexion / inscription ---
+  const reinitialiserDonnees = () => {
+    setTranscriptionComplete('')
+    setTexteImporte('')
+    setNoteImportee('')
+    setLienImporte('')
+    setNomImporte('')
+    setIdAudioTemporaire(null)
+    setConversation([])
+    salutationFaiteRef.current = false
+    setHistorique([])
+    setConversationsSauvegardees([])
+    setAudioUrl(null)
+    setFichierImporte(null)
+    setApercuImporte(null)
+    tranchesAudioRef.current = []
+  }
+
   const enregistrerSession = (donnees) => {
+    if (emailPrecedentRef.current && emailPrecedentRef.current !== donnees.email) {
+      reinitialiserDonnees()
+      localStorage.removeItem(CLE_TRAVAIL)
+    }
+    emailPrecedentRef.current = donnees.email
     localStorage.setItem('vocalia_token', donnees.token)
     localStorage.setItem('vocalia_email', donnees.email)
     localStorage.setItem('vocalia_prenom', donnees.prenom || '')
@@ -360,9 +458,16 @@ function AppInterne() {
     if (token) {
       apiFetch('/deconnexion', { method: 'POST', token }).catch(() => {})
     }
+    suiviRef.current = null
+    setAnalyseEnCours(false)
+    setPhaseImport('')
+    reinitialiserDonnees()
+    emailPrecedentRef.current = null
     localStorage.removeItem('vocalia_token')
     localStorage.removeItem('vocalia_email')
     localStorage.removeItem('vocalia_prenom')
+    localStorage.removeItem(CLE_ETAT)
+    localStorage.removeItem(CLE_TRAVAIL)
     setToken(null)
     setEmailUtilisateur(null)
     setPrenomUtilisateur('')
@@ -370,6 +475,7 @@ function AppInterne() {
   }
 
   useEffect(() => {
+    if (!token) return
     if (mode === 'assistant' && !salutationFaiteRef.current) {
       salutationFaiteRef.current = true
       const heure = new Date().getHours()
@@ -387,7 +493,7 @@ function AppInterne() {
       chargerHistorique()
       chargerHistoriqueConversations()
     }
-  }, [mode])
+  }, [mode, token])
 
   useEffect(() => {
     if (finConversationRef.current) {
@@ -493,7 +599,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setTranscriptionComplete(prev => prev + ' [' + donnees.erreur + ']')
@@ -512,7 +618,7 @@ function AppInterne() {
     const formData = new FormData()
     formData.append('texte', transcriptionComplete)
 
-    if (inclureAudio) {
+    if (inclureAudio && tranchesAudioRef.current.length > 0) {
       const audioComplet = new Blob(tranchesAudioRef.current, { type: 'audio/webm' })
       formData.append('fichier', audioComplet, 'enregistrement.webm')
     }
@@ -526,7 +632,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setMessageSauvegarde(donnees.erreur)
@@ -596,7 +702,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setConversation(prev => [...prev, { role: 'assistant', texte: donnees.erreur }])
@@ -635,7 +741,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setConversation(prev => [...prev, { role: 'assistant', texte: donnees.erreur }])
@@ -661,7 +767,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setMessageSauvegardeConversation(donnees.erreur)
@@ -695,7 +801,7 @@ function AppInterne() {
     try {
       const { donnees } = await apiFetch('/historique', { token })
       if (donnees.erreur) {
-        if (estErreurSession(donnees.erreur)) seDeconnecter()
+        if (estErreurSession(donnees.erreur)) sessionExpiree()
         return
       }
 
@@ -729,7 +835,7 @@ function AppInterne() {
     try {
       const { donnees } = await apiFetch('/historique-conversations', { token })
       if (donnees.erreur) {
-        if (estErreurSession(donnees.erreur)) seDeconnecter()
+        if (estErreurSession(donnees.erreur)) sessionExpiree()
         return
       }
       setConversationsSauvegardees(Array.isArray(donnees.conversations) ? donnees.conversations : [])
@@ -742,7 +848,7 @@ function AppInterne() {
     try {
       const { donnees } = await apiFetch(`/transcriptions/${id}`, { method: 'DELETE', token })
       if (donnees.erreur) {
-        if (estErreurSession(donnees.erreur)) seDeconnecter()
+        if (estErreurSession(donnees.erreur)) sessionExpiree()
         return
       }
       setHistorique((prev) => {
@@ -750,22 +856,18 @@ function AppInterne() {
         if (cible?.audio_blob_url) URL.revokeObjectURL(cible.audio_blob_url)
         return prev.filter((item) => item.id !== id)
       })
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
 
   const supprimerConversation = async (id) => {
     try {
       const { donnees } = await apiFetch(`/conversations/${id}`, { method: 'DELETE', token })
       if (donnees.erreur) {
-        if (estErreurSession(donnees.erreur)) seDeconnecter()
+        if (estErreurSession(donnees.erreur)) sessionExpiree()
         return
       }
       setConversationsSauvegardees((prev) => prev.filter((item) => item.id !== id))
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
 
   const exporterTexte = (nomFichier, contenu) => {
@@ -787,17 +889,79 @@ function AppInterne() {
     conv.messages.some(m => (m?.texte || '').toLowerCase().includes(rechercheHistorique.toLowerCase()))
   )
 
+  const preparerImport = (nom, phase) => {
+    setTexteImporte('')
+    setNoteImportee('')
+    setIdAudioTemporaire(null)
+    setProgressionImport(0)
+    setEtapeImport('')
+    setNomImporte(nom)
+    setPhaseImport(phase)
+    setAnalyseEnCours(true)
+  }
+
+  const terminerImport = () => {
+    setAnalyseEnCours(false)
+    setPhaseImport('')
+    setEtapeImport('')
+  }
+
+  const suivreTravail = async (idTravail) => {
+    const marque = Symbol('suivi')
+    suiviRef.current = marque
+    setAnalyseEnCours(true)
+    setPhaseImport('traitement')
+
+    while (suiviRef.current === marque) {
+      try {
+        const { donnees } = await apiFetch(`/travaux/${idTravail}`, { token })
+        if (suiviRef.current !== marque) return
+
+        if (donnees.erreur) {
+          if (estErreurSession(donnees.erreur)) {
+            sessionExpiree()
+            return
+          }
+          localStorage.removeItem(CLE_TRAVAIL)
+          setTexteImporte(donnees.erreur)
+          break
+        }
+
+        if (donnees.statut === 'termine') {
+          localStorage.removeItem(CLE_TRAVAIL)
+          setTexteImporte(donnees.texte)
+          setNoteImportee(donnees.note || '')
+          setIdAudioTemporaire(donnees.audio_temporaire || null)
+          setLienImporte('')
+          envoyerNotification("VocalIA", "Votre transcription est prête.")
+          break
+        }
+
+        if (donnees.statut === 'erreur') {
+          localStorage.removeItem(CLE_TRAVAIL)
+          setTexteImporte(donnees.message)
+          break
+        }
+
+        setEtapeImport(donnees.etape || '')
+      } catch {}
+
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+    }
+
+    if (suiviRef.current === marque) {
+      suiviRef.current = null
+      terminerImport()
+    }
+  }
+
   const gererImportFichier = async (event) => {
     const fichier = event.target.files[0]
     if (!fichier) return
 
     setFichierImporte(fichier)
     setLienImporte('')
-    setTexteImporte('')
-    setNoteImportee('')
-    setIdAudioTemporaire(null)
-    setProgressionImport(0)
-    setAnalyseEnCours(true)
+    preparerImport(`${fichier.name} (${(fichier.size / (1024 * 1024)).toFixed(1)} Mo)`, 'envoi')
     setApercuImporte((precedent) => {
       if (precedent) URL.revokeObjectURL(precedent)
       return URL.createObjectURL(fichier)
@@ -809,7 +973,7 @@ function AppInterne() {
     formData.append('conserver_audio', '1')
 
     try {
-      const { donnees } = await apiUpload('/transcription', {
+      const { donnees } = await apiUpload('/travaux/fichier', {
         token,
         body: formData,
         onProgress: setProgressionImport,
@@ -817,19 +981,20 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setTexteImporte(donnees.erreur)
-      } else {
-        setTexteImporte(donnees.texte)
-        setNoteImportee(donnees.note || '')
-        setIdAudioTemporaire(donnees.audio_temporaire || null)
+        terminerImport()
+        return
       }
+
+      localStorage.setItem(CLE_TRAVAIL, JSON.stringify({ id: donnees.id_travail }))
+      await suivreTravail(donnees.id_travail)
     } catch (erreur) {
       setTexteImporte(erreur.message)
+      terminerImport()
     }
-    setAnalyseEnCours(false)
   }
 
   const envoyerLienImporte = async (urlManuelle = null) => {
@@ -837,11 +1002,7 @@ function AppInterne() {
     if (!url || analyseEnCours) return
 
     setFichierImporte(null)
-    setTexteImporte('')
-    setNoteImportee('')
-    setIdAudioTemporaire(null)
-    setProgressionImport(0)
-    setAnalyseEnCours(true)
+    preparerImport(url, 'traitement')
     setApercuImporte((precedent) => {
       if (precedent) URL.revokeObjectURL(precedent)
       return null
@@ -853,7 +1014,7 @@ function AppInterne() {
     formData.append('conserver_audio', '1')
 
     try {
-      const { donnees } = await apiFetch('/transcription-lien', {
+      const { donnees } = await apiFetch('/travaux/lien', {
         method: 'POST',
         body: formData,
         token,
@@ -861,22 +1022,20 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          setAnalyseEnCours(false)
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setTexteImporte(donnees.erreur)
-      } else {
-        setTexteImporte(donnees.texte)
-        setNoteImportee(donnees.note || '')
-        setIdAudioTemporaire(donnees.audio_temporaire || null)
-        setLienImporte('')
+        terminerImport()
+        return
       }
+
+      localStorage.setItem(CLE_TRAVAIL, JSON.stringify({ id: donnees.id_travail }))
+      await suivreTravail(donnees.id_travail)
     } catch (erreur) {
       setTexteImporte(erreur.message)
+      terminerImport()
     }
-
-    setAnalyseEnCours(false)
   }
 
   const sauvegarderFichierImporte = async () => {
@@ -897,7 +1056,7 @@ function AppInterne() {
 
       if (donnees.erreur) {
         if (estErreurSession(donnees.erreur)) {
-          seDeconnecter()
+          sessionExpiree()
           return
         }
         setMessageSauvegardeFichier(donnees.erreur)
@@ -921,7 +1080,6 @@ function AppInterne() {
 
   const aEchangeAssistant = conversation.some(m => m.role === 'user')
 
-  // --- Écran de connexion / inscription, affiché si pas de token ---
   if (!token) {
     return (
       <div className="app-container">
@@ -929,43 +1087,44 @@ function AppInterne() {
         <div className="ambient-glow ambient-glow-2"></div>
         <h1 className="app-title">VocalIA</h1>
 
-  {(verificationServeur || serveurJoignable === false) && (
-    <div className={`serveur-alerte ${serveurJoignable === false ? '' : 'serveur-info'}`}>
-      {verificationServeur ? (
-        <p className="status-text">
-          Connexion au serveur VocalIA… Le serveur distant peut mettre quelques secondes à se réveiller.
-        </p>
-      ) : (
-        <p className="status-text">
-          Le serveur n’est pas joignable depuis ce téléphone. Sur mobile, <strong>localhost</strong> désigne le téléphone, pas votre PC.
-        </p>
-      )}
-      <label className="field-label" htmlFor="url-api-login">Adresse du serveur</label>
-      <input
-        id="url-api-login"
-        className="input-field"
-        type="url"
-        value={urlApiSaisie}
-        onChange={(e) => setUrlApiSaisie(e.target.value)}
-        placeholder="https://vocalia-ud4o.onrender.com"
-      />
-      <button
-        type="button"
-        className="btn-secondary"
-        style={{ width: '100%', marginTop: '10px' }}
-        disabled={verificationServeur}
-        onClick={async () => {
-          const url = definirApiUrl(urlApiSaisie)
-          setUrlApi(url)
-          setUrlApiSaisie(url)
-          await testerServeur()
-        }}
-      >
-        {verificationServeur ? 'Vérification…' : 'Enregistrer et réessayer'}
-      </button>
-      <p className="status-text" style={{ marginTop: '8px' }}>URL actuelle : {urlApi}</p>
-    </div>
-  )}
+        {(verificationServeur || serveurJoignable === false) && (
+          <div className={`serveur-alerte ${serveurJoignable === false ? '' : 'serveur-info'}`}>
+            {verificationServeur ? (
+              <p className="status-text">
+                Connexion au serveur VocalIA… Le serveur distant peut mettre quelques secondes à se réveiller.
+              </p>
+            ) : (
+              <p className="status-text">
+                Le serveur n’est pas joignable depuis ce téléphone. Sur mobile, <strong>localhost</strong> désigne le téléphone, pas votre PC.
+              </p>
+            )}
+            <label className="field-label" htmlFor="url-api-login">Adresse du serveur</label>
+            <input
+              id="url-api-login"
+              className="input-field"
+              type="url"
+              value={urlApiSaisie}
+              onChange={(e) => setUrlApiSaisie(e.target.value)}
+              placeholder="https://vocalia-ud4o.onrender.com"
+            />
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ width: '100%', marginTop: '10px' }}
+              disabled={verificationServeur}
+              onClick={async () => {
+                const url = definirApiUrl(urlApiSaisie)
+                setUrlApi(url)
+                setUrlApiSaisie(url)
+                await testerServeur()
+              }}
+            >
+              {verificationServeur ? 'Vérification…' : 'Enregistrer et réessayer'}
+            </button>
+            <p className="status-text" style={{ marginTop: '8px' }}>URL actuelle : {urlApi}</p>
+          </div>
+        )}
+
         <div className="card">
           <div className="assistant-toggle">
             <button
@@ -1250,11 +1409,7 @@ function AppInterne() {
                 </div>
               </div>
 
-              {fichierImporte && (
-                <p className="status-text">
-                  {fichierImporte.name} ({(fichierImporte.size / (1024 * 1024)).toFixed(1)} Mo)
-                </p>
-              )}
+              {nomImporte && <p className="status-text">{nomImporte}</p>}
 
               {apercuImporte && fichierImporte?.type.startsWith('video/') && (
                 <video className="preview-media" controls src={apercuImporte}></video>
@@ -1266,14 +1421,15 @@ function AppInterne() {
               {analyseEnCours && (
                 <>
                   <p className="status-text">
-                    {fichierImporte
-                      ? (progressionImport < 100
-                        ? `Envoi du fichier… ${progressionImport} %`
-                        : 'Extraction audio et transcription en cours, cela peut être long sur les gros fichiers…')
-                      : 'Téléchargement de l’audio du lien puis transcription en cours, cela peut prendre quelques minutes…'}
+                    {phaseImport === 'envoi'
+                      ? `Envoi du fichier… ${progressionImport} %`
+                      : (etapeImport || 'Traitement en cours sur le serveur. Vous pouvez quitter et revenir, le résultat sera récupéré.')}
                   </p>
                   <div className="progress-track">
-                    <div className="progress-fill" style={{ width: `${fichierImporte ? Math.max(progressionImport, progressionImport < 100 ? progressionImport : 100) : 100}%` }}></div>
+                    <div
+                      className="progress-fill"
+                      style={{ width: phaseImport === 'envoi' ? `${progressionImport}%` : '100%' }}
+                    ></div>
                   </div>
                 </>
               )}
