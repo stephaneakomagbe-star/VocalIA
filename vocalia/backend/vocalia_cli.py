@@ -3,7 +3,10 @@ import getpass
 import json
 import mimetypes
 import os
+import re
+import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -21,12 +24,22 @@ AIDE = """Commandes disponibles :
   /fichier CHEMIN       transcrire un fichier audio ou vidéo
   /traduire LANGUE      traduire la dernière transcription (ex. /traduire anglais)
   /resumer [LANGUE]     résumer la dernière transcription (français par défaut)
+  /lire [TEXTE]         lire à voix haute le TEXTE, ou la dernière réponse / transcription
   /sauver               enregistrer la dernière transcription
   /enregistrer          enregistrer la conversation en cours
   /historique           afficher vos dernières transcriptions
   /deconnexion          se déconnecter
   /quitter              fermer VocalIA
 Tout autre texte est envoyé à l'assistant."""
+
+MOTS_ANGLAIS = {
+    "the", "and", "is", "are", "you", "that", "with", "this", "have", "for", "not", "was", "what",
+    "from", "they", "your", "will", "would", "there", "about", "which", "their", "been", "were",
+}
+MOTS_FRANCAIS = {
+    "le", "la", "les", "des", "est", "une", "que", "pour", "pas", "vous", "dans", "avec", "qui",
+    "sur", "ce", "cette", "nous", "mais", "ont", "sont", "du", "au", "aux", "et", "je", "il",
+}
 
 
 class ErreurApi(Exception):
@@ -53,6 +66,54 @@ def effacer_session():
         os.remove(FICHIER_SESSION)
     except OSError:
         pass
+
+
+def langue_probable(texte):
+    mots = re.findall(r"[a-zàâçéèêëîïôûùüÿœ']+", texte.lower())
+    anglais = sum(1 for mot in mots if mot in MOTS_ANGLAIS)
+    francais = sum(1 for mot in mots if mot in MOTS_FRANCAIS)
+    return "en" if anglais > francais else "fr"
+
+
+def lire_a_voix_haute(texte):
+    texte = (texte or "").strip()
+    if not texte:
+        print("Rien à lire pour le moment.")
+        return
+
+    if sys.platform != "win32":
+        print("La lecture vocale en ligne de commande fonctionne seulement sous Windows.")
+        return
+
+    prefixe_voix = langue_probable(texte)
+    fd, chemin = tempfile.mkstemp(suffix=".txt")
+    os.close(fd)
+
+    try:
+        with open(chemin, "w", encoding="utf-8") as f:
+            f.write(texte)
+
+        chemin_ps = chemin.replace("'", "''")
+        script = (
+            "Add-Type -AssemblyName System.Speech;"
+            "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer;"
+            f"$v = $s.GetInstalledVoices() | Where-Object {{ $_.VoiceInfo.Culture.Name -like '{prefixe_voix}*' }} | Select-Object -First 1;"
+            "if ($v) { $s.SelectVoice($v.VoiceInfo.Name) } else { Write-Host 'Aucune voix de cette langue installée, voix par défaut utilisée.' };"
+            f"$t = Get-Content -LiteralPath '{chemin_ps}' -Raw -Encoding UTF8;"
+            "$s.Speak($t)"
+        )
+
+        print("Lecture en cours… (Ctrl + C pour arrêter)")
+        subprocess.run(["powershell", "-NoProfile", "-Command", script])
+    except KeyboardInterrupt:
+        print("\nLecture arrêtée.")
+    except OSError:
+        print("Impossible de lancer la lecture vocale (PowerShell introuvable).")
+    finally:
+        try:
+            os.remove(chemin)
+        except OSError:
+            pass
 
 
 def construire_multipart(champs, fichiers, limite):
@@ -112,6 +173,7 @@ class Client:
         self.derniere_transcription = ""
         self.dernier_audio = None
         self.derniere_langue = None
+        self.derniere_reponse = ""
 
     def connecter(self):
         print(f"Connexion à {URL_API}")
@@ -143,6 +205,7 @@ class Client:
         )
         self.historique.append({"role": "user", "texte": message})
         self.historique.append({"role": "assistant", "texte": reponse["reponse"]})
+        self.derniere_reponse = reponse["reponse"]
         return reponse["reponse"]
 
     def attendre(self, id_travail):
@@ -181,7 +244,9 @@ class Client:
         id_travail = self.requete(
             "POST", route, {"texte": self.derniere_transcription, "langue_cible": langue}
         )["id_travail"]
-        return self.attendre(id_travail)["texte"]
+        resultat = self.attendre(id_travail)["texte"]
+        self.derniere_reponse = resultat
+        return resultat
 
     def traduire(self, langue):
         return self.appliquer_outil("/outils/traduire", langue)
@@ -244,6 +309,7 @@ def traiter_commande(client, saisie):
         print(AIDE)
     elif commande == "/nouveau":
         client.historique = []
+        client.derniere_reponse = ""
         print("Nouvelle conversation.")
     elif commande == "/lien":
         if not argument:
@@ -265,6 +331,9 @@ def traiter_commande(client, saisie):
     elif commande == "/resumer":
         langue = argument or "français"
         print(f"\nRésumé ({langue}) :\n{client.resumer(langue)}")
+    elif commande == "/lire":
+        texte = argument or client.derniere_reponse or client.derniere_transcription
+        lire_a_voix_haute(texte)
     elif commande == "/sauver":
         client.sauver_transcription()
         print("Transcription enregistrée.")
@@ -319,19 +388,27 @@ def main():
     analyseur.add_argument("question", nargs="*", help="question à poser directement")
     analyseur.add_argument("--lien", help="transcrire l'audio d'un lien")
     analyseur.add_argument("--fichier", help="transcrire un fichier audio ou vidéo")
+    analyseur.add_argument("--lire", action="store_true", help="lire le résultat à voix haute")
     arguments = analyseur.parse_args()
 
     client = Client()
 
     try:
         if arguments.lien:
-            print(client.transcrire_lien(arguments.lien))
+            resultat = client.transcrire_lien(arguments.lien)
+            print(resultat)
         elif arguments.fichier:
-            print(client.transcrire_fichier(arguments.fichier))
+            resultat = client.transcrire_fichier(arguments.fichier)
+            print(resultat)
         elif arguments.question:
-            print(client.poser_question(" ".join(arguments.question)))
+            resultat = client.poser_question(" ".join(arguments.question))
+            print(resultat)
         else:
             boucle(client)
+            return
+
+        if arguments.lire:
+            lire_a_voix_haute(resultat)
     except ErreurApi as e:
         print(f"Erreur : {e}")
         sys.exit(1)

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, UploadCloud, Circle, CheckCircle2, Cloud, HardDrive, Send, Keyboard, Bell, LogOut, Trash2, Download, AlertTriangle, Link2, Languages, FileText, Copy } from 'lucide-react'
+import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, UploadCloud, Circle, CheckCircle2, Cloud, HardDrive, Send, Keyboard, Bell, LogOut, Trash2, Download, AlertTriangle, Link2, Languages, FileText, Copy, Volume2, VolumeX } from 'lucide-react'
 import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, obtenirApiUrl, definirApiUrl } from './api'
 import './App.css'
 
 const CLE_ETAT = 'vocalia_etat_v2'
 const CLE_TRAVAIL = 'vocalia_travail'
 const CLE_OUTIL = 'vocalia_outil'
+const CLE_LECTURE_AUTO = 'vocalia_lecture_auto_texte'
 
 const OPTIONS_LANGUES = [
   ['français', 'Français'],
@@ -18,6 +19,79 @@ const OPTIONS_LANGUES = [
   ['éwé', 'Éwé (expérimental)'],
   ['autre', 'Autre langue…'],
 ]
+
+const MOTS_ANGLAIS = new Set([
+  'the', 'and', 'is', 'are', 'you', 'that', 'with', 'this', 'have', 'for', 'not', 'was', 'what',
+  'from', 'they', 'your', 'will', 'would', 'there', 'about', 'which', 'their', 'been', 'were',
+])
+const MOTS_FRANCAIS = new Set([
+  'le', 'la', 'les', 'des', 'est', 'une', 'que', 'pour', 'pas', 'vous', 'dans', 'avec', 'qui',
+  'sur', 'ce', 'cette', 'nous', 'mais', 'ont', 'sont', 'du', 'au', 'aux', 'et', 'je', 'il',
+])
+
+const langueProbable = (texte) => {
+  const mots = (texte || '').toLowerCase().match(/[a-zàâçéèêëîïôûùüÿœ']+/g) || []
+  let anglais = 0
+  let francais = 0
+  mots.forEach((mot) => {
+    if (MOTS_ANGLAIS.has(mot)) anglais += 1
+    if (MOTS_FRANCAIS.has(mot)) francais += 1
+  })
+  return anglais > francais ? 'en' : 'fr'
+}
+
+const decouperPourLecture = (texte, tailleMax = 180) => {
+  const phrases = texte.replace(/\s+/g, ' ').trim().split(/(?<=[.!?…:;])\s+/)
+  const morceaux = []
+  let courant = ''
+
+  phrases.forEach((phrase) => {
+    let reste = phrase
+    while (reste.length > tailleMax) {
+      let coupe = reste.lastIndexOf(' ', tailleMax)
+      if (coupe < 40) coupe = tailleMax
+      if (courant) {
+        morceaux.push(courant)
+        courant = ''
+      }
+      morceaux.push(reste.slice(0, coupe).trim())
+      reste = reste.slice(coupe).trim()
+    }
+    if (!reste) return
+    if (courant && courant.length + reste.length + 1 > tailleMax) {
+      morceaux.push(courant)
+      courant = reste
+    } else {
+      courant = courant ? `${courant} ${reste}` : reste
+    }
+  })
+
+  if (courant) morceaux.push(courant)
+  return morceaux
+}
+
+function lireAVoixHaute(texte) {
+  if (typeof window === 'undefined' || !window.speechSynthesis || !texte || !texte.trim()) return
+
+  const synthese = window.speechSynthesis
+  synthese.cancel()
+
+  const prefixe = langueProbable(texte)
+  const voix = synthese.getVoices().find((v) => v.lang && v.lang.toLowerCase().startsWith(prefixe))
+
+  decouperPourLecture(texte).forEach((morceau) => {
+    const parole = new SpeechSynthesisUtterance(morceau)
+    parole.lang = prefixe === 'en' ? 'en-US' : 'fr-FR'
+    if (voix) parole.voice = voix
+    synthese.speak(parole)
+  })
+}
+
+function arreterLecture() {
+  if (typeof window !== 'undefined' && window.speechSynthesis) {
+    window.speechSynthesis.cancel()
+  }
+}
 
 const lireEtatSauvegarde = () => {
   try {
@@ -118,6 +192,9 @@ function AppInterne() {
   )
   const [messageTexte, setMessageTexte] = useState('')
   const [assistantEnCours, setAssistantEnCours] = useState(false)
+  const [lectureAutoTexte, setLectureAutoTexte] = useState(
+    () => localStorage.getItem(CLE_LECTURE_AUTO) === '1',
+  )
   const assistantRecorderRef = useRef(null)
   const salutationFaiteRef = useRef(Array.isArray(etatInitial.conversation) && etatInitial.conversation.length > 0)
   const finConversationRef = useRef(null)
@@ -233,9 +310,7 @@ function AppInterne() {
 
   useEffect(() => {
     if (mode !== 'assistant') {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel()
-      }
+      arreterLecture()
     }
   }, [mode])
 
@@ -498,6 +573,7 @@ function AppInterne() {
     if (token) {
       apiFetch('/deconnexion', { method: 'POST', token }).catch(() => {})
     }
+    arreterLecture()
     suiviRef.current = null
     suiviOutilRef.current = null
     setAnalyseEnCours(false)
@@ -792,6 +868,7 @@ function AppInterne() {
         setConversation(prev => [...prev, { role: 'assistant', texte: donnees.erreur }])
       } else {
         setConversation(prev => [...prev, { role: 'assistant', texte: donnees.reponse }])
+        if (lectureAutoTexte) lireAVoixHaute(donnees.reponse)
       }
     } catch (erreur) {
       setConversation(prev => [...prev, { role: 'assistant', texte: erreur.message }])
@@ -833,13 +910,6 @@ function AppInterne() {
       setMessageSauvegardeConversation(erreur.message)
     }
     setTimeout(() => setMessageSauvegardeConversation(''), 3000)
-  }
-
-  const lireAVoixHaute = (texte) => {
-    if (!window.speechSynthesis) return
-    const parole = new SpeechSynthesisUtterance(texte)
-    parole.lang = 'fr-FR'
-    window.speechSynthesis.speak(parole)
   }
 
   const chargerHistorique = async () => {
@@ -1209,6 +1279,30 @@ function AppInterne() {
 
   const aEchangeAssistant = conversation.some(m => m.role === 'user')
 
+  const commandesLecture = (texte) => {
+    if (!texte || !texte.trim()) return null
+    if (typeof window === 'undefined' || !window.speechSynthesis) return null
+
+    return (
+      <>
+        <button
+          className="btn-secondary"
+          onClick={() => lireAVoixHaute(texte)}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <Volume2 size={14} /> Lire
+        </button>
+        <button
+          className="btn-secondary"
+          onClick={arreterLecture}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <VolumeX size={14} /> Arrêter
+        </button>
+      </>
+    )
+  }
+
   const blocOutils = (texte, source) => {
     if (!texte || !texte.trim()) return null
 
@@ -1291,6 +1385,7 @@ function AppInterne() {
                 >
                   <Download size={14} /> Exporter
                 </button>
+                {commandesLecture(resultat.texte)}
               </div>
             )}
           </div>
@@ -1560,6 +1655,9 @@ function AppInterne() {
               {transcriptionComplete && (
                 <div>
                   <p className="transcript-box">{transcriptionComplete}</p>
+                  <div className="history-actions" style={{ marginTop: '8px' }}>
+                    {commandesLecture(transcriptionComplete)}
+                  </div>
                   <button className="btn-primary" onClick={sauvegarderTranscription} style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                     <Save size={16} /> Enregistrer la transcription
                   </button>
@@ -1660,6 +1758,9 @@ function AppInterne() {
               {texteImporte && (
                 <div>
                   <p className="transcript-box">{texteImporte}</p>
+                  <div className="history-actions" style={{ marginTop: '8px' }}>
+                    {commandesLecture(texteImporte)}
+                  </div>
                   <button className="btn-primary" onClick={sauvegarderFichierImporte} style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                     <Save size={16} /> Enregistrer la transcription
                   </button>
@@ -1697,6 +1798,11 @@ function AppInterne() {
             {conversation.map((msg, i) => (
               <div key={i} className={`chat-bubble ${msg.role === 'user' ? 'user' : 'assistant'}`}>
                 {msg.texte}
+                {msg.role === 'assistant' && (
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                    {commandesLecture(msg.texte)}
+                  </div>
+                )}
               </div>
             ))}
             {assistantEnCours && (
@@ -1822,6 +1928,7 @@ function AppInterne() {
                     >
                       <Download size={14} /> Exporter
                     </button>
+                    {commandesLecture(item.texte)}
                     <button
                       className="btn-secondary"
                       onClick={() => supprimerTranscription(item.id)}
@@ -1948,6 +2055,23 @@ function AppInterne() {
               <option value={5}>5 minutes</option>
               <option value={10}>10 minutes</option>
             </select>
+          </div>
+
+          <p className="settings-section-title">Assistant</p>
+
+          <div className="toggle-row">
+            <span className="field-label" style={{ margin: 0 }}>Lire automatiquement les réponses en mode Texte</span>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={lectureAutoTexte}
+                onChange={(e) => {
+                  setLectureAutoTexte(e.target.checked)
+                  localStorage.setItem(CLE_LECTURE_AUTO, e.target.checked ? '1' : '0')
+                }}
+              />
+              <span className="toggle-slider"></span>
+            </label>
           </div>
 
           <p className="settings-section-title">Sauvegardes</p>
