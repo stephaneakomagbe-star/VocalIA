@@ -1,10 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, UploadCloud, Circle, CheckCircle2, Cloud, HardDrive, Send, Keyboard, Bell, LogOut, Trash2, Download, AlertTriangle, Link2 } from 'lucide-react'
+import { Home, Mic, MessageCircle, Save, Settings, Square, Calendar, X, Search, UploadCloud, Circle, CheckCircle2, Cloud, HardDrive, Send, Keyboard, Bell, LogOut, Trash2, Download, AlertTriangle, Link2, Languages, FileText, Copy } from 'lucide-react'
 import { apiFetch, apiUpload, verifierServeur, chargerBlobAudio, chargerConfig, obtenirApiUrl, definirApiUrl } from './api'
 import './App.css'
 
-const CLE_ETAT = 'vocalia_etat'
+const CLE_ETAT = 'vocalia_etat_v2'
 const CLE_TRAVAIL = 'vocalia_travail'
+const CLE_OUTIL = 'vocalia_outil'
+
+const OPTIONS_LANGUES = [
+  ['français', 'Français'],
+  ['anglais', 'Anglais'],
+  ['espagnol', 'Espagnol'],
+  ['allemand', 'Allemand'],
+  ['portugais', 'Portugais'],
+  ['italien', 'Italien'],
+  ['arabe', 'Arabe'],
+  ['éwé', 'Éwé (expérimental)'],
+  ['autre', 'Autre langue…'],
+]
 
 const lireEtatSauvegarde = () => {
   try {
@@ -15,9 +28,9 @@ const lireEtatSauvegarde = () => {
   }
 }
 
-const lireTravailSauvegarde = () => {
+const lireJson = (cle) => {
   try {
-    return JSON.parse(localStorage.getItem(CLE_TRAVAIL))
+    return JSON.parse(localStorage.getItem(cle))
   } catch {
     return null
   }
@@ -116,7 +129,7 @@ function AppInterne() {
   const [messageSauvegarde, setMessageSauvegarde] = useState('')
   const [rechercheHistorique, setRechercheHistorique] = useState('')
 
-  const [langue, setLangue] = useState(etatInitial.langue || 'fr')
+  const [langue, setLangue] = useState(etatInitial.langue || 'auto')
   const [dureeTrancheMinutes, setDureeTrancheMinutes] = useState(etatInitial.dureeTrancheMinutes || 5)
   const dureeTranche = dureeTrancheMinutes * 60 * 1000
   const [inclureAudio, setInclureAudio] = useState(
@@ -135,7 +148,17 @@ function AppInterne() {
   const [progressionImport, setProgressionImport] = useState(0)
   const [idAudioTemporaire, setIdAudioTemporaire] = useState(etatInitial.idAudioTemporaire || null)
   const [messageSauvegardeFichier, setMessageSauvegardeFichier] = useState('')
+  const [erreurImport, setErreurImport] = useState('')
+  const [langueDetectee, setLangueDetectee] = useState(etatInitial.langueDetectee || '')
+  const [langueCible, setLangueCible] = useState(etatInitial.langueCible || '')
+  const [langueCibleAutre, setLangueCibleAutre] = useState(etatInitial.langueCibleAutre || '')
+  const [outilEnCours, setOutilEnCours] = useState(null)
+  const [etapeOutil, setEtapeOutil] = useState('')
+  const [resultatOutil, setResultatOutil] = useState(etatInitial.resultatOutil || null)
+  const [copie, setCopie] = useState(false)
+  const cibleParDefaut = langueDetectee === 'fr' ? 'anglais' : 'français'
   const suiviRef = useRef(null)
+  const suiviOutilRef = useRef(null)
   const emailPrecedentRef = useRef(localStorage.getItem('vocalia_email'))
 
   const [permissionNotif, setPermissionNotif] = useState(
@@ -161,12 +184,17 @@ function AppInterne() {
         dureeChoisie,
         dureeTrancheMinutes,
         inclureAudio,
+        langueDetectee,
+        langueCible,
+        langueCibleAutre,
+        resultatOutil,
       }))
     } catch {}
   }, [
     token, emailUtilisateur, mode, sousModeAccueil, modeAssistant, transcriptionComplete,
     texteImporte, noteImportee, lienImporte, nomImporte, idAudioTemporaire, conversation,
     langue, dureeChoisie, dureeTrancheMinutes, inclureAudio,
+    langueDetectee, langueCible, langueCibleAutre, resultatOutil,
   ])
 
   useEffect(() => {
@@ -225,12 +253,17 @@ function AppInterne() {
 
   useEffect(() => {
     if (!token) return
-    const enregistre = lireTravailSauvegarde()
-    if (enregistre?.id) {
-      suivreTravail(enregistre.id)
+    const travail = lireJson(CLE_TRAVAIL)
+    if (travail?.id) {
+      suivreTravail(travail.id)
+    }
+    const outil = lireJson(CLE_OUTIL)
+    if (outil?.id) {
+      suivreOutil(outil.id, outil.type, outil.source, outil.langue)
     }
     return () => {
       suiviRef.current = null
+      suiviOutilRef.current = null
     }
   }, [token])
 
@@ -250,8 +283,10 @@ function AppInterne() {
 
   const sessionExpiree = () => {
     suiviRef.current = null
+    suiviOutilRef.current = null
     setAnalyseEnCours(false)
     setPhaseImport('')
+    setOutilEnCours(null)
     setErreurAuth('Votre session a expiré. Reconnectez-vous, puis réessayez.')
     localStorage.removeItem('vocalia_token')
     setToken(null)
@@ -271,6 +306,10 @@ function AppInterne() {
     setAudioUrl(null)
     setFichierImporte(null)
     setApercuImporte(null)
+    setErreurImport('')
+    setLangueDetectee('')
+    setResultatOutil(null)
+    setOutilEnCours(null)
     tranchesAudioRef.current = []
   }
 
@@ -278,6 +317,7 @@ function AppInterne() {
     if (emailPrecedentRef.current && emailPrecedentRef.current !== donnees.email) {
       reinitialiserDonnees()
       localStorage.removeItem(CLE_TRAVAIL)
+      localStorage.removeItem(CLE_OUTIL)
     }
     emailPrecedentRef.current = donnees.email
     localStorage.setItem('vocalia_token', donnees.token)
@@ -459,6 +499,7 @@ function AppInterne() {
       apiFetch('/deconnexion', { method: 'POST', token }).catch(() => {})
     }
     suiviRef.current = null
+    suiviOutilRef.current = null
     setAnalyseEnCours(false)
     setPhaseImport('')
     reinitialiserDonnees()
@@ -468,6 +509,7 @@ function AppInterne() {
     localStorage.removeItem('vocalia_prenom')
     localStorage.removeItem(CLE_ETAT)
     localStorage.removeItem(CLE_TRAVAIL)
+    localStorage.removeItem(CLE_OUTIL)
     setToken(null)
     setEmailUtilisateur(null)
     setPrenomUtilisateur('')
@@ -530,6 +572,8 @@ function AppInterne() {
       streamRef.current = stream
       setEnregistrement(true)
       setTranscriptionComplete('')
+      setResultatOutil(null)
+      setLangueDetectee('')
       tranchesAudioRef.current = []
       enregistrerUneTranche()
 
@@ -605,6 +649,7 @@ function AppInterne() {
         setTranscriptionComplete(prev => prev + ' [' + donnees.erreur + ']')
       } else {
         setTranscriptionComplete(prev => prev + ' ' + donnees.texte)
+        if (donnees.langue_detectee) setLangueDetectee(donnees.langue_detectee)
       }
     } catch (erreur) {
       setTranscriptionComplete(prev => prev + ' [' + erreur.message + ']')
@@ -892,6 +937,9 @@ function AppInterne() {
   const preparerImport = (nom, phase) => {
     setTexteImporte('')
     setNoteImportee('')
+    setErreurImport('')
+    setResultatOutil(null)
+    setLangueDetectee('')
     setIdAudioTemporaire(null)
     setProgressionImport(0)
     setEtapeImport('')
@@ -906,53 +954,134 @@ function AppInterne() {
     setEtapeImport('')
   }
 
-  const suivreTravail = async (idTravail) => {
+  const suivre = async (idTravail, { cle, reference, surEtape, surTermine, surErreur }) => {
     const marque = Symbol('suivi')
-    suiviRef.current = marque
-    setAnalyseEnCours(true)
-    setPhaseImport('traitement')
+    reference.current = marque
 
-    while (suiviRef.current === marque) {
+    while (reference.current === marque) {
       try {
         const { donnees } = await apiFetch(`/travaux/${idTravail}`, { token })
-        if (suiviRef.current !== marque) return
+        if (reference.current !== marque) return false
 
         if (donnees.erreur) {
           if (estErreurSession(donnees.erreur)) {
             sessionExpiree()
-            return
+            return false
           }
-          localStorage.removeItem(CLE_TRAVAIL)
-          setTexteImporte(donnees.erreur)
+          localStorage.removeItem(cle)
+          surErreur(donnees.erreur)
           break
         }
 
         if (donnees.statut === 'termine') {
-          localStorage.removeItem(CLE_TRAVAIL)
-          setTexteImporte(donnees.texte)
-          setNoteImportee(donnees.note || '')
-          setIdAudioTemporaire(donnees.audio_temporaire || null)
-          setLienImporte('')
-          envoyerNotification("VocalIA", "Votre transcription est prête.")
+          localStorage.removeItem(cle)
+          surTermine(donnees)
           break
         }
 
         if (donnees.statut === 'erreur') {
-          localStorage.removeItem(CLE_TRAVAIL)
-          setTexteImporte(donnees.message)
+          localStorage.removeItem(cle)
+          surErreur(donnees.message)
           break
         }
 
-        setEtapeImport(donnees.etape || '')
+        surEtape(donnees.etape || '')
       } catch {}
 
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
-    if (suiviRef.current === marque) {
-      suiviRef.current = null
-      terminerImport()
+    const termine = reference.current === marque
+    if (termine) reference.current = null
+    return termine
+  }
+
+  const suivreTravail = async (idTravail) => {
+    setAnalyseEnCours(true)
+    setPhaseImport('traitement')
+
+    const fini = await suivre(idTravail, {
+      cle: CLE_TRAVAIL,
+      reference: suiviRef,
+      surEtape: setEtapeImport,
+      surTermine: (donnees) => {
+        setTexteImporte(donnees.texte)
+        setNoteImportee(donnees.note || '')
+        setIdAudioTemporaire(donnees.audio_temporaire || null)
+        if (donnees.langue_detectee) setLangueDetectee(donnees.langue_detectee)
+        setLienImporte('')
+        envoyerNotification("VocalIA", "Votre transcription est prête.")
+      },
+      surErreur: (message) => setErreurImport(message),
+    })
+
+    if (fini) terminerImport()
+  }
+
+  const suivreOutil = async (idTravail, type, source, cible) => {
+    setOutilEnCours({ type, source })
+
+    const fini = await suivre(idTravail, {
+      cle: CLE_OUTIL,
+      reference: suiviOutilRef,
+      surEtape: setEtapeOutil,
+      surTermine: (donnees) => {
+        setResultatOutil({ type, source, langue: cible, texte: donnees.texte })
+        envoyerNotification("VocalIA", type === 'traduction' ? "Votre traduction est prête." : "Votre résumé est prêt.")
+      },
+      surErreur: (message) => setResultatOutil({ type, source, langue: cible, texte: message, erreur: true }),
+    })
+
+    if (fini) {
+      setOutilEnCours(null)
+      setEtapeOutil('')
     }
+  }
+
+  const lancerOutil = async (type, texte, source) => {
+    const choix = langueCible || cibleParDefaut
+    const cible = choix === 'autre' ? langueCibleAutre.trim() : choix
+    if (!texte.trim() || !cible || outilEnCours) return
+
+    setResultatOutil(null)
+    setOutilEnCours({ type, source })
+    setEtapeOutil('')
+
+    const formData = new FormData()
+    formData.append('texte', texte)
+    formData.append('langue_cible', cible)
+
+    try {
+      const { donnees } = await apiFetch(type === 'traduction' ? '/outils/traduire' : '/outils/resumer', {
+        method: 'POST',
+        body: formData,
+        token,
+      })
+
+      if (donnees.erreur) {
+        if (estErreurSession(donnees.erreur)) {
+          sessionExpiree()
+          return
+        }
+        setResultatOutil({ type, source, langue: cible, texte: donnees.erreur, erreur: true })
+        setOutilEnCours(null)
+        return
+      }
+
+      localStorage.setItem(CLE_OUTIL, JSON.stringify({ id: donnees.id_travail, type, source, langue: cible }))
+      await suivreOutil(donnees.id_travail, type, source, cible)
+    } catch (erreur) {
+      setResultatOutil({ type, source, langue: cible, texte: erreur.message, erreur: true })
+      setOutilEnCours(null)
+    }
+  }
+
+  const copierTexte = async (texte) => {
+    try {
+      await navigator.clipboard.writeText(texte)
+      setCopie(true)
+      setTimeout(() => setCopie(false), 2000)
+    } catch {}
   }
 
   const gererImportFichier = async (event) => {
@@ -984,7 +1113,7 @@ function AppInterne() {
           sessionExpiree()
           return
         }
-        setTexteImporte(donnees.erreur)
+        setErreurImport(donnees.erreur)
         terminerImport()
         return
       }
@@ -992,7 +1121,7 @@ function AppInterne() {
       localStorage.setItem(CLE_TRAVAIL, JSON.stringify({ id: donnees.id_travail }))
       await suivreTravail(donnees.id_travail)
     } catch (erreur) {
-      setTexteImporte(erreur.message)
+      setErreurImport(erreur.message)
       terminerImport()
     }
   }
@@ -1025,7 +1154,7 @@ function AppInterne() {
           sessionExpiree()
           return
         }
-        setTexteImporte(donnees.erreur)
+        setErreurImport(donnees.erreur)
         terminerImport()
         return
       }
@@ -1033,7 +1162,7 @@ function AppInterne() {
       localStorage.setItem(CLE_TRAVAIL, JSON.stringify({ id: donnees.id_travail }))
       await suivreTravail(donnees.id_travail)
     } catch (erreur) {
-      setTexteImporte(erreur.message)
+      setErreurImport(erreur.message)
       terminerImport()
     }
   }
@@ -1079,6 +1208,96 @@ function AppInterne() {
   }
 
   const aEchangeAssistant = conversation.some(m => m.role === 'user')
+
+  const blocOutils = (texte, source) => {
+    if (!texte || !texte.trim()) return null
+
+    const choix = langueCible || cibleParDefaut
+    const cibleFinale = choix === 'autre' ? langueCibleAutre.trim() : choix
+    const occupe = Boolean(outilEnCours)
+    const actif = outilEnCours?.source === source ? outilEnCours : null
+    const resultat = resultatOutil?.source === source ? resultatOutil : null
+
+    return (
+      <div style={{ marginTop: '20px', textAlign: 'left' }}>
+        <label className="field-label">Langue pour la traduction et le résumé</label>
+        <select
+          className="input-field"
+          value={choix}
+          onChange={(e) => setLangueCible(e.target.value)}
+        >
+          {OPTIONS_LANGUES.map(([valeur, libelle]) => (
+            <option key={valeur} value={valeur}>{libelle}</option>
+          ))}
+        </select>
+
+        {choix === 'autre' && (
+          <input
+            type="text"
+            className="input-field"
+            placeholder="Ex. : japonais, swahili, lingala…"
+            value={langueCibleAutre}
+            onChange={(e) => setLangueCibleAutre(e.target.value)}
+            style={{ marginTop: '8px' }}
+          />
+        )}
+
+        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+          <button
+            className="btn-secondary"
+            onClick={() => lancerOutil('traduction', texte, source)}
+            disabled={occupe || !cibleFinale}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+          >
+            <Languages size={16} /> Traduire
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={() => lancerOutil('resume', texte, source)}
+            disabled={occupe || !cibleFinale}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+          >
+            <FileText size={16} /> Résumer
+          </button>
+        </div>
+
+        {actif && (
+          <p className="status-text">
+            {etapeOutil || (actif.type === 'traduction' ? 'Traduction en cours…' : 'Résumé en cours…')}
+          </p>
+        )}
+
+        {resultat && (
+          <div style={{ marginTop: '12px' }}>
+            {!resultat.erreur && (
+              <p className="history-date">
+                {resultat.type === 'traduction' ? 'Traduction' : 'Résumé'} ({resultat.langue})
+              </p>
+            )}
+            <p className="transcript-box" style={{ whiteSpace: 'pre-wrap' }}>{resultat.texte}</p>
+            {!resultat.erreur && (
+              <div className="history-actions">
+                <button
+                  className="btn-secondary"
+                  onClick={() => copierTexte(resultat.texte)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Copy size={14} /> {copie ? 'Copié' : 'Copier'}
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => exporterTexte(`${resultat.type}-vocalia-${Date.now()}.txt`, resultat.texte)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Download size={14} /> Exporter
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   if (!token) {
     return (
@@ -1349,6 +1568,7 @@ function AppInterne() {
                       <CheckCircle2 size={16} /> {messageSauvegarde}
                     </p>
                   )}
+                  {blocOutils(transcriptionComplete, 'direct')}
                 </div>
               )}
             </>
@@ -1435,6 +1655,7 @@ function AppInterne() {
               )}
 
               {noteImportee && <p className="status-text">{noteImportee}</p>}
+              {erreurImport && <p className="status-text">{erreurImport}</p>}
 
               {texteImporte && (
                 <div>
@@ -1447,6 +1668,7 @@ function AppInterne() {
                       <CheckCircle2 size={16} /> {messageSauvegardeFichier}
                     </p>
                   )}
+                  {blocOutils(texteImporte, 'importer')}
                 </div>
               )}
             </>
@@ -1708,8 +1930,9 @@ function AppInterne() {
           <div style={{ marginBottom: '28px', textAlign: 'left' }}>
             <label className="field-label">Langue de transcription</label>
             <select className="input-field" value={langue} onChange={(e) => setLangue(e.target.value)}>
-              <option value="fr">Français</option>
-              <option value="en">Anglais</option>
+              <option value="auto">Détection automatique (recommandé)</option>
+              <option value="fr">Français uniquement</option>
+              <option value="en">Anglais uniquement</option>
               <option value="ee">Éwé (expérimental)</option>
             </select>
           </div>

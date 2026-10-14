@@ -1,4 +1,5 @@
-import whisper
+import time
+import importlib.util
 import tempfile
 import os
 import uuid
@@ -38,6 +39,11 @@ MAX_AUDIO_OCTETS = 80 * 1024 * 1024
 TAILLE_LOT_UPLOAD = 1024 * 1024
 DOSSIER_AUDIOS = "audios"
 DUREE_CONSERVATION_TRAVAUX = timedelta(hours=6)
+DUREE_MORCEAU = 600
+TAILLE_MAX_TEXTE_OUTIL = 400000
+MODELE_WHISPER_GROQ = os.environ.get("GROQ_WHISPER_MODEL", "whisper-large-v3-turbo").strip()
+MODELE_GROQ_WEB = os.environ.get("MODELE_GROQ_WEB", "").strip()
+LANGUES_AUTO = ("", "auto", "ee")
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
 FICHIER_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_FILE", "").strip()
 NAVIGATEUR_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_BROWSER", "").strip().lower()
@@ -54,17 +60,69 @@ travaux = {}
 verrou_travaux = threading.Lock()
 verrou_transcription = threading.Lock()
 
+JOURS_FR = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+MOIS_FR = [
+    "janvier", "février", "mars", "avril", "mai", "juin",
+    "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+]
+
+NOMS_LANGUES = {
+    "fr": "français", "en": "anglais", "es": "espagnol", "de": "allemand", "pt": "portugais",
+    "it": "italien", "ar": "arabe", "nl": "néerlandais", "ru": "russe", "zh": "chinois",
+    "ja": "japonais", "ko": "coréen", "tr": "turc", "sw": "swahili", "ln": "lingala",
+    "hi": "hindi", "pl": "polonais",
+}
+
+CODES_PAR_NOM = {
+    "english": "en", "french": "fr", "spanish": "es", "german": "de", "portuguese": "pt",
+    "italian": "it", "arabic": "ar", "dutch": "nl", "russian": "ru", "chinese": "zh",
+    "japanese": "ja", "korean": "ko", "turkish": "tr", "swahili": "sw", "lingala": "ln",
+    "hindi": "hi", "polish": "pl",
+}
+
+REGEX_ACTUALITE = re.compile(
+    r"\b(match|score|résultat|resultat|classement|aujourd.?hui|hier|ce soir|cette semaine|"
+    r"dernier|dernière|derniere|récent|recent|météo|meteo|prix|cours|bourse|2025|2026)\b|actualit",
+    re.IGNORECASE,
+)
+
 PROMPT_SYSTEME = (
-    "Tu es VocalIA, un assistant vocal et écrit intégré à une application de transcription "
+    "Tu es VocalIA, un assistant intelligent, vocal et écrit, intégré à une application de transcription "
     "audio utilisée pour des réunions et des prédications à l'église, au Togo. "
-    "Réponds toujours en français, de façon claire, précise et concise. "
-    "Si une question est ambiguë, demande une précision plutôt que de deviner. "
-    "Évite les réponses vagues ou génériques : donne des réponses concrètes et directement utiles. "
-    "Tiens compte du contexte des messages précédents dans la conversation pour répondre de manière cohérente. "
+    "Tu réponds en français, sauf si l'utilisateur écrit dans une autre langue ou demande une autre langue. "
+    "Réponds directement et utilement dès la première réponse, avec des informations concrètes. "
+    "Quand une demande est un peu vague, ne pose pas de question : choisis l'interprétation la plus probable "
+    "(par exemple le football quand on parle du Barça), dis-la en quelques mots, puis réponds. "
+    "Ne pose une question de précision que si la demande est impossible à traiter sans elle, et jamais plus d'une. "
+    "Tu n'as pas accès à internet ni aux informations en temps réel, sauf si des résultats de recherche te sont fournis. "
+    "Pour un résultat sportif récent, l'actualité ou tout ce qui a pu changer, dis-le honnêtement, "
+    "donne ce que tu sais avec une date approximative et indique où vérifier. "
+    "N'invente jamais un score, une date, un chiffre ou une citation. "
+    "Tiens compte du contexte des messages précédents. "
     "N'utilise jamais de tableaux, ni de formatage Markdown (pas d'astérisques, pas de dièses, pas de tirets "
-    "de liste). Réponds uniquement en texte simple, comme dans une conversation orale naturelle, "
-    "en phrases complètes. Si tu dois présenter plusieurs éléments, énumère-les dans une phrase "
-    "fluide plutôt qu'en liste ou tableau."
+    "de liste). Réponds uniquement en texte simple, en phrases complètes, comme dans une conversation orale naturelle. "
+    "Si tu dois présenter plusieurs éléments, énumère-les dans une phrase fluide plutôt qu'en liste ou tableau."
+)
+
+CONSIGNE_TRADUCTION = (
+    "Tu es un traducteur professionnel. Traduis fidèlement le texte de l'utilisateur en {langue}. "
+    "Conserve le sens, le ton et la ponctuation. Ne résume pas, n'ajoute rien, ne commente pas. "
+    "Réponds uniquement avec la traduction, en texte simple sans Markdown."
+)
+
+CONSIGNE_RESUME_PARTIEL = (
+    "Tu résumes un extrait d'une transcription automatique (prédication, réunion ou vidéo). "
+    "Rédige en {langue}, en texte simple sans Markdown. Garde les idées principales, les arguments, "
+    "les chiffres et les références bibliques citées. N'invente rien."
+)
+
+CONSIGNE_RESUME = (
+    "Tu résumes la transcription automatique d'une prédication, d'une réunion ou d'une vidéo. "
+    "Rédige entièrement en {langue}, en texte simple sans Markdown (pas d'astérisques ni de dièses). "
+    "Corrige silencieusement les erreurs évidentes de transcription et n'invente rien. "
+    "Structure ta réponse ainsi, avec les titres de section traduits en {langue} : "
+    "d'abord le titre du résumé suivi de 4 à 8 phrases ; ensuite les points clés, un par ligne, "
+    "chaque ligne commençant par un tiret ; enfin, uniquement s'il y en a, les versets ou références bibliques cités."
 )
 
 PROMPTS_TRANSCRIPTION = {
@@ -77,12 +135,23 @@ verrou_modele = threading.Lock()
 client_groq = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 
+def whisper_local_disponible():
+    return importlib.util.find_spec("whisper") is not None
+
+
 def get_modele():
     global modele_whisper
     if modele_whisper is None:
         with verrou_modele:
             if modele_whisper is None:
-                modele_whisper = whisper.load_model("small")
+                try:
+                    import whisper
+                except ImportError:
+                    raise HTTPException(
+                        status_code=503,
+                        detail="La transcription locale n'est pas installée sur ce serveur.",
+                    )
+                modele_whisper = whisper.load_model(os.environ.get("WHISPER_MODELE", "small"))
     return modele_whisper
 
 
@@ -549,8 +618,13 @@ def reinitialiser_tentatives(email):
     conn.close()
 
 
+def date_francaise():
+    maintenant = datetime.now()
+    return f"{JOURS_FR[maintenant.weekday()]} {maintenant.day} {MOIS_FR[maintenant.month - 1]} {maintenant.year}"
+
+
 def construire_messages(historique_json, nouveau_message):
-    messages = [{"role": "system", "content": PROMPT_SYSTEME}]
+    messages = [{"role": "system", "content": f"{PROMPT_SYSTEME} Date du jour : {date_francaise()}."}]
 
     if historique_json:
         try:
@@ -568,40 +642,154 @@ def construire_messages(historique_json, nouveau_message):
     return messages
 
 
-def transcrire_avec_langue(chemin_temp, langue):
-    modele = get_modele()
-    prompt = PROMPTS_TRANSCRIPTION.get(langue)
-    with verrou_transcription:
+def code_langue(valeur):
+    if not valeur:
+        return None
+    texte = str(valeur).strip().lower()
+    if texte in NOMS_LANGUES:
+        return texte
+    return CODES_PAR_NOM.get(texte)
+
+
+def nom_langue(code):
+    return NOMS_LANGUES.get(code, code)
+
+
+def avec_reprise(fonction, tentatives=4):
+    for essai in range(tentatives):
         try:
-            resultat = modele.transcribe(chemin_temp, language=langue, initial_prompt=prompt)
-            return resultat, langue, False
-        except Exception:
-            resultat = modele.transcribe(chemin_temp)
-            langue_detectee = resultat.get("language")
-            return resultat, langue_detectee, True
+            return fonction()
+        except Exception as e:
+            texte = str(e).lower()
+            limite = "429" in texte or "rate limit" in texte or "rate_limit" in texte
+            if not limite or essai == tentatives - 1:
+                raise
+            time.sleep(15 * (essai + 1))
 
 
-def transcrire_francais(chemin_temp):
+def groq_disponible():
+    return bool(os.environ.get("GROQ_API_KEY")) and os.environ.get("TRANSCRIPTION_LOCALE", "").strip() != "1"
+
+
+def lire_champ(objet, nom, defaut=None):
+    if isinstance(objet, dict):
+        valeur = objet.get(nom)
+    else:
+        valeur = getattr(objet, nom, None)
+        extra = getattr(objet, "model_extra", None)
+        if valeur is None and extra:
+            valeur = extra.get(nom)
+    return defaut if valeur is None else valeur
+
+
+def decouper_audio(chemin_audio):
+    dossier = tempfile.mkdtemp()
+    modele = os.path.join(dossier, "morceau_%03d.mp3")
+    commande = [
+        "ffmpeg", "-y", "-i", chemin_audio, "-vn", "-ac", "1", "-ar", "16000",
+        "-c:a", "libmp3lame", "-b:a", "48k",
+        "-f", "segment", "-segment_time", str(DUREE_MORCEAU), "-reset_timestamps", "1",
+        modele,
+    ]
+    resultat = subprocess.run(commande, capture_output=True, timeout=4 * 3600)
+    morceaux = sorted(glob.glob(os.path.join(dossier, "morceau_*.mp3")))
+    if resultat.returncode != 0 or not morceaux:
+        shutil.rmtree(dossier, ignore_errors=True)
+        raise RuntimeError("Découpage audio impossible.")
+    return dossier, morceaux
+
+
+def transcrire_groq(chemin_audio, code):
+    dossier, morceaux = decouper_audio(chemin_audio)
+    try:
+        textes = []
+        segments = []
+        code_utilise = code
+        langue_detectee = code
+
+        for index, morceau in enumerate(morceaux):
+            with open(morceau, "rb") as f:
+                contenu = f.read()
+
+            parametres = {
+                "file": (os.path.basename(morceau), contenu),
+                "model": MODELE_WHISPER_GROQ,
+                "response_format": "verbose_json",
+                "temperature": 0.0,
+            }
+            if code_utilise:
+                parametres["language"] = code_utilise
+
+            reponse = avec_reprise(lambda: client_groq.audio.transcriptions.create(**parametres))
+
+            texte = (lire_champ(reponse, "text", "") or "").strip()
+            if texte:
+                textes.append(texte)
+
+            decalage = index * DUREE_MORCEAU
+            for segment in lire_champ(reponse, "segments", []) or []:
+                segments.append({
+                    "start": float(lire_champ(segment, "start", 0) or 0) + decalage,
+                    "end": float(lire_champ(segment, "end", 0) or 0) + decalage,
+                    "text": (lire_champ(segment, "text", "") or "").strip(),
+                    "no_speech_prob": float(lire_champ(segment, "no_speech_prob", 0) or 0),
+                })
+
+            if langue_detectee is None and texte:
+                detectee = code_langue(lire_champ(reponse, "language"))
+                if detectee:
+                    langue_detectee = detectee
+                    code_utilise = detectee
+
+        resultat = {"text": " ".join(textes), "segments": segments, "language": langue_detectee}
+        return resultat, langue_detectee, False
+    finally:
+        shutil.rmtree(dossier, ignore_errors=True)
+
+
+def transcrire_local(chemin_audio, code):
     modele = get_modele()
+    prompt = PROMPTS_TRANSCRIPTION.get(code) if code else None
     with verrou_transcription:
-        return modele.transcribe(chemin_temp, language="fr")
+        if code is None:
+            resultat = modele.transcribe(chemin_audio)
+            return resultat, resultat.get("language"), False
+        try:
+            resultat = modele.transcribe(chemin_audio, language=code, initial_prompt=prompt)
+            return resultat, code, False
+        except Exception:
+            resultat = modele.transcribe(chemin_audio)
+            return resultat, resultat.get("language"), True
+
+
+def transcrire_audio_complet(chemin_audio, langue):
+    code = None if (langue or "").strip().lower() in LANGUES_AUTO else langue.strip().lower()
+
+    if groq_disponible():
+        try:
+            return transcrire_groq(chemin_audio, code)
+        except Exception as e:
+            print(f"[transcription groq] {type(e).__name__}: {e}")
+            if not whisper_local_disponible():
+                raise HTTPException(
+                    status_code=502,
+                    detail="Le service de transcription est indisponible ou sa limite est atteinte. Réessayez plus tard.",
+                )
+
+    return transcrire_local(chemin_audio, code)
 
 
 def analyser_resultat(resultat, langue, langue_utilisee, repli_auto):
-    segments = resultat.get("segments", [])
-
-    if not segments:
-        return None, None, "Aucune parole détectée dans cet audio."
-
-    moyenne_no_speech = sum(s["no_speech_prob"] for s in segments) / len(segments)
-
-    if moyenne_no_speech > 0.6:
-        return None, None, "Aucune parole claire détectée (silence probable)."
-
-    texte = resultat["text"].strip()
+    texte = (resultat.get("text") or "").strip()
+    segments = resultat.get("segments") or []
 
     if not texte:
-        return None, None, "Aucune parole claire détectée dans cet audio."
+        return None, None, "Aucune parole détectée dans cet audio."
+
+    if segments:
+        moyenne_no_speech = sum(s.get("no_speech_prob", 0) for s in segments) / len(segments)
+        if moyenne_no_speech > 0.6:
+            return None, None, "Aucune parole claire détectée (silence probable)."
 
     note = None
     if repli_auto:
@@ -609,17 +797,88 @@ def analyser_resultat(resultat, langue, langue_utilisee, repli_auto):
             f"Langue « {langue} » non reconnue, détection automatique utilisée "
             f"(langue détectée : {langue_utilisee})."
         )
+    elif (langue or "").strip().lower() in LANGUES_AUTO and langue_utilisee:
+        note = f"Langue détectée : {nom_langue(langue_utilisee)}."
 
     return texte, note, None
 
 
-def appeler_groq(messages):
-    reponse_ia = client_groq.chat.completions.create(
-        model=MODELE_GROQ,
-        messages=messages,
-        temperature=0.4,
-    )
-    return reponse_ia.choices[0].message.content
+def appeler_groq(messages, modele=None, temperature=0.4):
+    def appel():
+        reponse_ia = client_groq.chat.completions.create(
+            model=modele or MODELE_GROQ,
+            messages=messages,
+            temperature=temperature,
+        )
+        return reponse_ia.choices[0].message.content
+
+    return avec_reprise(appel, 3)
+
+
+def repondre(messages, question):
+    if MODELE_GROQ_WEB and REGEX_ACTUALITE.search(question):
+        try:
+            reponse = appeler_groq(messages, modele=MODELE_GROQ_WEB)
+            if reponse and reponse.strip():
+                return reponse
+        except Exception as e:
+            print(f"[assistant web] {type(e).__name__}: {e}")
+    return appeler_groq(messages)
+
+
+def demander(consigne, contenu, temperature=0.2):
+    messages = [
+        {"role": "system", "content": consigne},
+        {"role": "user", "content": contenu},
+    ]
+    return (appeler_groq(messages, temperature=temperature) or "").strip()
+
+
+def decouper_texte(texte, taille):
+    morceaux = []
+    courant = ""
+    for phrase in re.split(r"(?<=[.!?…])\s+", texte.strip()):
+        while len(phrase) > taille:
+            if courant:
+                morceaux.append(courant)
+                courant = ""
+            morceaux.append(phrase[:taille])
+            phrase = phrase[taille:]
+        if courant and len(courant) + len(phrase) + 1 > taille:
+            morceaux.append(courant)
+            courant = phrase
+        else:
+            courant = f"{courant} {phrase}".strip()
+    if courant:
+        morceaux.append(courant)
+    return morceaux
+
+
+def traduire_long(texte, langue_cible, signaler):
+    morceaux = decouper_texte(texte, 4000)
+    consigne = CONSIGNE_TRADUCTION.format(langue=langue_cible)
+    traductions = []
+    for index, morceau in enumerate(morceaux, 1):
+        signaler(f"Traduction en cours… {index}/{len(morceaux)}")
+        traductions.append(demander(consigne, morceau, 0.1))
+    return " ".join(traductions)
+
+
+def resumer_long(texte, langue_cible, signaler):
+    morceaux = decouper_texte(texte, 6000)
+
+    if len(morceaux) == 1:
+        signaler("Résumé en cours…")
+        return demander(CONSIGNE_RESUME.format(langue=langue_cible), morceaux[0], 0.3)
+
+    consigne_partielle = CONSIGNE_RESUME_PARTIEL.format(langue=langue_cible)
+    partiels = []
+    for index, morceau in enumerate(morceaux, 1):
+        signaler(f"Lecture du texte… {index}/{len(morceaux)}")
+        partiels.append(demander(consigne_partielle, morceau, 0.3))
+
+    signaler("Rédaction du résumé final…")
+    return demander(CONSIGNE_RESUME.format(langue=langue_cible), "\n\n".join(partiels), 0.3)
 
 
 def nom_fichier_sur(nom: str) -> bool:
@@ -667,7 +926,7 @@ def transcrire_travail(identifiant, user_id, chemin_wav, nom, langue, conserver)
     else:
         maj_travail(identifiant, etape="Transcription en cours…")
 
-    resultat, langue_utilisee, repli_auto = transcrire_avec_langue(chemin_wav, langue)
+    resultat, langue_utilisee, repli_auto = transcrire_audio_complet(chemin_wav, langue)
     texte, note, erreur = analyser_resultat(resultat, langue, langue_utilisee, repli_auto)
 
     if erreur:
@@ -682,6 +941,7 @@ def transcrire_travail(identifiant, user_id, chemin_wav, nom, langue, conserver)
         note=note or "",
         audio_temporaire=audio_temporaire,
         nom_fichier=nom,
+        langue_detectee=langue_utilisee,
     )
 
 
@@ -710,6 +970,42 @@ def executer_travail_lien(identifiant, user_id, url, langue, conserver):
         maj_travail(identifiant, statut="erreur", message=message_exception(e))
     finally:
         supprimer_fichier(chemin_wav)
+
+
+def executer_travail_outil(identifiant, type_outil, texte, langue_cible):
+    def signaler(etape):
+        maj_travail(identifiant, etape=etape)
+
+    try:
+        if type_outil == "traduction":
+            resultat = traduire_long(texte, langue_cible, signaler)
+        else:
+            resultat = resumer_long(texte, langue_cible, signaler)
+
+        if not resultat.strip():
+            raise ValueError("Résultat vide")
+
+        maj_travail(
+            identifiant,
+            statut="termine",
+            texte=resultat,
+            note="",
+            audio_temporaire=None,
+            nom_fichier="",
+            langue_detectee=None,
+        )
+    except Exception as e:
+        print(f"[outil {type_outil} {identifiant}] {type(e).__name__}: {e}")
+        maj_travail(
+            identifiant,
+            statut="erreur",
+            message="L'assistant IA est momentanément indisponible ou sa limite est atteinte. Réessayez dans une minute.",
+        )
+
+
+def nettoyer_langue_cible(langue_cible):
+    propre = re.sub(r"[^\w\s'’-]", "", langue_cible or "").strip()[:40]
+    return propre or "français"
 
 
 @app.get("/")
@@ -896,7 +1192,7 @@ async def transcrire_audio(
         chemin_source, _taille = await enregistrer_upload_sur_disque(fichier, extension)
         chemin_wav = await asyncio.to_thread(extraire_audio_wav, chemin_source)
         resultat, langue_utilisee, repli_auto = await asyncio.to_thread(
-            transcrire_avec_langue, chemin_wav, langue
+            transcrire_audio_complet, chemin_wav, langue
         )
         if conserver_audio in ("1", "true", "True"):
             audio_temporaire = await asyncio.to_thread(enregistrer_audio_temporaire, user_id, chemin_wav)
@@ -912,6 +1208,7 @@ async def transcrire_audio(
         "texte": texte,
         "nom_fichier": fichier.filename,
         "audio_temporaire": audio_temporaire,
+        "langue_detectee": langue_utilisee,
     }
     if note:
         reponse["note"] = note
@@ -959,6 +1256,48 @@ async def lancer_travail_lien(
     return {"id_travail": identifiant}
 
 
+@app.post("/outils/traduire")
+async def lancer_traduction(
+    user_id: Annotated[int, Depends(utilisateur_connecte)],
+    texte: str = Form(...),
+    langue_cible: str = Form("français"),
+):
+    texte = texte.strip()
+    if not texte:
+        return reponse_erreur("Aucun texte à traduire.")
+    if len(texte) > TAILLE_MAX_TEXTE_OUTIL:
+        return reponse_erreur("Texte trop long pour être traité.", 413)
+
+    identifiant = creer_travail(user_id, "Préparation de la traduction…")
+    threading.Thread(
+        target=executer_travail_outil,
+        args=(identifiant, "traduction", texte, nettoyer_langue_cible(langue_cible)),
+        daemon=True,
+    ).start()
+    return {"id_travail": identifiant}
+
+
+@app.post("/outils/resumer")
+async def lancer_resume(
+    user_id: Annotated[int, Depends(utilisateur_connecte)],
+    texte: str = Form(...),
+    langue_cible: str = Form("français"),
+):
+    texte = texte.strip()
+    if not texte:
+        return reponse_erreur("Aucun texte à résumer.")
+    if len(texte) > TAILLE_MAX_TEXTE_OUTIL:
+        return reponse_erreur("Texte trop long pour être traité.", 413)
+
+    identifiant = creer_travail(user_id, "Préparation du résumé…")
+    threading.Thread(
+        target=executer_travail_outil,
+        args=(identifiant, "resume", texte, nettoyer_langue_cible(langue_cible)),
+        daemon=True,
+    ).start()
+    return {"id_travail": identifiant}
+
+
 @app.get("/travaux/{identifiant}")
 def etat_travail(identifiant: str, user_id: Annotated[int, Depends(utilisateur_connecte)]):
     with verrou_travaux:
@@ -981,6 +1320,7 @@ def etat_travail(identifiant: str, user_id: Annotated[int, Depends(utilisateur_c
         "note": travail.get("note", ""),
         "audio_temporaire": travail.get("audio_temporaire"),
         "nom_fichier": travail.get("nom_fichier", ""),
+        "langue_detectee": travail.get("langue_detectee"),
     }
 
 
@@ -996,28 +1336,19 @@ async def assistant_vocal(
         chemin_source, _taille = await enregistrer_upload_sur_disque(
             fichier, ".webm", limite=MAX_AUDIO_OCTETS
         )
-        resultat = await asyncio.to_thread(transcrire_francais, chemin_source)
+        resultat, langue_utilisee, repli_auto = await asyncio.to_thread(
+            transcrire_audio_complet, chemin_source, "auto"
+        )
     finally:
         supprimer_fichier(chemin_source)
 
-    segments = resultat.get("segments", [])
-
-    if not segments:
-        return reponse_erreur("Aucune parole détectée dans cet audio.")
-
-    moyenne_no_speech = sum(s["no_speech_prob"] for s in segments) / len(segments)
-
-    if moyenne_no_speech > 0.6:
-        return reponse_erreur("Aucune parole claire détectée (silence probable).")
-
-    question = resultat["text"].strip()
-
-    if not question:
-        return reponse_erreur("Aucune parole détectée.")
+    question, _note, erreur = analyser_resultat(resultat, "auto", langue_utilisee, repli_auto)
+    if erreur:
+        return reponse_erreur(erreur)
 
     try:
         messages = construire_messages(historique, question)
-        texte_reponse = await asyncio.to_thread(appeler_groq, messages)
+        texte_reponse = await asyncio.to_thread(repondre, messages, question)
     except Exception as e:
         return reponse_erreur(f"Erreur de l'assistant IA : {str(e)}", 502)
 
@@ -1035,7 +1366,7 @@ async def assistant_texte(
 
     try:
         messages = construire_messages(historique, message.strip())
-        texte_reponse = await asyncio.to_thread(appeler_groq, messages)
+        texte_reponse = await asyncio.to_thread(repondre, messages, message.strip())
     except Exception as e:
         return reponse_erreur(f"Erreur de l'assistant IA : {str(e)}", 502)
 

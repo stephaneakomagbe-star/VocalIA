@@ -19,6 +19,8 @@ AIDE = """Commandes disponibles :
   /nouveau              recommencer une conversation
   /lien URL             transcrire l'audio d'un lien (YouTube, etc.)
   /fichier CHEMIN       transcrire un fichier audio ou vidéo
+  /traduire LANGUE      traduire la dernière transcription (ex. /traduire anglais)
+  /resumer [LANGUE]     résumer la dernière transcription (français par défaut)
   /sauver               enregistrer la dernière transcription
   /enregistrer          enregistrer la conversation en cours
   /historique           afficher vos dernières transcriptions
@@ -109,6 +111,7 @@ class Client:
         self.historique = []
         self.derniere_transcription = ""
         self.dernier_audio = None
+        self.derniere_langue = None
 
     def connecter(self):
         print(f"Connexion à {URL_API}")
@@ -142,9 +145,7 @@ class Client:
         self.historique.append({"role": "assistant", "texte": reponse["reponse"]})
         return reponse["reponse"]
 
-    def transcrire(self, route, champs, fichiers=None):
-        champs = {**champs, "langue": "fr", "conserver_audio": "1"}
-        id_travail = self.requete("POST", route, champs, fichiers)["id_travail"]
+    def attendre(self, id_travail):
         derniere_etape = ""
 
         while True:
@@ -161,11 +162,32 @@ class Client:
             if etat["statut"] == "erreur":
                 raise ErreurApi(etat.get("message", "Une erreur est survenue."))
 
-            self.derniere_transcription = etat["texte"]
-            self.dernier_audio = etat.get("audio_temporaire")
-            if etat.get("note"):
-                print(f"  {etat['note']}")
-            return etat["texte"]
+            return etat
+
+    def transcrire(self, route, champs, fichiers=None):
+        champs = {**champs, "langue": "auto", "conserver_audio": "1"}
+        id_travail = self.requete("POST", route, champs, fichiers)["id_travail"]
+        etat = self.attendre(id_travail)
+        self.derniere_transcription = etat["texte"]
+        self.dernier_audio = etat.get("audio_temporaire")
+        self.derniere_langue = etat.get("langue_detectee")
+        if etat.get("note"):
+            print(f"  {etat['note']}")
+        return etat["texte"]
+
+    def appliquer_outil(self, route, langue):
+        if not self.derniere_transcription:
+            raise ErreurApi("Faites d'abord une transcription avec /lien ou /fichier.")
+        id_travail = self.requete(
+            "POST", route, {"texte": self.derniere_transcription, "langue_cible": langue}
+        )["id_travail"]
+        return self.attendre(id_travail)["texte"]
+
+    def traduire(self, langue):
+        return self.appliquer_outil("/outils/traduire", langue)
+
+    def resumer(self, langue):
+        return self.appliquer_outil("/outils/resumer", langue)
 
     def transcrire_lien(self, url):
         return self.transcrire("/travaux/lien", {"url": url})
@@ -233,6 +255,16 @@ def traiter_commande(client, saisie):
             print("Utilisation : /fichier C:\\chemin\\audio.mp3")
         else:
             print(f"\nTranscription :\n{client.transcrire_fichier(argument)}")
+    elif commande == "/traduire":
+        if not argument:
+            langue = "anglais" if client.derniere_langue == "fr" else "français"
+            print(f"Langue non précisée, traduction en {langue}.")
+        else:
+            langue = argument
+        print(f"\nTraduction ({langue}) :\n{client.traduire(langue)}")
+    elif commande == "/resumer":
+        langue = argument or "français"
+        print(f"\nRésumé ({langue}) :\n{client.resumer(langue)}")
     elif commande == "/sauver":
         client.sauver_transcription()
         print("Transcription enregistrée.")
