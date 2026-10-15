@@ -1,4 +1,5 @@
 import argparse
+import base64
 import getpass
 import json
 import mimetypes
@@ -30,7 +31,7 @@ AIDE = """Commandes disponibles :
   /historique           afficher vos dernières transcriptions
   /deconnexion          se déconnecter
   /quitter              fermer VocalIA
-Tout autre texte est envoyé à l'assistant."""
+Tout autre texte est envoyé à l'assistant. Écrire « lis ça » ou « lis : texte » lance aussi la lecture."""
 
 MOTS_ANGLAIS = {
     "the", "and", "is", "are", "you", "that", "with", "this", "have", "for", "not", "was", "what",
@@ -104,7 +105,16 @@ def lire_a_voix_haute(texte):
         )
 
         print("Lecture en cours… (Ctrl + C pour arrêter)")
-        subprocess.run(["powershell", "-NoProfile", "-Command", script])
+        encode = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+        resultat = subprocess.run(
+            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", encode],
+            capture_output=True,
+            text=True,
+        )
+        if resultat.stdout.strip():
+            print(resultat.stdout.strip())
+        if resultat.returncode != 0:
+            print("Erreur de lecture :", (resultat.stderr or "inconnue").strip())
     except KeyboardInterrupt:
         print("\nLecture arrêtée.")
     except OSError:
@@ -161,19 +171,21 @@ def appeler(methode, route, champs=None, fichiers=None, token=None):
         except Exception:
             message = "Erreur du serveur."
         raise ErreurApi(message, e.code)
-    except urllib.error.URLError:
-        raise ErreurApi(f"Serveur injoignable : {URL_API}")
 
 
-class Client:
-    def __init__(self):
-        donnees = lire_session()
-        self.token = donnees.get("token") if donnees.get("url") == URL_API else None
-        self.historique = []
-        self.derniere_transcription = ""
-        self.dernier_audio = None
-        self.derniere_langue = None
-        self.derniere_reponse = ""
+    except urllib.error.URLError as e:
+        raise ErreurApi(f"Serveur injoignable : {URL_API} (cause : {e.reason})")
+    except (ConnectionError, TimeoutError) as e:
+        raise ErreurApi(f"Connexion coupée : {e}")
+    class Client:
+        def __init__(self):
+            donnees = lire_session()
+            self.token = donnees.get("token") if donnees.get("url") == URL_API else None
+            self.historique = []
+            self.derniere_transcription = ""
+            self.dernier_audio = None
+            self.derniere_langue = None
+            self.derniere_reponse = ""
 
     def connecter(self):
         print(f"Connexion à {URL_API}")
@@ -297,6 +309,20 @@ class Client:
         effacer_session()
 
 
+def extraire_demande_lecture(saisie):
+    m = re.match(r"^(lis-moi|lisez|lis)\b[\s:,-]*(.*)$", saisie.strip(), re.IGNORECASE | re.DOTALL)
+    if not m:
+        return None
+    reste = m.group(2).strip()
+    reste = re.sub(
+        r"^(ce texte|ça|ca|ceci|cela|la réponse|ta réponse)?\s*((à|a) voix haute)?\s*[:,-]*\s*",
+        "",
+        reste,
+        flags=re.IGNORECASE,
+    ).strip().strip('"«»')
+    return reste
+
+
 def traiter_commande(client, saisie):
     commande, _, argument = saisie.partition(" ")
     commande = commande.lower()
@@ -370,7 +396,12 @@ def boucle(client):
                 if not traiter_commande(client, saisie):
                     break
             else:
-                print(f"\nVocalIA : {client.poser_question(saisie)}")
+                demande = extraire_demande_lecture(saisie)
+                if demande is not None:
+                    lire_a_voix_haute(demande or client.derniere_reponse or client.derniere_transcription)
+                else:
+                    reponse = client.poser_question(saisie)
+                    print(f"\nVocalIA : {reponse}")
         except ErreurApi as e:
             print(f"Erreur : {e}")
         except KeyboardInterrupt:
