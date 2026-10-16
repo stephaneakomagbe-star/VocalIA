@@ -44,6 +44,8 @@ TAILLE_MAX_TEXTE_OUTIL = 400000
 MODELE_WHISPER_GROQ = os.environ.get("GROQ_WHISPER_MODEL", "whisper-large-v3-turbo").strip()
 MODELE_GROQ_WEB = os.environ.get("MODELE_GROQ_WEB", "").strip()
 LANGUES_AUTO = ("", "auto", "ee")
+URL_BASE_DONNEES = os.environ.get("DATABASE_URL", "").strip()
+UTILISE_POSTGRES = URL_BASE_DONNEES.startswith(("postgres://", "postgresql://"))
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
 FICHIER_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_FILE", "").strip()
 NAVIGATEUR_COOKIES_YOUTUBE = os.environ.get("YOUTUBE_COOKIES_BROWSER", "").strip().lower()
@@ -161,17 +163,41 @@ def get_modele():
     return modele_whisper
 
 
+class ConnexionBase:
+    def __init__(self, connexion, postgres):
+        self._connexion = connexion
+        self._postgres = postgres
+
+    def execute(self, requete, parametres=()):
+        if self._postgres:
+            requete = requete.replace("?", "%s")
+        return self._connexion.execute(requete, parametres)
+
+    def commit(self):
+        self._connexion.commit()
+
+    def close(self):
+        self._connexion.close()
+
+
 def get_db():
+    if UTILISE_POSTGRES:
+        import psycopg
+
+        return ConnexionBase(psycopg.connect(URL_BASE_DONNEES, connect_timeout=15), True)
+
     conn = sqlite3.connect("vocalia.db")
     conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    return ConnexionBase(conn, False)
 
 
 def init_db():
     os.makedirs(DOSSIER_AUDIOS, exist_ok=True)
     conn = get_db()
-    conn.execute("""CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cle = "SERIAL PRIMARY KEY" if UTILISE_POSTGRES else "INTEGER PRIMARY KEY AUTOINCREMENT"
+
+    conn.execute(f"""CREATE TABLE IF NOT EXISTS users (
+        id {cle},
         email TEXT UNIQUE,
         password_hash TEXT,
         salt TEXT,
@@ -180,40 +206,47 @@ def init_db():
         telephone TEXT,
         google_id TEXT
     )""")
-    colonnes = {row[1] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
-    for nom_colonne, definition in (
+
+    colonnes_ajoutees = (
         ("prenom", "TEXT"),
         ("nom", "TEXT"),
         ("telephone", "TEXT"),
         ("google_id", "TEXT"),
-    ):
-        if nom_colonne not in colonnes:
-            conn.execute(f"ALTER TABLE users ADD COLUMN {nom_colonne} {definition}")
-    conn.execute("""CREATE TABLE IF NOT EXISTS transcriptions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    )
+    if UTILISE_POSTGRES:
+        for nom_colonne, definition in colonnes_ajoutees:
+            conn.execute(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {nom_colonne} {definition}")
+    else:
+        colonnes = {row[1] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
+        for nom_colonne, definition in colonnes_ajoutees:
+            if nom_colonne not in colonnes:
+                conn.execute(f"ALTER TABLE users ADD COLUMN {nom_colonne} {definition}")
+
+    conn.execute(f"""CREATE TABLE IF NOT EXISTS transcriptions (
+        id {cle},
         user_id INTEGER,
         date TEXT,
         texte TEXT,
         audio_fichier TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
-    conn.execute("""CREATE TABLE IF NOT EXISTS conversations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conn.execute(f"""CREATE TABLE IF NOT EXISTS conversations (
+        id {cle},
         user_id INTEGER,
         date TEXT,
         messages TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
-    conn.execute("""CREATE TABLE IF NOT EXISTS sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conn.execute(f"""CREATE TABLE IF NOT EXISTS sessions (
+        id {cle},
         token TEXT UNIQUE,
         user_id INTEGER,
         date_creation TEXT,
         date_expiration TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
-    conn.execute("""CREATE TABLE IF NOT EXISTS tentatives_connexion (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conn.execute(f"""CREATE TABLE IF NOT EXISTS tentatives_connexion (
+        id {cle},
         email TEXT,
         date_tentative TEXT
     )""")
@@ -1028,6 +1061,7 @@ def health_check():
         "yt_dlp": version_yt_dlp(),
         "node": shutil.which("node") is not None,
         "deno": shutil.which("deno") is not None,
+        "base": "postgresql" if UTILISE_POSTGRES else "sqlite",
     }
 
 

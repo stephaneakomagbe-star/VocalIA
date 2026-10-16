@@ -171,30 +171,50 @@ def appeler(methode, route, champs=None, fichiers=None, token=None):
         except Exception:
             message = "Erreur du serveur."
         raise ErreurApi(message, e.code)
-
-
     except urllib.error.URLError as e:
         raise ErreurApi(f"Serveur injoignable : {URL_API} (cause : {e.reason})")
     except (ConnectionError, TimeoutError) as e:
         raise ErreurApi(f"Connexion coupée : {e}")
-    class Client:
-        def __init__(self):
-            donnees = lire_session()
-            self.token = donnees.get("token") if donnees.get("url") == URL_API else None
-            self.historique = []
-            self.derniere_transcription = ""
-            self.dernier_audio = None
-            self.derniere_langue = None
-            self.derniere_reponse = ""
+
+
+class Client:
+    def __init__(self):
+        donnees = lire_session()
+        self.token = donnees.get("token") if donnees.get("url") == URL_API else None
+        self.historique = []
+        self.derniere_transcription = ""
+        self.dernier_audio = None
+        self.derniere_langue = None
+        self.derniere_reponse = ""
+
+    def enregistrer_connexion(self, reponse, email):
+        self.token = reponse["token"]
+        ecrire_session({"url": URL_API, "token": self.token, "email": email})
+        prenom = reponse.get("prenom")
+        print(f"Connecté{(' : ' + prenom) if prenom else ''}.")
 
     def connecter(self):
         print(f"Connexion à {URL_API}")
         email = input("Email : ").strip()
         mot_de_passe = getpass.getpass("Mot de passe : ")
         reponse = appeler("POST", "/connexion", {"email": email, "mot_de_passe": mot_de_passe})
-        self.token = reponse["token"]
-        ecrire_session({"url": URL_API, "token": self.token, "email": email})
-        print(f"Connecté{(' : ' + reponse['prenom']) if reponse.get('prenom') else ''}.")
+        self.enregistrer_connexion(reponse, email)
+
+    def inscrire(self):
+        print(f"Création d'un compte sur {URL_API}")
+        prenom = input("Prénom : ").strip()
+        nom = input("Nom : ").strip()
+        email = input("Email : ").strip()
+        mot_de_passe = getpass.getpass("Mot de passe (6 caractères minimum) : ")
+        confirmation = getpass.getpass("Confirmer le mot de passe : ")
+        if mot_de_passe != confirmation:
+            raise ErreurApi("Les mots de passe ne correspondent pas.")
+        reponse = appeler(
+            "POST",
+            "/inscription",
+            {"email": email, "mot_de_passe": mot_de_passe, "prenom": prenom, "nom": nom, "telephone": ""},
+        )
+        self.enregistrer_connexion(reponse, email)
 
     def requete(self, methode, route, champs=None, fichiers=None):
         if not self.token:
@@ -420,11 +440,15 @@ def main():
     analyseur.add_argument("--lien", help="transcrire l'audio d'un lien")
     analyseur.add_argument("--fichier", help="transcrire un fichier audio ou vidéo")
     analyseur.add_argument("--lire", action="store_true", help="lire le résultat à voix haute")
+    analyseur.add_argument("--inscription", action="store_true", help="créer un compte sur le serveur")
     arguments = analyseur.parse_args()
 
     client = Client()
 
     try:
+        if arguments.inscription:
+            client.inscrire()
+            return
         if arguments.lien:
             resultat = client.transcrire_lien(arguments.lien)
             print(resultat)
