@@ -16,13 +16,14 @@ import shutil
 import subprocess
 import urllib.error
 import urllib.request
-import yt_dlp
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
 from fastapi import FastAPI, UploadFile, File, Form, Depends, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.exceptions import RequestValidationError
 from dotenv import load_dotenv
@@ -38,6 +39,7 @@ FENETRE_BLOCAGE_MINUTES = 15
 MAX_AUDIO_OCTETS = 80 * 1024 * 1024
 TAILLE_LOT_UPLOAD = 1024 * 1024
 DOSSIER_AUDIOS = "audios"
+DOSSIER_FRONTEND = Path(__file__).resolve().parent / "static"
 DUREE_CONSERVATION_TRAVAUX = timedelta(hours=6)
 DUREE_MORCEAU = 600
 TAILLE_MAX_TEXTE_OUTIL = 400000
@@ -408,9 +410,20 @@ def extraire_audio_wav(chemin_source):
     return chemin_wav
 
 
-def version_yt_dlp():
+def module_yt_dlp():
     try:
-        return yt_dlp.version.__version__
+        import yt_dlp
+        return yt_dlp
+    except ImportError:
+        return None
+
+
+def version_yt_dlp():
+    module = module_yt_dlp()
+    if module is None:
+        return None
+    try:
+        return module.version.__version__
     except Exception:
         return "inconnue"
 
@@ -450,6 +463,13 @@ def supprimer_residus(base_sans_extension):
 
 
 def telecharger_audio_lien(url):
+    yt_dlp = module_yt_dlp()
+    if yt_dlp is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Le téléchargement de liens n'est pas installé sur ce serveur. Importez le fichier audio ou vidéo.",
+        )
+
     if not ffmpeg_disponible():
         raise HTTPException(
             status_code=500,
@@ -1049,6 +1069,9 @@ def nettoyer_langue_cible(langue_cible):
 
 @app.get("/")
 def read_root():
+    index = DOSSIER_FRONTEND / "index.html"
+    if index.is_file():
+        return FileResponse(index)
     return {"message": "VocalIA backend en ligne"}
 
 
@@ -1574,3 +1597,15 @@ def supprimer_conversation(item_id: int, user_id: Annotated[int, Depends(utilisa
     conn.commit()
     conn.close()
     return {"status": "ok"}
+
+
+if (DOSSIER_FRONTEND / "assets").is_dir():
+    app.mount("/assets", StaticFiles(directory=str(DOSSIER_FRONTEND / "assets")), name="frontend_assets")
+
+
+@app.get("/favicon.svg")
+def favicon_svg():
+    chemin = DOSSIER_FRONTEND / "favicon.svg"
+    if chemin.is_file():
+        return FileResponse(chemin)
+    raise HTTPException(status_code=404, detail="Favicon introuvable.")

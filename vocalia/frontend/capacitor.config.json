@@ -1,6 +1,6 @@
 {
   "appId": "com.vocalia.app",
-  "appName": "vocalIA",
+  "appName": "Vocalia",
   "webDir": "dist",
   "android": {
     "allowMixedContent": true
