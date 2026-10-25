@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Send, Square, Volume2 } from "lucide-react";
 import { envoyerFormulaire } from "./api";
+import { BoutonsPartage } from "./partage";
 
 const EXEMPLES = [
   "Quels points retenir d’une prédication sur la persévérance ?",
@@ -186,6 +187,10 @@ export default function AssistantScreen() {
 
       {messages.length > 0 && (
         <div className="actions" style={{ marginBottom: 10 }}>
+          <BoutonsPartage
+            titre="Conversation Vocalia"
+            texte={messages.map((m) => `${m.role === "assistant" ? "Vocalia" : "Vous"} : ${m.texte}`).join("\n\n")}
+          />
           <button className="btn small ghost" type="button" onClick={() => { setMessages([]); setInfo(""); }}>
             Nouvelle conversation
           </button>

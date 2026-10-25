@@ -230,6 +230,7 @@ def init_db():
         date TEXT,
         texte TEXT,
         audio_fichier TEXT,
+        titre TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
     conn.execute(f"""CREATE TABLE IF NOT EXISTS conversations (
@@ -237,8 +238,19 @@ def init_db():
         user_id INTEGER,
         date TEXT,
         messages TEXT,
+        titre TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id)
     )""")
+    if UTILISE_POSTGRES:
+        conn.execute("ALTER TABLE transcriptions ADD COLUMN IF NOT EXISTS titre TEXT")
+        conn.execute("ALTER TABLE conversations ADD COLUMN IF NOT EXISTS titre TEXT")
+    else:
+        colonnes_t = {row[1] for row in conn.execute("PRAGMA table_info(transcriptions)").fetchall()}
+        if "titre" not in colonnes_t:
+            conn.execute("ALTER TABLE transcriptions ADD COLUMN titre TEXT")
+        colonnes_c = {row[1] for row in conn.execute("PRAGMA table_info(conversations)").fetchall()}
+        if "titre" not in colonnes_c:
+            conn.execute("ALTER TABLE conversations ADD COLUMN titre TEXT")
     conn.execute(f"""CREATE TABLE IF NOT EXISTS sessions (
         id {cle},
         token TEXT UNIQUE,
@@ -893,6 +905,42 @@ def demander(consigne, contenu, temperature=0.2):
     return (appeler_groq(messages, temperature=temperature) or "").strip()
 
 
+def titre_de_secours(texte):
+    extrait = re.sub(r"\s+", " ", (texte or "").strip())
+    if not extrait:
+        return f"Notes du {datetime.now().strftime('%d/%m/%Y')}"
+    premiere = re.split(r"[.!?\n]", extrait, maxsplit=1)[0].strip()
+    mots = premiere.split()[:8]
+    return " ".join(mots) if mots else f"Notes du {datetime.now().strftime('%d/%m/%Y')}"
+
+
+def nettoyer_titre(titre):
+    propre = re.sub(r"\s+", " ", (titre or "").strip())
+    propre = propre.strip("\"'«»“” ").strip()
+    propre = re.sub(r"^titre\s*:\s*", "", propre, flags=re.IGNORECASE)
+    return propre.strip(" .")[:80]
+
+
+def proposer_titre(texte):
+    extrait = (texte or "").strip()[:2500]
+    if not extrait:
+        return titre_de_secours(extrait)
+    try:
+        brut = demander(
+            "Tu es Vocalia. Donne uniquement un titre court en français, 4 à 10 mots, "
+            "sans guillemets, sans point final. Le titre décrit le sujet "
+            "(prédication, réunion, entretien, message).",
+            extrait,
+            temperature=0.2,
+        )
+        propre = nettoyer_titre(brut)
+        if len(propre.split()) >= 2 and len(propre) >= 8:
+            return propre
+    except Exception as e:
+        print(f"[titre] {type(e).__name__}: {e}")
+    return titre_de_secours(extrait)
+
+
 def decouper_texte(texte, taille):
     morceaux = []
     courant = ""
@@ -1319,6 +1367,14 @@ async def lancer_travail_lien(
     return {"id_travail": identifiant}
 
 
+@app.post("/outils/titre")
+def outil_titre(
+    user_id: Annotated[int, Depends(utilisateur_connecte)],
+    texte: str = Form(...),
+):
+    return {"titre": proposer_titre(texte)}
+
+
 @app.post("/outils/traduire")
 async def lancer_traduction(
     user_id: Annotated[int, Depends(utilisateur_connecte)],
@@ -1442,6 +1498,7 @@ async def sauvegarder_transcription(
     texte: str = Form(...),
     fichier: UploadFile = File(None),
     audio_temporaire: str = Form(None),
+    titre: str = Form(""),
 ):
     nom_audio = None
     chemin_temporaire = consommer_audio_temporaire(user_id, audio_temporaire)
@@ -1460,14 +1517,15 @@ async def sauvegarder_transcription(
         finally:
             supprimer_fichier(chemin_source)
 
+    titre_final = nettoyer_titre(titre) or proposer_titre(texte)
     conn = get_db()
     conn.execute(
-        "INSERT INTO transcriptions (user_id, date, texte, audio_fichier) VALUES (?, ?, ?, ?)",
-        (user_id, datetime.now().strftime("%d/%m/%Y %H:%M"), texte, nom_audio),
+        "INSERT INTO transcriptions (user_id, date, texte, audio_fichier, titre) VALUES (?, ?, ?, ?, ?)",
+        (user_id, datetime.now().strftime("%d/%m/%Y %H:%M"), texte, nom_audio, titre_final),
     )
     conn.commit()
     conn.close()
-    return {"status": "ok"}
+    return {"status": "ok", "titre": titre_final}
 
 
 @app.post("/sauvegarder-drive")
@@ -1488,22 +1546,34 @@ def sauvegarder_drive(
 def sauvegarder_conversation(
     user_id: Annotated[int, Depends(utilisateur_connecte)],
     conversation: str = Form(...),
+    titre: str = Form(""),
 ):
+    try:
+        messages = json.loads(conversation)
+        extraits = [
+            str(item.get("texte") or item.get("content") or "").strip()
+            for item in messages
+            if isinstance(item, dict)
+        ]
+        texte_conversation = "\n".join(partie for partie in extraits if partie)
+    except (json.JSONDecodeError, TypeError):
+        texte_conversation = conversation
+    titre_final = nettoyer_titre(titre) or proposer_titre(texte_conversation)
     conn = get_db()
     conn.execute(
-        "INSERT INTO conversations (user_id, date, messages) VALUES (?, ?, ?)",
-        (user_id, datetime.now().strftime("%d/%m/%Y %H:%M"), conversation),
+        "INSERT INTO conversations (user_id, date, messages, titre) VALUES (?, ?, ?, ?)",
+        (user_id, datetime.now().strftime("%d/%m/%Y %H:%M"), conversation, titre_final),
     )
     conn.commit()
     conn.close()
-    return {"status": "ok"}
+    return {"status": "ok", "titre": titre_final}
 
 
 @app.get("/historique")
 def get_historique(user_id: Annotated[int, Depends(utilisateur_connecte)]):
     conn = get_db()
     rows = conn.execute(
-        "SELECT id, date, texte, audio_fichier FROM transcriptions WHERE user_id = ? ORDER BY id DESC",
+        "SELECT id, date, texte, audio_fichier, titre FROM transcriptions WHERE user_id = ? ORDER BY id DESC",
         (user_id,),
     ).fetchall()
     conn.close()
@@ -1514,6 +1584,7 @@ def get_historique(user_id: Annotated[int, Depends(utilisateur_connecte)]):
                 "date": r[1],
                 "texte": r[2],
                 "audio_fichier": r[3],
+                "titre": r[4] or "",
             }
             for r in rows
         ]
@@ -1524,7 +1595,7 @@ def get_historique(user_id: Annotated[int, Depends(utilisateur_connecte)]):
 def get_historique_conversations(user_id: Annotated[int, Depends(utilisateur_connecte)]):
     conn = get_db()
     rows = conn.execute(
-        "SELECT id, date, messages FROM conversations WHERE user_id = ? ORDER BY id DESC",
+        "SELECT id, date, messages, titre FROM conversations WHERE user_id = ? ORDER BY id DESC",
         (user_id,),
     ).fetchall()
     conn.close()
@@ -1535,7 +1606,7 @@ def get_historique_conversations(user_id: Annotated[int, Depends(utilisateur_con
             messages = json.loads(r[2])
         except (json.JSONDecodeError, TypeError):
             messages = []
-        resultats.append({"id": r[0], "date": r[1], "messages": messages})
+        resultats.append({"id": r[0], "date": r[1], "messages": messages, "titre": r[3] or ""})
 
     return {"conversations": resultats}
 

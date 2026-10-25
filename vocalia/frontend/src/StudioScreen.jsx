@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Copy, Download, Link, Mic, Square, Upload, Volume2 } from "lucide-react";
+import { Download, Link, Mic, Square, Upload, Volume2 } from "lucide-react";
 import {
   ApiError,
   LANGUES_CIBLE,
@@ -8,6 +8,7 @@ import {
   envoyerFormulaire,
   suivreTravail,
 } from "./api";
+import { BoutonsPartage, nomFichier, titreLocal } from "./partage";
 
 function formatTemps(secondes) {
   const m = String(Math.floor(secondes / 60)).padStart(2, "0");
@@ -61,6 +62,8 @@ export default function StudioScreen({ prefs }) {
   const [derive, setDerive] = useState(null);
   const [message, setMessage] = useState("");
   const [occupe, setOccupe] = useState(false);
+  const [titre, setTitre] = useState("");
+  const [titreEnCours, setTitreEnCours] = useState(false);
 
   const recRef = useRef(null);
   const timerRef = useRef(null);
@@ -86,6 +89,7 @@ export default function StudioScreen({ prefs }) {
     setNote("");
     setEtape("Envoi…");
     setProgression(0);
+    setTitre("");
     abortRef.current?.abort();
     const controle = new AbortController();
     abortRef.current = controle;
@@ -106,6 +110,7 @@ export default function StudioScreen({ prefs }) {
       setNote(etat.note || "");
       setAudioTemp(etat.audio_temporaire || null);
       setEtape("");
+      proposerTitre(etat.texte || "");
       if (document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") {
         new Notification("Vocalia", { body: "Votre transcription est prête." });
       }
@@ -189,11 +194,30 @@ export default function StudioScreen({ prefs }) {
     }
   }
 
+  async function proposerTitre(contenu) {
+    const brut = (contenu || "").trim();
+    if (!brut) {
+      setTitre("");
+      return;
+    }
+    setTitre(titreLocal(brut));
+    setTitreEnCours(true);
+    try {
+      const reponse = await envoyerFormulaire("/outils/titre", { texte: brut });
+      if (reponse.titre) setTitre(reponse.titre);
+    } catch {
+      /* le titre local reste affiché */
+    } finally {
+      setTitreEnCours(false);
+    }
+  }
+
   async function archiver(contenu, nom, avecAudio = false) {
     setMessage("");
     setErreur("");
+    const titreFinal = titre.trim() || titreLocal(contenu);
     try {
-      const champs = { texte: contenu };
+      const champs = { texte: contenu, titre: titreFinal };
       if (avecAudio && audioTemp && prefs.conserverAudio) champs.audio_temporaire = audioTemp;
       await envoyerFormulaire("/sauvegarder", champs);
       let suite = "Transcription enregistrée dans vos archives.";
@@ -203,7 +227,7 @@ export default function StudioScreen({ prefs }) {
           await envoyerFormulaire("/sauvegarder-drive", {
             access_token: jetonDrive,
             texte: contenu,
-            nom,
+            nom: nom || nomFichier(titreFinal),
           });
           suite = "Enregistrée dans vos archives et envoyée sur Google Drive.";
         } catch (e) {
@@ -366,6 +390,16 @@ export default function StudioScreen({ prefs }) {
               <span>Langue : {langueLisible}</span>
             </div>
             {note && <div className="banner info">{note}</div>}
+            <label className="field title-field">
+              <span>{titreEnCours ? "Titre (en cours…)" : "Titre"}</span>
+              <input
+                className="input"
+                value={titre}
+                onChange={(e) => setTitre(e.target.value)}
+                placeholder="Un titre sera proposé automatiquement"
+                aria-label="Titre de la transcription"
+              />
+            </label>
             <textarea
               className="doc"
               value={texte}
@@ -373,17 +407,15 @@ export default function StudioScreen({ prefs }) {
               placeholder={occupe ? "Transcription en cours…" : ""}
               aria-label="Texte transcrit"
             />
+            <BoutonsPartage titre={titre} texte={texte} className="no-print" />
             <div className="doc-toolbar no-print">
-              <button className="btn small ghost" type="button" disabled={!texte} onClick={() => navigator.clipboard.writeText(texte)}>
-                <Copy size={14} /> Copier
-              </button>
-              <button className="btn small ghost" type="button" disabled={!texte} onClick={() => telecharger(`vocalia-${Date.now()}.txt`, texte)}>
+              <button className="btn small ghost" type="button" disabled={!texte} onClick={() => telecharger(nomFichier(titre || "vocalia"), texte)}>
                 <Download size={14} /> Télécharger
               </button>
               <button className="btn small ghost" type="button" disabled={!texte} onClick={() => lire(texte)}>
                 <Volume2 size={14} /> Lire
               </button>
-              <button className="btn small primary" type="button" disabled={!texte || occupe} onClick={() => archiver(texte, `transcription-vocalia-${Date.now()}.txt`, true)}>
+              <button className="btn small primary" type="button" disabled={!texte || occupe} onClick={() => archiver(texte, nomFichier(titre || "transcription"), true)}>
                 Archiver
               </button>
             </div>
@@ -412,11 +444,9 @@ export default function StudioScreen({ prefs }) {
               onChange={(e) => setDerive({ ...derive, texte: e.target.value })}
               aria-label={derive.type === "resume" ? "Résumé" : "Traduction"}
             />
+            <BoutonsPartage titre={titre} texte={derive.texte} className="no-print" />
             <div className="doc-toolbar no-print">
-              <button className="btn small ghost" type="button" onClick={() => navigator.clipboard.writeText(derive.texte)}>
-                <Copy size={14} /> Copier
-              </button>
-              <button className="btn small primary" type="button" onClick={() => archiver(derive.texte, `${derive.type}-vocalia-${Date.now()}.txt`)}>
+              <button className="btn small primary" type="button" onClick={() => archiver(derive.texte, nomFichier(titre || derive.type))}>
                 Archiver ce texte
               </button>
             </div>

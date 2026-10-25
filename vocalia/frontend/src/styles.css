@@ -293,6 +293,8 @@ a { color: var(--accent-dark); }
 }
 .doc:focus { box-shadow: none; }
 .doc-toolbar, .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.title-field { margin: 10px 0 4px; }
+.share-row { display: contents; }
 .tools { padding-top: 12px; border-top: 1px solid var(--line); align-items: end; }
 .tools .field { margin: 0; min-width: 180px; flex: 1; }
 .empty-doc {
@@ -381,6 +383,7 @@ a { color: var(--accent-dark); }
 .archive { max-width: 980px; display: flex; flex-direction: column; gap: 12px; }
 .archive-item { padding: 16px 18px; }
 .archive-item header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 8px; }
+.archive-item header strong { font-size: 17px; letter-spacing: -0.02em; }
 .archive-item time { color: var(--muted); font-size: 13px; }
 .excerpt { white-space: pre-wrap; color: var(--ink); }
 .excerpt.clamp {

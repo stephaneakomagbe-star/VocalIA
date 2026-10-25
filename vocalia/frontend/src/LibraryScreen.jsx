@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Copy, Download, Search, Trash2 } from "lucide-react";
+import { Download, Search, Trash2 } from "lucide-react";
 import { blobMedia, requete } from "./api";
+import { BoutonsPartage, nomFichier, titreLocal } from "./partage";
 
 function telecharger(nom, texte) {
   const blob = new Blob([texte], { type: "text/plain;charset=utf-8" });
@@ -90,8 +91,14 @@ export default function LibraryScreen() {
   }
 
   const filtre = recherche.trim().toLowerCase();
-  const listeTextes = transcriptions.filter((item) => !filtre || (item.texte || "").toLowerCase().includes(filtre));
-  const listeEchanges = conversations.filter((item) => !filtre || texteConversation(item.messages).toLowerCase().includes(filtre));
+  const listeTextes = transcriptions.filter((item) => {
+    if (!filtre) return true;
+    return `${item.titre || ""} ${item.texte || ""}`.toLowerCase().includes(filtre);
+  });
+  const listeEchanges = conversations.filter((item) => {
+    if (!filtre) return true;
+    return `${item.titre || ""} ${texteConversation(item.messages)}`.toLowerCase().includes(filtre);
+  });
   const liste = onglet === "transcriptions" ? listeTextes : listeEchanges;
 
   return (
@@ -135,7 +142,7 @@ export default function LibraryScreen() {
           return (
             <article key={item.id} className="card archive-item">
               <header>
-                <strong>Transcription</strong>
+                <strong>{item.titre || titreLocal(item.texte) || "Transcription"}</strong>
                 <time>{item.date}</time>
               </header>
               <p className={`excerpt${montre ? "" : " clamp"}`}>{item.texte}</p>
@@ -146,10 +153,8 @@ export default function LibraryScreen() {
               )}
               {audios[item.id] && <audio controls src={audios[item.id]} />}
               <div className="actions">
-                <button className="btn small ghost" type="button" onClick={() => navigator.clipboard.writeText(item.texte || "")}>
-                  <Copy size={14} /> Copier
-                </button>
-                <button className="btn small ghost" type="button" onClick={() => telecharger(`vocalia-${item.id}.txt`, item.texte || "")}>
+                <BoutonsPartage titre={item.titre || titreLocal(item.texte)} texte={item.texte || ""} />
+                <button className="btn small ghost" type="button" onClick={() => telecharger(nomFichier(item.titre || `vocalia-${item.id}`), item.texte || "")}>
                   <Download size={14} /> Télécharger
                 </button>
                 {confirmation === `t-${item.id}` ? (
@@ -172,7 +177,7 @@ export default function LibraryScreen() {
           return (
             <article key={item.id} className="card archive-item">
               <header>
-                <strong>Conversation</strong>
+                <strong>{item.titre || "Conversation"}</strong>
                 <time>{item.date}</time>
               </header>
               <div className="thread" style={{ minHeight: 0, margin: 0 }}>
@@ -183,10 +188,8 @@ export default function LibraryScreen() {
                 ))}
               </div>
               <div className="actions">
-                <button className="btn small ghost" type="button" onClick={() => navigator.clipboard.writeText(corps)}>
-                  <Copy size={14} /> Copier
-                </button>
-                <button className="btn small ghost" type="button" onClick={() => telecharger(`conversation-${item.id}.txt`, corps)}>
+                <BoutonsPartage titre={item.titre || "Conversation"} texte={corps} />
+                <button className="btn small ghost" type="button" onClick={() => telecharger(nomFichier(item.titre || `conversation-${item.id}`), corps)}>
                   <Download size={14} /> Télécharger
                 </button>
                 {confirmation === `c-${item.id}` ? (
