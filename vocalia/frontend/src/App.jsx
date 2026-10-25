@@ -17,6 +17,19 @@ const VUES = [
   { id: "reglages", label: "Réglages", icon: Settings },
 ];
 
+function BoutonTheme({ theme, onTheme, className = "" }) {
+  return (
+    <button
+      className={`theme-btn${className ? ` ${className}` : ""}`}
+      type="button"
+      aria-label={theme === "sombre" ? "Passer au fond blanc" : "Passer au fond noir"}
+      onClick={() => onTheme(theme === "sombre" ? "clair" : "sombre")}
+    >
+      {theme === "sombre" ? <Sun size={18} /> : <Moon size={18} />}
+    </button>
+  );
+}
+
 const TITRES = {
   studio: ["Transcription", "Enregistrez, importez un fichier ou collez un lien. Le texte reste modifiable avant l’archivage."],
   assistant: ["Assistant", "Posez une question à l’écrit ou à la voix. Les réponses peuvent être lues à voix haute."],
@@ -192,8 +205,7 @@ export default function App() {
           onConnecter={connecter}
           onChangerUrl={changerUrl}
           onVerifier={verifierServeur}
-          theme={theme}
-          onTheme={changerTheme}
+          boutonTheme={<BoutonTheme theme={theme} onTheme={changerTheme} />}
         />
       </>
     );
@@ -236,10 +248,6 @@ export default function App() {
               <span>{session.email}</span>
             </div>
           </div>
-          <button className="linkish" type="button" onClick={() => changerTheme(theme === "sombre" ? "clair" : "sombre")}>
-            {theme === "sombre" ? <Sun size={16} /> : <Moon size={16} />}
-            {theme === "sombre" ? "Fond blanc" : "Fond noir"}
-          </button>
           <button className="linkish" onClick={() => deconnecter()} style={{ marginTop: 10 }}>
             <LogOut size={16} /> Se déconnecter
           </button>
@@ -248,31 +256,14 @@ export default function App() {
 
       <main className="main">
         <header className="topbar">
-          <strong className="brand-name">Vocalia</strong>
-          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <button
-              className="theme-btn"
-              type="button"
-              aria-label={theme === "sombre" ? "Passer au fond blanc" : "Passer au fond noir"}
-              onClick={() => changerTheme(theme === "sombre" ? "clair" : "sombre")}
-            >
-              {theme === "sombre" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <span className={`status-dot${serveur === "ok" ? "" : " off"}`} title={serveur === "ok" ? "Serveur en ligne" : "Serveur injoignable"} />
-          </span>
+          <div className="brand topbar-brand">
+            <Logo size={32} />
+            <strong className="brand-name">Vocalia</strong>
+          </div>
+          <BoutonTheme theme={theme} onTheme={changerTheme} />
         </header>
         <div className="page-head">
-          <div className="page-head-row">
-            <h1>{titre}</h1>
-            <button
-              className="theme-btn desktop-theme"
-              type="button"
-              aria-label={theme === "sombre" ? "Passer au fond blanc" : "Passer au fond noir"}
-              onClick={() => changerTheme(theme === "sombre" ? "clair" : "sombre")}
-            >
-              {theme === "sombre" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
+          <h1>{titre}</h1>
           <p>{sousTitre}</p>
         </div>
         {serveur !== "ok" && (

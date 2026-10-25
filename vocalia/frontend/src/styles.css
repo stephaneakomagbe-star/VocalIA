@@ -104,7 +104,7 @@ a { color: var(--accent-dark); }
 }
 .logo-wave { color: var(--accent); stroke: var(--accent); }
 .logo-wave.faint { opacity: 0.55; }
-.sidebar .logo, .auth-aside .logo { color: var(--on-sidebar); }
+.sidebar .logo { color: var(--on-sidebar); }
 .brand-name { display: block; font-family: var(--serif); font-size: 22px; letter-spacing: -0.03em; }
 .brand-kicker { display: block; color: var(--on-sidebar-muted); font-size: 13px; margin-top: 1px; }
 .nav { display: flex; flex-direction: column; gap: 4px; }
@@ -145,14 +145,17 @@ a { color: var(--accent-dark); }
   align-items: center;
   gap: 6px;
 }
-.main { min-width: 0; padding: 36px 48px 72px; }
-.topbar, .bottom-nav { display: none; }
-.page-head { max-width: 980px; margin-bottom: 22px; }
-.page-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.desktop-theme { display: grid; }
-@media (max-width: 900px) {
-  .desktop-theme { display: none; }
+.main { min-width: 0; padding: 20px 48px 72px; }
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+  min-height: 40px;
 }
+.topbar-brand { display: none; padding: 0; }
+.bottom-nav { display: none; }
+.page-head { max-width: 980px; margin-bottom: 22px; }
 .page-head h1 {
   font-family: var(--serif);
   font-size: 40px;
@@ -442,7 +445,20 @@ audio { width: 100%; margin-top: 10px; }
   min-height: 100vh;
   display: grid;
   grid-template-columns: minmax(300px, 460px) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
 }
+.auth-top {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.auth-top .brand { padding: 0; }
+.auth-top .brand-kicker { color: var(--muted); }
 .auth-aside {
   background:
     radial-gradient(circle at 20% 10%, rgba(31, 107, 90, 0.22), transparent 32%),
@@ -481,7 +497,7 @@ audio { width: 100%; margin-top: 10px; }
   margin: 16px 0;
 }
 .sep::before, .sep::after { content: ""; height: 1px; background: var(--line); flex: 1; }
-.server-line { margin-top: 16px; color: var(--muted); font-size: 13px; }
+.auth-top .theme-btn { color: var(--ink); }
 
 .theme-btn {
   width: 40px;
@@ -518,23 +534,13 @@ audio { width: 100%; margin-top: 10px; }
   border-color: var(--ink);
   background: var(--bg);
 }
-.auth-theme {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
 @media (max-width: 900px) {
   .shell { display: block; }
   .sidebar { display: none; }
   .main { padding: 18px 16px 104px; }
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-  }
-  .topbar .brand-name { color: var(--ink); font-size: 26px; }
+  .topbar { justify-content: space-between; }
+  .topbar-brand { display: flex; }
+  .topbar .brand-name { color: var(--ink); font-size: 22px; }
   .bottom-nav {
     display: flex;
     position: fixed;
@@ -566,6 +572,7 @@ audio { width: 100%; margin-top: 10px; }
   .studio { grid-template-columns: 1fr; }
   .document { min-height: 0; }
   .auth-layout { grid-template-columns: 1fr; }
+  .auth-top { padding: 12px 16px; }
   .auth-aside { padding: 28px 20px 8px; min-height: auto; }
   .auth-aside h1 { font-size: 42px; }
   .auth-aside ul, .auth-aside .aside-foot { display: none; }

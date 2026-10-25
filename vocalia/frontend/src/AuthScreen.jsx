@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Moon, Sun } from "lucide-react";
+import { Check } from "lucide-react";
 import Logo from "./Logo";
 import { envoyerFormulaire } from "./api";
 
@@ -11,8 +11,7 @@ export default function AuthScreen({
   onConnecter,
   onChangerUrl,
   onVerifier,
-  theme = "clair",
-  onTheme,
+  boutonTheme,
 }) {
   const [mode, setMode] = useState("connexion");
   const [prenom, setPrenom] = useState("");
@@ -22,7 +21,6 @@ export default function AuthScreen({
   const [motDePasse, setMotDePasse] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [url, setUrl] = useState(apiUrl);
-  const [montrerUrl, setMontrerUrl] = useState(false);
   const [erreur, setErreur] = useState(messageSession || "");
   const [enCours, setEnCours] = useState(false);
   const googleRef = useRef(null);
@@ -116,21 +114,23 @@ export default function AuthScreen({
 
   async function enregistrerUrl() {
     onChangerUrl(url);
-    setMontrerUrl(false);
     await onVerifier();
   }
 
   return (
     <div className="auth-layout">
+      <header className="auth-top">
+        <div className="brand">
+          <Logo size={36} />
+          <span>
+            <strong className="brand-name">Vocalia</strong>
+            <span className="brand-kicker">Transcription</span>
+          </span>
+        </div>
+        {boutonTheme}
+      </header>
       <aside className="auth-aside">
         <div>
-          <div className="brand">
-            <Logo size={36} />
-            <span>
-              <strong className="brand-name">Vocalia</strong>
-              <span className="brand-kicker">Transcription</span>
-            </span>
-          </div>
           <h1>Le texte, après la parole.</h1>
           <p className="lead">
             Prédications, réunions, entretiens et vidéos. Vocalia transcrit, puis vous résumez, traduisez et archivez.
@@ -147,16 +147,6 @@ export default function AuthScreen({
       </aside>
 
       <section className="auth-panel">
-        {onTheme && (
-          <button
-            className="theme-btn auth-theme"
-            type="button"
-            aria-label={theme === "sombre" ? "Passer au fond blanc" : "Passer au fond noir"}
-            onClick={() => onTheme(theme === "sombre" ? "clair" : "sombre")}
-          >
-            {theme === "sombre" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        )}
         <form className="card auth-card" onSubmit={soumettre}>
           <div className="seg pair" role="tablist">
             <button type="button" className={mode === "connexion" ? "active" : ""} onClick={() => { setMode("connexion"); setErreur(""); }}>
@@ -232,22 +222,15 @@ export default function AuthScreen({
           <button className="btn primary block" type="submit" disabled={enCours || serveur === "verification"}>
             {enCours ? "Veuillez patienter…" : mode === "connexion" ? "Se connecter" : "Créer mon compte"}
           </button>
-
-          <div className="server-line">
-            {montrerUrl || serveur === "ko" ? (
-              <div className="field" style={{ marginTop: 8 }}>
-                <span>Adresse du serveur</span>
-                <div className="row">
-                  <input className="input" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://vocalia-ud4o.onrender.com" />
-                  <button className="btn small" type="button" onClick={enregistrerUrl}>OK</button>
-                </div>
+          {serveur === "ko" && (
+            <div className="field" style={{ marginTop: 14 }}>
+              <span>Adresse du serveur</span>
+              <div className="row">
+                <input className="input" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://vocalia-ud4o.onrender.com" />
+                <button className="btn small" type="button" onClick={enregistrerUrl}>OK</button>
               </div>
-            ) : (
-              <button className="linkish" type="button" style={{ color: "var(--muted)" }} onClick={() => setMontrerUrl(true)}>
-                Serveur : {apiUrl.replace(/^https?:\/\//, "")}
-              </button>
-            )}
-          </div>
+            </div>
+          )}
         </form>
       </section>
     </div>
