@@ -1,4 +1,3 @@
-# test
 import time
 import importlib.util
 import tempfile
@@ -49,11 +48,25 @@ MODELE_WHISPER_GROQ = os.environ.get("GROQ_WHISPER_MODEL", "whisper-large-v3-tur
 MODELE_GROQ_WEB = os.environ.get("MODELE_GROQ_WEB", "").strip()
 MODELE_VISION = os.environ.get("MODELE_VISION", "").strip()
 TAILLE_MAX_IMAGE = 4 * 1024 * 1024
+TAILLE_MAX_INSTRUCTION = 300
 TYPES_IMAGE = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp"}
 CONSIGNE_IMAGE = (
-    "Recopie fidèlement tout le texte visible sur cette photo de notes, dans l'ordre de lecture. "
+    "Recopie fidèlement tout le texte visible sur cette photo, dans l'ordre de lecture. "
     "Garde les retours à la ligne. Ne commente pas, ne corrige pas, n'invente rien. "
     "Si un mot est illisible, écris [illisible]. S'il n'y a aucun texte, réponds uniquement : AUCUN_TEXTE"
+)
+CONSIGNE_IMAGE_PARTIE = (
+    "Tu lis la photo d'un document. L'utilisateur veut UNIQUEMENT une partie précise de cette photo. "
+    "Demande de l'utilisateur : « {instruction} ». "
+    "Repère d'abord, sans l'écrire, où commence et où finit exactement la partie demandée. "
+    "Recopie ensuite seulement ce passage, mot pour mot, dans l'ordre de lecture, avec les retours à la ligne. "
+    "N'inclus rien d'autre : ni l'en-tête, ni les titres, ni les consignes, ni les questions, "
+    "ni les autres sujets ou sections, même s'ils sont lisibles sur la photo. "
+    "Si la demande est vague (par exemple « juste le texte »), recopie uniquement le texte principal à lire, "
+    "sans l'en-tête, sans les titres et sans les questions. "
+    "Ne commente pas, ne corrige pas, n'invente rien. Si un mot est illisible, écris [illisible]. "
+    "Si cette partie n'existe pas sur la photo, réponds uniquement : PARTIE_INTROUVABLE. "
+    "S'il n'y a aucun texte, réponds uniquement : AUCUN_TEXTE"
 )
 LANGUES_AUTO = ("", "auto", "ee")
 URL_BASE_DONNEES = os.environ.get("DATABASE_URL", "").strip()
@@ -290,26 +303,9 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-ORIGINES_CORS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:4173",
-    "http://127.0.0.1:4173",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "capacitor://localhost",
-    "ionic://localhost",
-    "http://localhost",
-    "https://localhost",
-]
-extra_cors = os.environ.get("CORS_ORIGINS", "")
-if extra_cors:
-    ORIGINES_CORS.extend([o.strip() for o in extra_cors.split(",") if o.strip()])
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_origin_regex=r"https?://.*",
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -391,7 +387,7 @@ async def enregistrer_upload_sur_disque(fichier: UploadFile, suffixe: str, limit
                 if limite is not None and taille > limite:
                     raise HTTPException(
                         status_code=413,
-                        detail="Fichier trop volumineux (maximum 80 Mo pour l’assistant).",
+                        detail=f"Fichier trop volumineux (maximum {limite // (1024 * 1024)} Mo).",
                     )
                 sortie.write(lot)
     except Exception:
@@ -1125,6 +1121,32 @@ def nettoyer_langue_cible(langue_cible):
     return propre or "français"
 
 
+def consigne_image(instruction):
+    if not instruction:
+        return CONSIGNE_IMAGE
+    return CONSIGNE_IMAGE_PARTIE.replace("{instruction}", instruction)
+
+
+def lire_texte_image(chemin, type_mime, instruction=""):
+    with open(chemin, "rb") as f:
+        donnees = base64.b64encode(f.read()).decode("utf-8")
+    messages = [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": consigne_image(instruction)},
+            {"type": "image_url", "image_url": {"url": f"data:{type_mime};base64,{donnees}"}},
+        ],
+    }]
+
+    def appel():
+        reponse = client_groq.chat.completions.create(
+            model=MODELE_VISION, messages=messages, temperature=0.0, max_tokens=4096
+        )
+        return reponse.choices[0].message.content
+
+    return (avec_reprise(appel, 3) or "").strip()
+
+
 @app.get("/")
 def read_root():
     index = DOSSIER_FRONTEND / "index.html"
@@ -1143,6 +1165,7 @@ def health_check():
         "node": shutil.which("node") is not None,
         "deno": shutil.which("deno") is not None,
         "base": "postgresql" if UTILISE_POSTGRES else "sqlite",
+        "vision": bool(MODELE_VISION),
     }
 
 
@@ -1345,6 +1368,9 @@ async def lancer_travail_fichier(
     conserver_audio: str = Form("0"),
 ):
     extension = os.path.splitext(fichier.filename or "")[1].lower() or ".webm"
+    if extension in TYPES_IMAGE:
+        return reponse_erreur("Pour une photo, utilisez la lecture d'image.")
+
     chemin_source, _taille = await enregistrer_upload_sur_disque(fichier, extension)
     identifiant = creer_travail(user_id, "Préparation du fichier…")
     conserver = conserver_audio in ("1", "true", "True")
@@ -1502,30 +1528,11 @@ async def assistant_texte(
     return {"question": message.strip(), "reponse": texte_reponse}
 
 
-def lire_texte_image(chemin, type_mime):
-    with open(chemin, "rb") as f:
-        donnees = base64.b64encode(f.read()).decode("utf-8")
-    messages = [{
-        "role": "user",
-        "content": [
-            {"type": "text", "text": CONSIGNE_IMAGE},
-            {"type": "image_url", "image_url": {"url": f"data:{type_mime};base64,{donnees}"}},
-        ],
-    }]
-
-    def appel():
-        reponse = client_groq.chat.completions.create(
-            model=MODELE_VISION, messages=messages, temperature=0.0
-        )
-        return reponse.choices[0].message.content
-
-    return (avec_reprise(appel, 3) or "").strip()
-
-
 @app.post("/image-texte")
 async def image_vers_texte(
     user_id: Annotated[int, Depends(utilisateur_connecte)],
     fichier: UploadFile = File(...),
+    instruction: str = Form(""),
 ):
     if not MODELE_VISION:
         return reponse_erreur("La lecture d'images n'est pas configurée sur ce serveur.", 503)
@@ -1535,10 +1542,12 @@ async def image_vers_texte(
     if not type_mime:
         return reponse_erreur("Format non pris en charge (JPG, PNG ou WebP).")
 
+    instruction = re.sub(r"\s+", " ", instruction or "").strip()[:TAILLE_MAX_INSTRUCTION]
+
     chemin = None
     try:
         chemin, _taille = await enregistrer_upload_sur_disque(fichier, extension, limite=TAILLE_MAX_IMAGE)
-        texte = await asyncio.to_thread(lire_texte_image, chemin, type_mime)
+        texte = await asyncio.to_thread(lire_texte_image, chemin, type_mime, instruction)
     except HTTPException:
         raise
     except Exception as e:
@@ -1547,10 +1556,14 @@ async def image_vers_texte(
     finally:
         supprimer_fichier(chemin)
 
+    if texte.strip() == "PARTIE_INTROUVABLE":
+        return reponse_erreur("Cette partie est introuvable sur la photo. Reformulez ou videz le champ.")
+
     if not texte or texte.strip() == "AUCUN_TEXTE":
         return reponse_erreur("Aucun texte lisible sur cette image.")
 
     return {"texte": texte, "nom_fichier": fichier.filename}
+
 
 @app.post("/sauvegarder")
 async def sauvegarder_transcription(

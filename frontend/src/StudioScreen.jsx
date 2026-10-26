@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Link, Mic, Square, Upload, Volume2 } from "lucide-react";
+import { Download, Image as ImageIcon, Link, Mic, Square, Upload, Volume2 } from "lucide-react";
 import {
   ApiError,
   LANGUES_CIBLE,
@@ -9,6 +9,10 @@ import {
   suivreTravail,
 } from "./api";
 import { BoutonsPartage, nomFichier, titreLocal } from "./partage";
+
+const EXTENSIONS_PHOTO = [".jpg", ".jpeg", ".png", ".webp"];
+const TAILLE_MAX_PHOTO = 4 * 1024 * 1024;
+const TAILLE_MAX_INSTRUCTION = 300;
 
 function formatTemps(secondes) {
   const m = String(Math.floor(secondes / 60)).padStart(2, "0");
@@ -43,12 +47,20 @@ function mimeEnregistrement() {
   return candidats.find((type) => window.MediaRecorder?.isTypeSupported?.(type)) || "";
 }
 
+function extensionDe(nom) {
+  const point = (nom || "").lastIndexOf(".");
+  return point >= 0 ? nom.slice(point).toLowerCase() : "";
+}
+
 export default function StudioScreen({ prefs }) {
   const [source, setSource] = useState("micro");
   const [langue, setLangue] = useState("auto");
   const [dureeMax, setDureeMax] = useState(30);
   const [lien, setLien] = useState("");
   const [fichier, setFichier] = useState(null);
+  const [photo, setPhoto] = useState(null);
+  const [apercu, setApercu] = useState("");
+  const [instruction, setInstruction] = useState("");
   const [survol, setSurvol] = useState(false);
   const [enregistrement, setEnregistrement] = useState(false);
   const [secondes, setSecondes] = useState(0);
@@ -69,6 +81,7 @@ export default function StudioScreen({ prefs }) {
   const timerRef = useRef(null);
   const abortRef = useRef(null);
   const fichierRef = useRef(null);
+  const photoRef = useRef(null);
 
   useEffect(() => () => {
     clearInterval(timerRef.current);
@@ -80,6 +93,16 @@ export default function StudioScreen({ prefs }) {
       recRef.current.stream?.getTracks().forEach((piste) => piste.stop());
     }
   }, []);
+
+  useEffect(() => {
+    if (!photo) {
+      setApercu("");
+      return undefined;
+    }
+    const url = URL.createObjectURL(photo);
+    setApercu(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
 
   async function lancer(champs, fichierEnvoye) {
     setOccupe(true);
@@ -117,6 +140,45 @@ export default function StudioScreen({ prefs }) {
     } catch (e) {
       if (e?.name === "AbortError") return;
       setErreur(e.message || "La transcription a échoué.");
+      setEtape("");
+      setProgression(null);
+    } finally {
+      setOccupe(false);
+    }
+  }
+
+  async function lirePhoto() {
+    if (!photo) return;
+    setOccupe(true);
+    setErreur("");
+    setMessage("");
+    setDerive(null);
+    setNote("");
+    setTitre("");
+    setEtape("Envoi de la photo…");
+    setProgression(0);
+    try {
+      const reponse = await envoyerFormulaire(
+        "/image-texte",
+        { instruction: instruction.trim() },
+        photo,
+        (valeur) => {
+          setProgression(valeur);
+          if (valeur >= 100) setEtape("Lecture de la photo…");
+        },
+      );
+      setProgression(null);
+      setTexte(reponse.texte || "");
+      setAudioTemp(null);
+      setNote(
+        instruction.trim()
+          ? `Partie demandée : « ${instruction.trim()} ». Relisez le texte avant d’archiver.`
+          : "Texte lu sur la photo. Relisez-le avant d’archiver.",
+      );
+      setEtape("");
+      proposerTitre(reponse.texte || "");
+    } catch (e) {
+      setErreur(e.message || "La lecture de la photo a échoué.");
       setEtape("");
       setProgression(null);
     } finally {
@@ -166,6 +228,21 @@ export default function StudioScreen({ prefs }) {
   function choisirFichier(liste) {
     const choisi = liste?.[0];
     if (choisi) setFichier(choisi);
+  }
+
+  function choisirPhoto(liste) {
+    const choisie = liste?.[0];
+    if (!choisie) return;
+    if (!EXTENSIONS_PHOTO.includes(extensionDe(choisie.name))) {
+      setErreur("Format non pris en charge. Utilisez une photo JPG, PNG ou WebP.");
+      return;
+    }
+    if (choisie.size > TAILLE_MAX_PHOTO) {
+      setErreur("Photo trop lourde (maximum 4 Mo). Réduisez-la ou recadrez-la.");
+      return;
+    }
+    setErreur("");
+    setPhoto(choisie);
   }
 
   async function outil(type) {
@@ -245,6 +322,7 @@ export default function StudioScreen({ prefs }) {
   }
 
   const langueLisible = NOMS_LANGUES[langue] || (langue === "auto" ? "automatique" : langue);
+  const modePhoto = source === "photo";
 
   return (
     <div className="studio">
@@ -255,6 +333,9 @@ export default function StudioScreen({ prefs }) {
           </button>
           <button type="button" className={source === "fichier" ? "active" : ""} onClick={() => setSource("fichier")}>
             <Upload size={15} /> Fichier
+          </button>
+          <button type="button" className={source === "photo" ? "active" : ""} onClick={() => setSource("photo")}>
+            <ImageIcon size={15} /> Photo
           </button>
           <button type="button" className={source === "lien" ? "active" : ""} onClick={() => setSource("lien")}>
             <Link size={15} /> Lien
@@ -334,6 +415,66 @@ export default function StudioScreen({ prefs }) {
           </>
         )}
 
+        {source === "photo" && (
+          <>
+            <div
+              className={`dropzone${survol ? " over" : ""}`}
+              onDragOver={(e) => { e.preventDefault(); setSurvol(true); }}
+              onDragLeave={() => setSurvol(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setSurvol(false);
+                choisirPhoto(e.dataTransfer.files);
+              }}
+            >
+              <strong>Déposez une photo de texte</strong>
+              <p className="help">JPG, PNG ou WebP, 4 Mo maximum. Pages de livre, notes, tableau, document.</p>
+              {apercu && (
+                <img
+                  src={apercu}
+                  alt="Aperçu de la photo choisie"
+                  style={{ display: "block", maxWidth: "100%", maxHeight: 220, margin: "12px auto 0", borderRadius: 8 }}
+                />
+              )}
+              {photo && <p className="file-name">{photo.name}</p>}
+              <button className="btn small" type="button" style={{ marginTop: 12 }} onClick={() => photoRef.current?.click()}>
+                {photo ? "Changer de photo" : "Parcourir"}
+              </button>
+              <input
+                ref={photoRef}
+                hidden
+                type="file"
+                accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                onChange={(e) => {
+                  choisirPhoto(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
+            <label className="field" style={{ marginTop: 16 }}>
+              <span>Instructions (facultatif)</span>
+              <textarea
+                className="input"
+                rows={3}
+                maxLength={TAILLE_MAX_INSTRUCTION}
+                value={instruction}
+                onChange={(e) => setInstruction(e.target.value)}
+                placeholder="Ex. : copie seulement le sujet 1 et le sujet 5"
+                disabled={occupe}
+                style={{ resize: "vertical", minHeight: 76 }}
+              />
+            </label>
+            <p className="help" style={{ marginBottom: 12 }}>
+              Laissez vide pour copier tout le texte de la photo. {instruction.length}/{TAILLE_MAX_INSTRUCTION}
+            </p>
+
+            <button className="btn primary block" type="button" disabled={!photo || occupe} onClick={lirePhoto}>
+              Extraire le texte
+            </button>
+          </>
+        )}
+
         {source === "lien" && (
           <>
             <label className="field">
@@ -360,18 +501,22 @@ export default function StudioScreen({ prefs }) {
           </>
         )}
 
-        <label className="field" style={{ marginTop: 16 }}>
-          <span>Langue</span>
-          <select className="select" value={langue} onChange={(e) => setLangue(e.target.value)} disabled={occupe || enregistrement}>
-            {LANGUES_SOURCE.map((item) => (
-              <option key={item.code} value={item.code}>{item.label}</option>
-            ))}
-          </select>
-        </label>
-        <p className="help">
-          L’éwé utilise la détection automatique : le modèle ne force pas encore cette langue.
-          {prefs.conserverAudio ? " L’audio sera joint si vous archivez." : " L’audio ne sera pas conservé."}
-        </p>
+        {!modePhoto && (
+          <>
+            <label className="field" style={{ marginTop: 16 }}>
+              <span>Langue</span>
+              <select className="select" value={langue} onChange={(e) => setLangue(e.target.value)} disabled={occupe || enregistrement}>
+                {LANGUES_SOURCE.map((item) => (
+                  <option key={item.code} value={item.code}>{item.label}</option>
+                ))}
+              </select>
+            </label>
+            <p className="help">
+              L’éwé utilise la détection automatique : le modèle ne force pas encore cette langue.
+              {prefs.conserverAudio ? " L’audio sera joint si vous archivez." : " L’audio ne sera pas conservé."}
+            </p>
+          </>
+        )}
       </section>
 
       <section className="card document">
@@ -387,7 +532,7 @@ export default function StudioScreen({ prefs }) {
           <>
             <div className="doc-meta">
               <span>{texte ? `${mots(texte).toLocaleString("fr-FR")} mots` : "Transcription"}</span>
-              <span>Langue : {langueLisible}</span>
+              {!modePhoto && <span>Langue : {langueLisible}</span>}
             </div>
             {note && <div className="banner info">{note}</div>}
             <label className="field title-field">
