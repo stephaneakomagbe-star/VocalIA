@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+groq
+openai-whisper
+google-auth
+yt-dlp[default]
+psycopg[binary]
