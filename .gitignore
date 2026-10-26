@@ -9,4 +9,3 @@ audios/
 node_modules/
 *.pptx
 .vercel
-.env*
