@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lomé Propre Connexion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0b4d2e 0%, #1a7a4a 40%, #2ecc71 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== ANIMATED BACKGROUND PARTICLES ===== */
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            animation: floatParticle 12s infinite ease-in-out;
+        }
+        .particle:nth-child(1) { top: 10%; left: 15%; width: 12px; height: 12px; animation-delay: 0s; animation-duration: 14s; }
+        .particle:nth-child(2) { top: 25%; left: 80%; width: 6px; height: 6px; animation-delay: 1.5s; animation-duration: 10s; }
+        .particle:nth-child(3) { top: 60%; left: 10%; width: 10px; height: 10px; animation-delay: 3s; animation-duration: 16s; }
+        .particle:nth-child(4) { top: 75%; left: 70%; width: 5px; height: 5px; animation-delay: 0.5s; animation-duration: 11s; }
+        .particle:nth-child(5) { top: 40%; left: 50%; width: 7px; height: 7px; animation-delay: 2s; animation-duration: 13s; }
+        .particle:nth-child(6) { top: 85%; left: 25%; width: 9px; height: 9px; animation-delay: 4s; animation-duration: 15s; }
+        .particle:nth-child(7) { top: 15%; left: 45%; width: 4px; height: 4px; animation-delay: 1s; animation-duration: 9s; }
+        .particle:nth-child(8) { top: 50%; left: 90%; width: 11px; height: 11px; animation-delay: 3.5s; animation-duration: 12s; }
+
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-30px) scale(1.3); opacity: 0.7; }
+            50% { transform: translateY(-60px) scale(0.8); opacity: 0.4; }
+            75% { transform: translateY(-20px) scale(1.1); opacity: 0.6; }
+        }
+
+        /* ===== OVERLAY DECORATION ===== */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.05) 0%, transparent 60%);
+            animation: rotateGlow 20s linear infinite;
+            z-index: 0;
+        }
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== CARD PRINCIPALE ===== */
+        .Connexion {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 45px 38px 38px;
+            box-shadow: 
+                0 25px 60px rgba(0,0,0,0.25),
+                0 0 0 1px rgba(255,255,255,0.1) inset;
+            animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transform: translateY(30px) scale(0.96);
+            opacity: 0;
+        }
+
+        @keyframes cardEntry {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ===== LOGO / ICON SECTION ===== */
+        .login-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .login-icon .icon-circle {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #0b4d2e, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.35);
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+        .login-icon .icon-circle i {
+            font-size: 32px;
+            color: #fff;
+        }
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 30px rgba(46, 204, 113, 0.35); }
+            50% { transform: scale(1.05); box-shadow: 0 12px 40px rgba(46, 204, 113, 0.5); }
+        }
+
+        /* ===== TITLE ===== */
+        .Connexion h3 {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #1a2a3a;
+            text-align: center;
+            margin-bottom: 28px;
+            line-height: 1.4;
+            animation: fadeUp 0.6s ease 0.3s both;
+            position: relative;
+        }
+        .Connexion h3::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #2ecc71, #0b4d2e);
+            margin: 12px auto 0;
+            border-radius: 3px;
+            animation: lineExpand 0.6s ease 0.6s both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes lineExpand {
+            from { width: 0; opacity: 0; }
+            to { width: 50px; opacity: 1; }
+        }
+
+        /* ===== FORMULAIRE ===== */
+        .formulaire {
+            animation: fadeUp 0.6s ease 0.5s both;
+        }
+
+        .formulaire form {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Labels */
+        .formulaire label {
+            font-size: 0.85em;
+            font-weight: 500;
+            color: #4a5a6a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .formulaire label i {
+            color: #2ecc71;
+            font-size: 0.9em;
+            width: 18px;
+        }
+
+        /* Inputs */
+        .formulaire input[type="email"],
+        .formulaire input[type="password"] {
+            width: 100%;
+            padding: 14px 18px 14px 46px;
+            border: 2px solid #e8edf0;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95em;
+            color: #1a2a3a;
+            background: #f8fafb;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .formulaire input[type="email"]:focus,
+        .formulaire input[type="password"]:focus {
+            border-color: #2ecc71;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.12);
+            transform: translateY(-1px);
+        }
+        .formulaire input[type="email"]:hover,
+        .formulaire input[type="password"]:hover {
+            background: #fff;
+            border-color: #c8d0d8;
+        }
+
+        /* Wrapper d'entrée avec icône */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8a9aa8;
+            font-size: 1em;
+            transition: color 0.3s ease;
+            pointer-events: none;
+        }
+        .input-wrapper:focus-within i {
+            color: #2ecc71;
+        }
+
+        /* ===== SUBMIT BUTTON ===== */
+        .formulaire input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #0b4d2e, #2ecc71);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 25px rgba(46, 204, 113, 0.3);
+        }
+        .formulaire input[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 35px rgba(46, 204, 113, 0.4);
+        }
+        .formulaire input[type="submit"]:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        /* Ripple effect overlay */
+        .formulaire input[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        .formulaire input[type="submit"]:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* ===== LIEN INSCRIPTION ===== */
+        .formulaire p {
+            text-align: center;
+            font-size: 0.9em;
+            color: #6a7a8a;
+            margin-top: 6px;
+            animation: fadeUp 0.6s ease 0.7s both;
+        }
+        .formulaire p a {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .formulaire p a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #2ecc71;
+            transition: width 0.3s ease;
+        }
+        .formulaire p a:hover {
+            color: #0b4d2e;
+        }
+        .formulaire p a:hover::after {
+            width: 100%;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .Connexion {
+                padding: 32px 24px 28px;
+                max-width: 100%;
+                border-radius: 18px;
+            }
+            .Connexion h3 {
+                font-size: 1.1em;
+            }
+            .login-icon .icon-circle {
+                width: 60px;
+                height: 60px;
+            }
+            .login-icon .icon-circle i {
+                font-size: 26px;
+            }
+            .formulaire input[type="email"],
+            .formulaire input[type="password"] {
+                padding: 12px 14px 12px 40px;
+                font-size: 0.9em;
+            }
+            .formulaire input[type="submit"] {
+                padding: 13px;
+                font-size: 0.95em;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .Connexion {
+                padding: 24px 18px 22px;
+            }
+            .Connexion h3 {
+                font-size: 1em;
+            }
+            .formulaire label {
+                font-size: 0.8em;
+            }
+            .formulaire p {
+                font-size: 0.82em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="Connexion">
+        <div class="login-icon">
+            <div class="icon-circle">
+                <i class="fas fa-leaf"></i>
+            </div>
+        </div>
+        <h3>Connectez-vous et contribuez à une ville propre</h3>
+
+        <div class="formulaire">
+            <form action="perso.html" method="get">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="Votre adresse email" required>
+                </div>
+
+                <label for="password"><i class="fas fa-lock"></i> Mot de passe</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+                </div>
+
+                <input type="submit" value="Se connecter">
+            </form>
+            <br>
+            <p>Vous n'avez pas de compte ? <a href="inscription.html">S'inscrire ici</a></p>
+        </div>
+    </div>
+</body>
+</html>

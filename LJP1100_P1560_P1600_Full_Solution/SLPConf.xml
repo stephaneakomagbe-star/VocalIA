@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+SLP specific configuration.  Right now we are using a default to support
+any hp printer.  In the future we would want to add a model attributes to
+group settings per vendor  
+
+Right now the schema is really flat and not design for scalability but
+should be easily replacable.  If you change the structure, remember to 
+update the parsing code.
+-->
+<slp_config>
+  <attr_parsing_info>
+    <ip_addr_key>peer-addr</ip_addr_key>
+    <ip_addr2_key>x-hp-ip</ip_addr2_key>
+    <mac_addr_key>x-hp-mac</mac_addr_key>
+    <device_id_string_key>x-hp-p1</device_id_string_key>
+    <host_name_key>x-hp-hn</host_name_key>
+    <model_name_key>MDL</model_name_key>
+    <description_key>DES</description_key>
+  </attr_parsing_info>
+  
+  <version>2</version>
+  <multicast_address>224.0.1.60</multicast_address>
+  <service_name>service:x-hpnp-discover:</service_name>
+</slp_config>

@@ -1,0 +1,509 @@
+;
+; Copyright(C) 2008 Marvell International Ltd.
+;
+; All rights reserved.
+;
+; HP1100.INF
+;  HP LaserJet Professional P1100 SD driver
+;
+
+[Version]
+Signature		= "$Windows NT$"
+Provider		= Marvell
+ClassGUID		= {4D36E979-E325-11CE-BFC1-08002BE10318}
+Class			= Printer
+DriverVer=08/31/2012,5.0.1.57036
+CatalogFile.NTx86	= HP110032.CAT
+CatalogFile.NTamd64	= HP110064.CAT
+
+[Manufacturer]
+%MFG%		= HP,NTx86,NTamd64
+
+[HP]
+"HP LaserJet Professional P1102" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4EA1, Hewlett-PackardHP_La4EA1
+"HP LaserJet Professional P1104" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4C21, Hewlett-PackardHP_La4C21
+"HP LaserJet Professional P1106" 	= HP1100, USBPRINT\Hewlett-PackardHP_La8DA0, Hewlett-PackardHP_La8DA0
+"HP LaserJet Professional P1107" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4D61, Hewlett-PackardHP_La4D61
+"HP LaserJet Professional P1108" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4921, Hewlett-PackardHP_La4921
+"HP LaserJet Professional P1109" 	= HP1100, USBPRINT\Hewlett-PackardHP_La89E0, Hewlett-PackardHP_La89E0
+
+"HP LaserJet Professional P 1102w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La9F0F, Hewlett-PackardHP_La9F0F
+"HP LaserJet Professional P1102w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La9ECF, Hewlett-PackardHP_La9ECF
+"HP LaserJet Professional P1106w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La5ECD, Hewlett-PackardHP_La5ECD
+"HP LaserJet Professional P1107w" 	= HP1100, USBPRINT\Hewlett-PackardHP_LaCECC, Hewlett-PackardHP_LaCECC
+"HP LaserJet Professional P1108w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La3EC9, Hewlett-PackardHP_La3EC9
+"HP LaserJet Professional P1109w" 	= HP1100, USBPRINT\Hewlett-PackardHP_LaAEC8, Hewlett-PackardHP_LaAEC8
+
+"HP LaserJet Professional P1566" 	= HP1600, USBPRINT\Hewlett-PackardHP_LaECE2, Hewlett-PackardHP_LaECE2
+"HP LaserJet Professional P1567" 	= HP1600, USBPRINT\Hewlett-PackardHP_La2C23, Hewlett-PackardHP_La2C23
+"HP LaserJet Professional P1568" 	= HP1600, USBPRINT\Hewlett-PackardHP_La2863, Hewlett-PackardHP_La2863
+"HP LaserJet Professional P1569" 	= HP1600, USBPRINT\Hewlett-PackardHP_LaE8A2, Hewlett-PackardHP_LaE8A2
+
+"HP LaserJet Professional P1606dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La89A6, Hewlett-PackardHP_La89A6
+"HP LaserJet Professional P1607dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La49F7, Hewlett-PackardHP_La49F7
+"HP LaserJet Professional P1608dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La4AC5, Hewlett-PackardHP_La4AC5
+"HP LaserJet Professional P1609dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La8A96, Hewlett-PackardHP_La8A96
+
+[HP.NTx86]
+"HP LaserJet Professional P1102" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4EA1, Hewlett-PackardHP_La4EA1
+"HP LaserJet Professional P1104" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4C21, Hewlett-PackardHP_La4C21
+"HP LaserJet Professional P1106" 	= HP1100, USBPRINT\Hewlett-PackardHP_La8DA0, Hewlett-PackardHP_La8DA0
+"HP LaserJet Professional P1107" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4D61, Hewlett-PackardHP_La4D61
+"HP LaserJet Professional P1108" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4921, Hewlett-PackardHP_La4921
+"HP LaserJet Professional P1109" 	= HP1100, USBPRINT\Hewlett-PackardHP_La89E0, Hewlett-PackardHP_La89E0
+
+"HP LaserJet Professional P 1102w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La9F0F, Hewlett-PackardHP_La9F0F
+"HP LaserJet Professional P1102w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La9ECF, Hewlett-PackardHP_La9ECF
+"HP LaserJet Professional P1106w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La5ECD, Hewlett-PackardHP_La5ECD
+"HP LaserJet Professional P1107w" 	= HP1100, USBPRINT\Hewlett-PackardHP_LaCECC, Hewlett-PackardHP_LaCECC
+"HP LaserJet Professional P1108w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La3EC9, Hewlett-PackardHP_La3EC9
+"HP LaserJet Professional P1109w" 	= HP1100, USBPRINT\Hewlett-PackardHP_LaAEC8, Hewlett-PackardHP_LaAEC8
+
+"HP LaserJet Professional P1566" 	= HP1600, USBPRINT\Hewlett-PackardHP_LaECE2, Hewlett-PackardHP_LaECE2
+"HP LaserJet Professional P1567" 	= HP1600, USBPRINT\Hewlett-PackardHP_La2C23, Hewlett-PackardHP_La2C23
+"HP LaserJet Professional P1568" 	= HP1600, USBPRINT\Hewlett-PackardHP_La2863, Hewlett-PackardHP_La2863
+"HP LaserJet Professional P1569" 	= HP1600, USBPRINT\Hewlett-PackardHP_LaE8A2, Hewlett-PackardHP_LaE8A2
+
+"HP LaserJet Professional P1606dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La89A6, Hewlett-PackardHP_La89A6
+"HP LaserJet Professional P1607dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La49F7, Hewlett-PackardHP_La49F7
+"HP LaserJet Professional P1608dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La4AC5, Hewlett-PackardHP_La4AC5
+"HP LaserJet Professional P1609dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La8A96, Hewlett-PackardHP_La8A96
+
+[HP.NTamd64]
+"HP LaserJet Professional P1102" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4EA1, Hewlett-PackardHP_La4EA1
+"HP LaserJet Professional P1104" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4C21, Hewlett-PackardHP_La4C21
+"HP LaserJet Professional P1106" 	= HP1100, USBPRINT\Hewlett-PackardHP_La8DA0, Hewlett-PackardHP_La8DA0
+"HP LaserJet Professional P1107" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4D61, Hewlett-PackardHP_La4D61
+"HP LaserJet Professional P1108" 	= HP1100, USBPRINT\Hewlett-PackardHP_La4921, Hewlett-PackardHP_La4921
+"HP LaserJet Professional P1109" 	= HP1100, USBPRINT\Hewlett-PackardHP_La89E0, Hewlett-PackardHP_La89E0
+
+"HP LaserJet Professional P 1102w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La9F0F, Hewlett-PackardHP_La9F0F
+"HP LaserJet Professional P1102w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La9ECF, Hewlett-PackardHP_La9ECF
+"HP LaserJet Professional P1106w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La5ECD, Hewlett-PackardHP_La5ECD
+"HP LaserJet Professional P1107w" 	= HP1100, USBPRINT\Hewlett-PackardHP_LaCECC, Hewlett-PackardHP_LaCECC
+"HP LaserJet Professional P1108w" 	= HP1100, USBPRINT\Hewlett-PackardHP_La3EC9, Hewlett-PackardHP_La3EC9
+"HP LaserJet Professional P1109w" 	= HP1100, USBPRINT\Hewlett-PackardHP_LaAEC8, Hewlett-PackardHP_LaAEC8
+
+"HP LaserJet Professional P1566" 	= HP1600, USBPRINT\Hewlett-PackardHP_LaECE2, Hewlett-PackardHP_LaECE2
+"HP LaserJet Professional P1567" 	= HP1600, USBPRINT\Hewlett-PackardHP_La2C23, Hewlett-PackardHP_La2C23
+"HP LaserJet Professional P1568" 	= HP1600, USBPRINT\Hewlett-PackardHP_La2863, Hewlett-PackardHP_La2863
+"HP LaserJet Professional P1569" 	= HP1600, USBPRINT\Hewlett-PackardHP_LaE8A2, Hewlett-PackardHP_LaE8A2
+
+"HP LaserJet Professional P1606dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La89A6, Hewlett-PackardHP_La89A6
+"HP LaserJet Professional P1607dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La49F7, Hewlett-PackardHP_La49F7
+"HP LaserJet Professional P1608dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La4AC5, Hewlett-PackardHP_La4AC5
+"HP LaserJet Professional P1609dn" 	= HP1600, USBPRINT\Hewlett-PackardHP_La8A96, Hewlett-PackardHP_La8A96
+
+[HP1100.NTx86]
+FeatureScore=0
+DriverVer=08/31/2012,5.0.1.57036
+CopyFiles	= DRV,SYSFILES,PRTPROCS,PRGFILES
+DataSection	= HP1100_DATA_NT
+
+[HP1600.NTx86]
+FeatureScore=0
+DriverVer=08/31/2012,5.0.1.57036
+CopyFiles	= DRV,SYSFILES,PRTPROCS,PRGFILES
+DataSection	= HP1600_DATA_NT
+
+[HP1100.NTamd64]
+FeatureScore=0
+DriverVer=08/31/2012,5.0.1.57036
+CopyFiles	= DRV,SYSFILES,PRTPROCS,PRGFILES
+DataSection	= HP1100_DATA_NT
+
+[HP1600.NTamd64]
+FeatureScore=0
+DriverVer=08/31/2012,5.0.1.57036
+CopyFiles	= DRV,SYSFILES,PRTPROCS,PRGFILES
+DataSection	= HP1600_DATA_NT
+
+[HP1100_DATA_NT]
+DriverFile	= hp1100sd.dll
+ConfigFile	= hp1100su.dll
+HelpFile	= hp1100sd.chm
+DataFile	= hp1100sd.sdd
+LanguageMonitor	= HP1100LM,HP1100LM.DLL
+DefaultDataType = RAW
+PrintProcessor	= HP1100PrintProc,HP1100PP.DLL
+
+[HP1600_DATA_NT]
+DriverFile	= hp1100sd.dll
+ConfigFile	= hp1100su.dll
+HelpFile	= hp1100sd.chm
+DataFile	= hp1600sd.sdd
+LanguageMonitor	= HP1100LM,HP1100LM.DLL
+DefaultDataType = RAW
+PrintProcessor	= HP1100PrintProc,HP1100PP.DLL
+
+[DRV]
+hp1100sd.dll
+hp1100su.dll
+hp1100su.ent
+hp1100su.ver
+hp1100sd.sdd
+hp1600sd.sdd
+hp1100sd.chm
+HP1100PP.DLL
+HP1100GC.DLL
+
+[SYSFILES]
+HP1100LM.DLL
+HP1100SMs.dll
+HP1100SM.EXE
+mvhlewsi.DLL
+
+[PRTPROCS]
+HP1100PP.dll
+
+[PRGFILES]
+P1100BTN.JS
+P1100DEF.CSS
+P1100GLB.JS
+P1100OS.HTM
+P1100SIG.GIF
+P1100SMT.HTM
+P1100SMT.SWF
+
+[SourceDisksNames.x86]
+1 = %Location%,,,%LANGDIR%
+2 = %Location%,drv32.cab,,
+3 = %Location%,,,%LANGDIR%
+
+[SourceDisksNames.amd64]
+1 = %Location%,,,%LANGDIR%
+2 = %Location%,drv64.cab,,
+3 = %Location%,,,%LANGDIR%\x64
+
+[SourceDisksFiles]
+HP1100SMs.dll   = 3
+HP1100SM.EXE		= 2
+mvhlewsi.DLL        = 2
+hp1100sd.dll		= 2
+hp1100su.dll		= 2
+HP1100LM.DLL		= 2
+HP1100PP.DLL		= 2
+hp1100su.ver		= 2
+hp1100su.ent		= 1
+hp1100sd.sdd		= 1
+hp1600sd.sdd		= 1
+hp1100sd.chm		= 1
+P1100BTN.JS			= 2
+P1100DEF.CSS		= 2
+P1100GLB.JS			= 2
+P1100OS.HTM			= 1
+P1100SIG.GIF		= 2
+HP1100GC.DLL			= 2
+P1100SMT.HTM		= 2
+P1100SMT.SWF		= 2
+
+
+[DestinationDirs]
+DefaultDestDir	= 66000
+DRV		= 66000
+SYSFILES	= 66002
+PRTPROCS	= 66001
+PRGFILES	= 16422,HP\HP LaserJet P1100 Series
+
+[Strings]
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+LANGDIR  = "ENGLISH"
+
+; Arabic
+[Strings.0001]
+LANGDIR     	= "Arabic"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Bulgarian
+[Strings.0002]
+LANGDIR     	= "Bulgarian"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Catalan
+[Strings.0003]
+LANGDIR     	= "Catalan"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Chinese-Simplified
+[Strings.0804]
+LANGDIR     	= "Simplified_Chinese"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Traditional_Chinese
+[Strings.0004]
+LANGDIR     	= "Traditional_Chinese"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Czech
+[Strings.0005]
+LANGDIR     	= "Cestina"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Danish
+[Strings.0006]
+LANGDIR     	= "Dansk"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; German
+[Strings.0007]
+LANGDIR     	= "Deutsch"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Greek
+[Strings.0008]
+LANGDIR     	= "Greek"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; English
+[Strings.0009]
+LANGDIR     	= "English"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Spanish
+[Strings.000a]
+LANGDIR     	= "Espanol"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Finnish
+[Strings.000b]
+LANGDIR     	= "Suomi"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; French
+[Strings.000c]
+LANGDIR     	= "Francais"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Hebrew
+[Strings.000d]
+LANGDIR     	= "Hebrew"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Hungarian
+[Strings.000e]
+LANGDIR     	= "Magyar"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Italian
+[Strings.0010]
+LANGDIR     	= "Italiano"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Korean
+[Strings.0012]
+LANGDIR     	= "Korean"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Dutch
+[Strings.0013]
+LANGDIR     	= "Nederlands"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Norwegian
+[Strings.0014]
+LANGDIR     	= "Norsk"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Polish
+[Strings.0015]
+LANGDIR     	= "Polski"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Portuguese
+[Strings.0016]
+LANGDIR     	= "Portugues"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Romanian
+[Strings.0018]
+LANGDIR     	= "Romanian"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Russian
+[Strings.0019]
+LANGDIR     	= "Russian"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Croatian
+[Strings.041a]
+LANGDIR     	= "Hrvatski"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Serbian
+[Strings.001a]
+LANGDIR     	= "Srpski"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Slovak
+[Strings.001b]
+LANGDIR     	= "Slovak"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Swedish
+[Strings.001d]
+LANGDIR     	= "Svenska"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Thai
+[Strings.001e]
+LANGDIR     	= "Thai"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Turkish
+[Strings.001f]
+LANGDIR     	= "Turkce"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Indonesian
+[Strings.0021]
+LANGDIR     	= "Indonesian"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Ukrainian
+[Strings.0022]
+LANGDIR     	= "Ukrainian"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Slovenian
+[Strings.0024]
+LANGDIR     	= "Slovenian"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Estonian
+[Strings.0025]
+LANGDIR     	= "Eesti"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Latvian
+[Strings.0026]
+LANGDIR     	= "Latviski"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Lithuanian
+[Strings.0027]
+LANGDIR     	= "Lietuviskai"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Vietnamese
+[Strings.002a]
+LANGDIR     	= "Viet_Nam"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"
+
+; Kazakh
+[Strings.003f]
+LANGDIR     	= "Kazakh"
+Location	= "Driver Location"
+MS		= "Microsoft"
+Microsoft	= "Microsoft"
+MFG		= "HP"

@@ -1,0 +1,272 @@
+[Installation]
+Product=695
+Configuration=HP1100SU.DLL
+UI=HP1100SU.DLL
+Driver=HP1100SD.DLL
+
+[Units]
+MarginPerInch=300
+MarginPerCM=118     ; 300/2.54
+ExtentPerInch=100
+
+[PrinterName]
+0=HP LaserJet Professional P1566
+1=HP LaserJet Professional P1567
+2=HP LaserJet Professional P1568
+3=HP LaserJet Professional P1569
+4=HP LaserJet Professional P1606dn
+5=HP LaserJet Professional P1607dn
+6=HP LaserJet Professional P1608dn
+7=HP LaserJet Professional P1609dn
+8=XPS HP LaserJet Professional P1566
+9=XPS HP LaserJet Professional P1567
+10=XPS HP LaserJet Professional P1568
+11=XPS HP LaserJet Professional P1569
+12=XPS HP LaserJet Professional P1606dn
+13=XPS HP LaserJet Professional P1607dn
+14=XPS HP LaserJet Professional P1608dn
+15=XPS HP LaserJet Professional P1609dn
+
+[DefaultPrinter]
+DefaultFeed	=1
+PrintQuality	=600
+MarginEnglish	=47,47,47,47
+MarginMetric	=47,47,47,47
+Formats		=0,1,2,3,4,5,6
+PrintRate	=22
+MediaType	=1
+Papers		=1,5,9,7,258,11,70,13,264,263,257,43,82,20,37,34,28,27
+Media		=1,258,282,262,283,2,265,513,267,514,515,512,260,516,263,273
+Capabilities	=1,2,3,4,7,9,10,11,12,13,14,16
+Fields		=1,2,3,4,9,10,11,12,13,16
+Bins		=7,4,1,3,2
+Source		=7
+BinName		=BinNameCassette  
+NUps		=0,2,4,6,9,16
+MinExtent	=300,500
+MaxExtent	=850,1400
+Aspect1		=1
+GCR		=40
+Data1		=0
+Dither		=0
+PlaneMode	=5
+HalftoneKeys	=1,12
+EEDumpLine	=0
+PlaneBuffer	=1
+Color		=1
+PixAlignX	=128
+PixAlignY	=4
+Data2		=2
+SSPR		=1
+Stream		=ZJS
+Compression	=JBIG
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1566
+BitFlags=0x10041A
+
+[HP LaserJet Professional P1566]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+
+[HP LaserJet Professional P1567]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+
+[HP LaserJet Professional P1568]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+
+[HP LaserJet Professional P1569]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+
+[HP LaserJet Professional P1606dn]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+PrintRate	=25
+
+[HP LaserJet Professional P1607dn]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+PrintRate	=25
+
+[HP LaserJet Professional P1608dn]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+PrintRate	=25
+
+[HP LaserJet Professional P1609dn]
+Resolution=600
+PrintProcessor	=HP1100PrintProc
+DataType	=IMF
+PrintRate	=25
+
+[XPS HP LaserJet Professional P1566]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1566
+
+[XPS HP LaserJet Professional P1567]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1567
+
+[XPS HP LaserJet Professional P1568]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1568
+
+[XPS HP LaserJet Professional P1569]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1569
+
+[XPS HP LaserJet Professional P1606dn]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1606dn
+PrintRate	=25
+
+[XPS HP LaserJet Professional P1607dn]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1607dn
+PrintRate	=25
+
+[XPS HP LaserJet Professional P1608dn]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1608dn
+PrintRate	=25
+
+[XPS HP LaserJet Professional P1609dn]
+Resolution=600
+PrintTicketNamespace=http://schemas.marvell.com/windows/2003/08/printing/1609dn
+PrintRate	=25
+
+[BinNameCassette]
+;TRANSLATE THIS SECTION
+1=Тава 1
+2=Тава 3
+3=Тава 2
+4=Ръчно подаване в тава 1
+7=Автоматичен избор
+
+[PapersPerBin]
+;Manual Feed
+4=1,5,9,7,258,11,70,13,264,263,257,43,82,20,37,34,28,27
+; Tray 1
+1=1,5,9,7,258,11,70,13,264,263,257,43,82,20,37,34,28,27
+;Tray2
+3=1,5,9,7,258,11,70,13
+;Tray 3
+2=1,5,9,7,258,11,70,13
+;Auto
+7=1,5,9,7,258,11,70,13,264,263,257,43,82,20,37,34,28,27
+
+[ATMOVE]
+HX0=-16,-16,-16,-16
+HX1=-12,-12,-12,-12
+
+[PaperName]
+;TRANSLATE THIS SECTION
+1  =Letter
+5  =Legal
+7  =Executive
+9  =A4
+11 =A5
+13 =B5 (JIS)
+20 =Плик №10
+27 =Плик DL
+28 =Плик C5
+34 =Плик B5
+37 =Плик Monarch
+43=Японска картичка
+70 =A6
+82=Двойна японска картичка - завъртяна
+258=8,5 x 13 (по избор)
+263=16K 184 x 260
+264=16K 195 x 270
+257=16K 197 x 273
+
+[PaperSize]
+43=1000,1480,2
+82=1480,2000,2
+70=1050,1480,2
+258=850,1300,4
+263=1840,2600,2
+264=1950,2700,2
+257=1970,2730,2
+
+[MediaName]
+;TRANSLATE THIS SECTION
+1=Обикновена хартия
+2=Прозрачно фолио
+258=Лека (60-74 г/м2)
+260=Луксозна
+262=Тежка (111–130 г/м2)
+263=Груба
+265=Етикети
+267=Плик
+282=Средно тежка (96–110 г/м2)
+283=Много тежка (131–175 г/м2)
+300=Офисна хартия на HP
+301=Универсална хартия на HP
+302=Хартия за HP LaserJet
+303=Хартия за печат за многофункционални устройства на HP
+304=Хартия HP Premium Choice LaserJet
+512=Цветна
+513=Бланка
+514=Предварително напечатана
+515=Перфорирана
+516=Рециклирана
+273=Велен
+
+[DefaultPaper]
+2=1	; Canada
+500=1	; Falkland Islands
+501=1	; Belize
+502=1	; Guatemala
+503=1	; El Salvador
+504=1	; Honduras
+505=1	; Nicaragua
+506=1	; Costa Rica
+507=1	; Panama
+51=1	; Peru
+52=1	; Mexico
+54=1	; Argentina
+56=1	; Chile
+57=1	; Colombia
+58=1	; Venezuela
+591=1	; Bolivia
+592=1	; Guyana
+593=1	; Ecuador
+594=1	; French Guiana
+595=1	; Paraguay
+597=1	; Suriname
+598=1	; Uruguay
+
+[Halftone]
+PrintQuality600.Data21=HX0
+PrintQuality600.Data22=HX1
+
+[PTConstraints]
+Option1=//psf:Feature[@name="psk:JobNUpAllDocumentsContiguously"]/psf:Option
+Rule1=//psf:ParameterInit[@name="psk:PageScalingScale"]/psf:Value[.!='0' and .!='100']
+Option2=//psf:Feature[@name="psk:DocumentNUp"]/psf:Option
+Rule2=//psf:ParameterInit[@name="psk:PageScalingScale"]/psf:Value[.!='0' and .!='100']
+Option3=//psf:Feature[@name="psk:PageScaling"]/psf:Option
+Rule3=//psf:Feature[@name="psk:DocumentNUp"]/psf:Option/psf:ScoredProperty[@name="psk:PagesPerSheet"]/psf:Value[. > 1]
+Option4=//psf:Feature[@name="psk:PageScaling"]/psf:Option
+Rule4=//psf:Feature[@name="psk:JobNUpAllDocumentsContiguously"]/psf:Option/psf:ScoredProperty[@name="psk:PagesPerSheet"]/psf:Value[.>1]
+Option5=//psf:Feature[@name="psk:JobNUpAllDocumentsContiguously"]/psf:Option
+Rule5=//psf:Feature[@name="psk:DocumentNUp"]/psf:Option/psf:ScoredProperty[@name="psk:PagesPerSheet"]/psf:Value[. > 1]
+Option6=//psf:Feature[@name="psk:DocumentNUp"]/psf:Option
+Rule6=//psf:Feature[@name="psk:JobNUpAllDocumentsContiguously"]/psf:Option/psf:ScoredProperty[@name="psk:PagesPerSheet"]/psf:Value[. > 1]
+Option7=//psf:Feature[@name="psk:JobDuplexAllDocumentsContiguously"]/psf:Option[@name="psk:TwoSidedLongEdge"]
+Rule7=//psf:Feature[@name="psk:DocumentDuplex"]/psf:Option[@name!="psk:OneSided"]
+Option8=//psf:Feature[@name="psk:JobDuplexAllDocumentsContiguously"]/psf:Option[@name="psk:TwoSidedShortEdge"]
+Rule8=//psf:Feature[@name="psk:DocumentDuplex"]/psf:Option[@name!="psk:OneSided"]
+Option9=//psf:Feature[@name="psk:DocumentDuplex"]/psf:Option[@name="psk:TwoSidedLongEdge"]
+Rule9=//psf:Feature[@name="psk:JobDuplexAllDocumentsContiguously"]/psf:Option[@name!="psk:OneSided"]
+Option10=//psf:Feature[@name="psk:DocumentDuplex"]/psf:Option[@name="psk:TwoSidedShortEdge"]
+Rule10=//psf:Feature[@name="psk:JobDuplexAllDocumentsContiguously"]/psf:Option[@name!="psk:OneSided"]

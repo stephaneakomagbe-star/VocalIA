@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StephFood – Restaurant Togolais | Lomé</title>
+    <meta name="description" content="StephFood : restaurant de cuisine togolaise authentique à Lomé. Plats locaux, chefs experts, réservation en ligne." />
+    <meta name="keywords" content="restaurant togolais, cuisine togolaise, Lomé, plats locaux, StephFood, réservation" />
+    <meta name="author" content="Stephane AKOMAGBE" />
+    <meta name="google-site-verification" content="nWpNoiSkI4Rk2WIMK4qWrguLRanqa76QBu1TOyJBVHI" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+
+        :root {
+            --primary: #fb911f;
+            --primary-dark: #d87710;
+            --secondary: #2a4963;
+            --secondary-light: #3a6a8a;
+            --bg-cream: #f5ead9;
+            --bg-white: #ffffff;
+            --text-dark: #1a1a2e;
+            --text-muted: #666;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            background: var(--bg-cream);
+        }
+        a { text-decoration: none; }
+        img { max-width: 100%; display: block; }
+        section { padding: 90px 5%; }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2.6em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .section-title span { color: var(--primary); }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.05em;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+        @media (max-width: 768px) {
+            .section-title { font-size: 1.8em; }
+            .section-subtitle { font-size: 0.95em; }
+        }
+
+        header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        header.scrolled {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            padding: 12px 5%;
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+            transition: var(--transition);
+        }
+        .logo span { color: var(--primary); }
+        header.scrolled .logo { color: var(--text-dark); }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: #fff;
+            font-size: 0.9em;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 4px;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: var(--primary);
+            transition: 0.3s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a:hover { color: var(--primary); }
+        header.scrolled .nav-links a { color: var(--text-dark); }
+        header.scrolled .nav-links a:hover { color: var(--primary); }
+
+        .btn-reserve-nav {
+            padding: 10px 24px;
+            background: var(--primary);
+            color: #fff !important;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .btn-reserve-nav:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(251,145,31,0.3);
+        }
+        .btn-reserve-nav::after { display: none !important; }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 5px;
+        }
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: #fff;
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        header.scrolled .hamburger span { background: var(--text-dark); }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+        @media (max-width: 991px) {
+            .hamburger { display: flex; }
+            .nav-links {
+                position: fixed;
+                top: 0; right: -100%;
+                width: 75%;
+                max-width: 350px;
+                height: 100vh;
+                background: #fff;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 35px;
+                transition: 0.4s;
+                box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+            }
+            .nav-links.open { right: 0; }
+            .nav-links a { color: var(--text-dark) !important; font-size: 1.1em; }
+            .btn-reserve-nav { margin-top: 10px; }
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0,0,0,0.65), rgba(0,0,0,0.4)), url(Image/photo2.jpg) center/cover fixed;
+            padding: 0 5%;
+            position: relative;
+        }
+        .hero-content { max-width: 750px; animation: fadeUp 1s ease; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-size: 3.8em;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+        .hero h1 span { color: var(--primary); }
+        .hero p {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.2em;
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
+        .hero-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(251,145,31,0.35); }
+        .btn-outline { border: 2px solid #fff; color: #fff; }
+        .btn-outline:hover { background: #fff; color: var(--text-dark); transform: translateY(-3px); }
+        .btn-secondary { background: var(--secondary); color: #fff; }
+        .btn-secondary:hover { background: var(--secondary-light); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(42,73,99,0.3); }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2em; }
+            .hero p { font-size: 1em; }
+            .hero { background-attachment: scroll; }
+        }
+
+        /* ========== ABOUT ========== */
+        .about { background: var(--bg-white); }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .about-text h2 { font-family: var(--font-heading); font-size: 2.4em; margin-bottom: 20px; }
+        .about-text h2 span { color: var(--primary); }
+        .about-text p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.02em;
+        }
+        .about-image {
+            position: relative;
+        }
+        .about-image img {
+            width: 100%;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .about-image img:hover { transform: scale(1.02); }
+        .about-image::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            right: -15px;
+            width: 60%;
+            height: 60%;
+            border: 3px solid var(--primary);
+            border-radius: var(--radius-lg);
+            z-index: -1;
+            opacity: 0.3;
+        }
+        @media (max-width: 991px) {
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .about-text h2 { font-size: 1.8em; }
+            .about-image::after { display: none; }
+        }
+
+        /* ========== MENU ========== */
+        .menu-section { background: var(--bg-cream); }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .menu-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        .menu-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); }
+        .menu-card-img {
+            height: 230px;
+            overflow: hidden;
+            position: relative;
+        }
+        .menu-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.6s;
+        }
+        .menu-card:hover .menu-card-img img { transform: scale(1.1); }
+        .menu-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary);
+            color: #fff;
+            padding: 5px 16px;
+            border-radius: 50px;
+            font-size: 0.78em;
+            font-weight: 600;
+        }
+        .menu-price {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--secondary);
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .menu-card-body { padding: 25px; }
+        .menu-card-body h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+        .menu-card-body p {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .menu-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu-card-footer .price {
+            font-family: var(--font-heading);
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .btn-order {
+            padding: 8px 20px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-order:hover { background: var(--primary-dark); }
+        .menu-cta { text-align: center; margin-top: 50px; }
+        @media (max-width: 768px) {
+            .menu-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ========== EXPERTS ========== */
+        .experts { background: var(--bg-white); }
+        .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .expert-card {
+            text-align: center;
+            background: var(--bg-cream);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            transition: var(--transition);
+        }
+        .expert-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+        .expert-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 4px solid var(--primary);
+        }
+        .expert-card h3 { font-family: var(--font-heading); font-size: 1.2em; color: var(--secondary); }
+        .expert-card p { color: var(--text-muted); font-size: 0.9em; }
+
+        /* ========== TESTIMONIALS ========== */
+        .testimonials { background: var(--bg-cream); }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .testimonial-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 35px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .testimonial-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .testimonial-card img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+        }
+        .testimonial-card .stars { color: var(--primary); margin-bottom: 10px; font-size: 0.9em; }
+        .testimonial-card p {
+            color: var(--text-muted);
+            font-style: italic;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        .testimonial-card h4 { font-family: var(--font-heading); color: var(--secondary); font-size: 1.1em; }
+
+        /* ========== GALLERY ========== */
+        .gallery { background: var(--bg-white); }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-item {
+            border-radius: var(--radius);
+            overflow: hidden;
+            height: 250px;
+            cursor: pointer;
+            position: relative;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.6s;
+        }
+        .gallery-item:hover img { transform: scale(1.12); }
+        .gallery-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .gallery-item:hover .overlay { opacity: 1; }
+        .gallery-item .overlay i {
+            color: #fff;
+            font-size: 2em;
+        }
+
+        /* ========== CONTACT ========== */
+        .contact-section { background: var(--bg-cream); }
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+        .contact-info h3 {
+            font-family: var(--font-heading);
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        .contact-info p { color: var(--text-muted); margin-bottom: 30px; line-height: 1.7; }
+        .contact-details { display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px; }
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .contact-detail i {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+        }
+        .contact-detail div h4 { font-size: 1em; color: var(--secondary); }
+        .contact-detail div p { color: var(--text-muted); font-size: 0.9em; margin: 0; }
+
+        .contact-socials { display: flex; gap: 15px; }
+        .contact-socials a {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.3em;
+            transition: var(--transition);
+        }
+        .contact-socials a:hover { transform: translateY(-3px); }
+        .social-wa { background: #25D366; }
+        .social-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .social-tel { background: var(--secondary); }
+        .social-email { background: transparent; }
+
+        .contact-form {
+            background: var(--bg-white);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+        .contact-form h3 {
+            font-family: var(--font-heading);
+            font-size: 1.4em;
+            margin-bottom: 25px;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #eee;
+            border-radius: var(--radius);
+            font-family: var(--font-body);
+            font-size: 0.95em;
+            outline: none;
+            transition: var(--transition);
+            background: #fafafa;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(251,145,31,0.1);
+        }
+        .form-group textarea { height: 120px; resize: none; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 768px) {
+            .contact-container { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* ========== HORAIRES + MAPS ========== */
+        .infos-wrapper {
+            max-width: 1200px;
+            margin: 50px auto 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .horaires-box {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 35px;
+            box-shadow: var(--shadow);
+        }
+        .horaires-box h3 {
+            font-family: var(--font-heading);
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .horaire-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .horaire-row:last-child { border: none; }
+        .horaire-row .day { font-weight: 600; color: var(--secondary); }
+        .horaire-row .time { color: var(--text-muted); }
+        .horaire-row .time span { color: var(--primary); font-weight: 600; }
+
+        .maps-box {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .maps-box iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+border: none;
+        }
+
+        /* ========== ANIMATIONS ========== */
+
+        /* --- Scroll Reveal (IntersectionObserver) --- */
+        .reveal,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 0;
+            will-change: opacity, transform;
+            transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal        { transform: translateY(40px); }
+        .reveal-left   { transform: translateX(-50px); }
+        .reveal-right  { transform: translateX(50px); }
+        .reveal-scale  { transform: scale(0.92); }
+        .reveal.visible,
+        .reveal-left.visible,
+        .reveal-right.visible,
+        .reveal-scale.visible {
+            opacity: 1;
+            transform: translate(0) scale(1);
+        }
+
+        .d1 { transition-delay: 0.08s; }
+        .d2 { transition-delay: 0.16s; }
+        .d3 { transition-delay: 0.24s; }
+.d4 { transition-delay: 0.32s; }
+        .d5 { transition-delay: 0.40s; }
+        .d6 { transition-delay: 0.48s; }
+
+        /* --- Typewriter glow on hero title --- */
+        .hero h1 .typewriter .char {
+            display: inline-block;
+            opacity: 0;
+            animation: charAppear 0.05s ease forwards;
+        }
+        .hero h1 .typewriter .char.space {
+            display: inline;
+            opacity: 1;
+            animation: none;
+        }
+        @keyframes charAppear {
+            0%   { opacity: 0; transform: translateY(10px) scale(0.8); filter: blur(4px); }
+            60%  { opacity: 1; transform: translateY(-2px) scale(1.05); filter: blur(0); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        @media (max-width: 768px) {
+            @keyframes charAppearMobile {
+                0%   { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            .hero h1 .typewriter .char {
+                animation: charAppearMobile 0.04s ease forwards;
+            }
+        }
+
+        /* --- Badge shimmer --- */
+        .menu-badge {
+            background: linear-gradient(90deg, var(--primary) 0%, #ffb347 50%, var(--primary) 100%);
+            background-size: 200% auto;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+
+        /* --- Contact icons: tilt on hover --- */
+        .contact-detail i {
+            transition: transform 0.4s ease;
+        }
+        .contact-detail:hover i {
+            transform: rotateY(180deg);
+        }
+
+/* --- Hero glow --- */
+        .hero h1 .typewriter {
+            animation: heroGlow 4s ease-in-out infinite alternate;
+        }
+        @keyframes heroGlow {
+            0%   { text-shadow: 0 0 15px rgba(251,145,31,0.1); }
+            100% { text-shadow: 0 0 40px rgba(251,145,31,0.25), 0 0 80px rgba(251,145,31,0.06); }
+        }
+
+        /* Star rating shimmer */
+        .testimonial-card .stars {
+            display: inline-block;
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Gallery overlay pop */
+        .gallery-item .overlay i {
+            transform: scale(0);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gallery-item:hover .overlay i {
+            transform: scale(1) rotate(360deg);
+        }
+
+        /* Horaire rows slide in */
+        .horaire-row {
+            animation: slideInLeft 0.5s ease forwards;
+            opacity: 0;
+        }
+        .horaire-row:nth-child(2) { animation-delay: 0.15s; }
+        .horaire-row:nth-child(3) { animation-delay: 0.3s; }
+        .horaire-row:nth-child(4) { animation-delay: 0.45s; }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ========== BACK TO TOP ========== */
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(251,145,31,0.4);
+            z-index: 999;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #back-to-top.visible { opacity: 1; visibility: visible; }
+        #back-to-top:hover { transform: scale(1.1); background: var(--primary-dark); }
+
+        /* ========== TOAST ========== */
+        #toast-container {
+            position: fixed;
+            top: 30px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            padding: 16px 28px;
+            border-radius: var(--radius);
+            color: #fff;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInRight 0.4s ease, fadeOutRight 0.4s ease 3.6s forwards;
+            max-width: 380px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOutRight { to { opacity: 0; transform: translateX(100%); } }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--secondary);
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            padding: 35px 5%;
+        }
+        footer .logo-footer {
+            font-family: var(--font-heading);
+            font-size: 1.5em;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        footer .logo-footer span { color: var(--primary); }
+        footer p { font-size: 0.9em; }
+        footer a { color: var(--primary); }
+        footer .footer-links { margin: 15px 0; display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; }
+        footer .footer-links a { color: rgba(255,255,255,0.7); font-size: 0.9em; transition: var(--transition); }
+        footer .footer-links a:hover { color: var(--primary); }
+
+        /* ========== STEPHFOOD WHEEL ========== */
+        #wheel { scroll-margin-top: 90px; }
+        .wheel-section { background: #fffaf3; }
+        .wheel-panel {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 42px;
+            display: grid;
+            grid-template-columns: minmax(280px, 1fr) minmax(260px, 0.9fr);
+            align-items: center;
+            gap: 48px;
+            background: #fff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+        .wheel-wrap {
+            position: relative;
+            width: min(100%, 360px);
+            aspect-ratio: 1;
+            margin: 0 auto;
+            padding: 12px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 12px 35px rgba(42,73,99,0.2);
+        }
+        .wheel-pointer {
+            position: absolute;
+            z-index: 3;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform: translateX(-50%);
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 30px solid var(--primary-dark);
+            filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2));
+        }
+        .prize-wheel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border: 5px solid var(--secondary);
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--primary) 0deg 45deg,
+                var(--secondary) 45deg 90deg,
+                var(--primary) 90deg 135deg,
+                var(--secondary) 135deg 180deg,
+                var(--primary) 180deg 225deg,
+                var(--secondary) 225deg 270deg,
+                var(--primary) 270deg 315deg,
+                var(--secondary) 315deg 360deg
+            );
+            transition: transform 5.5s cubic-bezier(0.12, 0.78, 0.12, 1);
+        }
+        .wheel-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            color: #fff;
+            font-size: 0.68em;
+            font-weight: 700;
+            line-height: 1.2;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+        }
+        .wheel-label:nth-child(1) { transform: rotate(22.5deg) translateY(-108px) rotate(-22.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(2) { transform: rotate(67.5deg) translateY(-108px) rotate(-67.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(3) { transform: rotate(112.5deg) translateY(-108px) rotate(-112.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(4) { transform: rotate(157.5deg) translateY(-108px) rotate(-157.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(5) { transform: rotate(202.5deg) translateY(-108px) rotate(-202.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(6) { transform: rotate(247.5deg) translateY(-108px) rotate(-247.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(7) { transform: rotate(292.5deg) translateY(-108px) rotate(-292.5deg) translate(-50%, -50%); }
+        .wheel-label:nth-child(8) { transform: rotate(337.5deg) translateY(-108px) rotate(-337.5deg) translate(-50%, -50%); }
+        .wheel-center {
+            position: absolute;
+            z-index: 2;
+            top: 50%;
+            left: 50%;
+            width: 64px;
+            height: 64px;
+            display: grid;
+            place-items: center;
+            transform: translate(-50%, -50%);
+            border: 4px solid var(--secondary);
+            border-radius: 50%;
+            background: #fff;
+            color: var(--primary-dark);
+            font-size: 1.35em;
+        }
+        .wheel-copy h3 {
+            margin-bottom: 12px;
+            color: var(--secondary);
+            font-family: var(--font-heading);
+            font-size: 1.8em;
+        }
+        .wheel-copy p { margin-bottom: 18px; color: var(--text-muted); line-height: 1.8; }
+        .wheel-copy .wheel-odds { margin-bottom: 24px; font-size: 0.88em; }
+        .wheel-spin {
+            min-width: 190px;
+            justify-content: center;
+            border: 0;
+            cursor: pointer;
+        }
+        .wheel-spin:disabled { cursor: not-allowed; opacity: 0.65; transform: none; }
+        .wheel-result {
+            min-height: 52px;
+            margin-top: 18px !important;
+            margin-bottom: 0 !important;
+            color: var(--secondary) !important;
+            font-weight: 600;
+        }
+        .wheel-result.is-win { color: #287a3d !important; }
+        .wheel-result.is-loss { color: var(--text-muted) !important; }
+        .wheel-terms { margin-top: 14px !important; font-size: 0.78em; line-height: 1.6 !important; }
+        @media (max-width: 768px) {
+            .wheel-panel { grid-template-columns: 1fr; gap: 32px; padding: 30px 22px; }
+            .wheel-wrap { width: min(100%, 330px); }
+            .wheel-label:nth-child(n) { transform: rotate(var(--label-angle)) translateY(-96px) rotate(calc(-1 * var(--label-angle))) translate(-50%, -50%); }
+            .wheel-label:nth-child(1) { --label-angle: 22.5deg; }
+            .wheel-label:nth-child(2) { --label-angle: 67.5deg; }
+            .wheel-label:nth-child(3) { --label-angle: 112.5deg; }
+            .wheel-label:nth-child(4) { --label-angle: 157.5deg; }
+            .wheel-label:nth-child(5) { --label-angle: 202.5deg; }
+            .wheel-label:nth-child(6) { --label-angle: 247.5deg; }
+            .wheel-label:nth-child(7) { --label-angle: 292.5deg; }
+            .wheel-label:nth-child(8) { --label-angle: 337.5deg; }
+            .wheel-copy { text-align: center; }
+            .wheel-copy h3 { font-size: 1.55em; }
+        }
+
+        /* ========== MOBILE RESPONSIVE : ≤480px ========== */
+        @media (max-width: 480px) {
+            header { padding: 14px 4%; }
+            .logo { font-size: 1.4em; }
+            section { padding: 50px 4%; }
+            .section-title { font-size: 1.5em; }
+            .section-subtitle { font-size: 0.85em; margin-bottom: 30px; }
+            .hero { min-height: 85vh; padding: 0 4%; }
+            .hero h1 { font-size: 1.7em; }
+            .hero p { font-size: 0.9em; margin-bottom: 25px; }
+            .hero-buttons { gap: 12px; flex-direction: column; align-items: center; }
+            .hero-buttons .btn { width: 100%; max-width: 260px; justify-content: center; }
+            .btn { padding: 11px 24px; font-size: 0.85em; }
+            .about-text h2 { font-size: 1.4em; }
+            .about-text p { font-size: 0.9em; }
+            .about-grid { gap: 25px; }
+            .menu-grid { gap: 18px; }
+            .menu-card-img { height: 180px; }
+            .menu-card-body { padding: 18px; }
+            .menu-card-body h3 { font-size: 1.1em; }
+            .menu-card-body p { font-size: 0.82em; }
+            .menu-price { font-size: 0.75em; padding: 4px 12px; }
+            .menu-badge { font-size: 0.7em; padding: 4px 12px; }
+            .experts-grid { gap: 18px; }
+            .expert-card { padding: 20px; }
+            .expert-card img { width: 90px; height: 90px; }
+            .testimonials-grid { gap: 18px; }
+            .testimonial-card { padding: 22px; }
+            .testimonial-card p { font-size: 0.85em; }
+            .gallery-grid { gap: 12px; }
+            .gallery-item { height: 180px; }
+            .contact-container { gap: 25px; }
+            .contact-info h3 { font-size: 1.3em; }
+            .contact-form { padding: 25px; }
+            .contact-form h3 { font-size: 1.2em; }
+            .infos-wrapper { grid-template-columns: 1fr; gap: 25px; margin-top: 30px; }
+            .horaires-box { padding: 22px; }
+            .horaires-box h3 { font-size: 1.1em; }
+            .horaire-row { font-size: 0.85em; flex-wrap: wrap; gap: 5px; }
+            .maps-box iframe { min-height: 220px; }
+            #back-to-top { width: 40px; height: 40px; font-size: 1em; bottom: 20px; right: 20px; }
+            footer { padding: 25px 4%; }
+            footer .logo-footer { font-size: 1.2em; }
+            footer p { font-size: 0.8em; }
+            footer .footer-links { gap: 15px; }
+            footer .footer-links a { font-size: 0.8em; }
+            .nav-links { width: 85%; max-width: 300px; }
+            .nav-links a { font-size: 1em; }
+            .form-group input, .form-group textarea { padding: 11px 14px; font-size: 0.88em; }
+            .contact-detail i { width: 38px; height: 38px; font-size: 0.95em; }
+            .contact-socials a { width: 42px; height: 42px; font-size: 1.1em; }
+        }
+
+        /* ========== TRÈS PETITS ÉCRANS : ≤380px ========== */
+        @media (max-width: 380px) {
+            header { padding: 10px 3%; }
+            .logo { font-size: 1.1em; }
+            .hero { min-height: 75vh; }
+            .hero h1 { font-size: 1.35em; }
+            .hero p { font-size: 0.8em; margin-bottom: 20px; }
+            .section-title { font-size: 1.3em; }
+            .section-subtitle { font-size: 0.78em; margin-bottom: 22px; }
+            .btn { padding: 9px 16px; font-size: 0.75em; }
+            .hero-buttons .btn { max-width: 220px; }
+            section { padding: 35px 3%; }
+            .about-text h2 { font-size: 1.15em; }
+            .about-text p { font-size: 0.82em; }
+            .menu-grid { gap: 14px; }
+            .menu-card-img { height: 150px; }
+            .menu-card-body { padding: 14px; }
+            .menu-card-body h3 { font-size: 1em; }
+            .price { font-size: 1.1em; }
+            .experts-grid { grid-template-columns: 1fr; gap: 14px; }
+            .testimonials-grid { grid-template-columns: 1fr; gap: 14px; }
+            .testimonial-card { padding: 18px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .gallery-item { height: 130px; }
+            .contact-form { padding: 18px; }
+            .form-group input, .form-group textarea { padding: 10px 12px; font-size: 0.82em; }
+            .contact-detail i { width: 34px; height: 34px; font-size: 0.85em; }
+            .contact-socials a { width: 38px; height: 38px; font-size: 1em; }
+            .horaires-box { padding: 16px; }
+            .horaire-row { font-size: 0.78em; }
+            .maps-box iframe { min-height: 180px; }
+            #back-to-top { width: 36px; height: 36px; font-size: 0.85em; bottom: 15px; right: 15px; }
+            footer { padding: 20px 3%; }
+            footer .logo-footer { font-size: 1em; }
+            footer .footer-links { gap: 10px; }
+            .nav-links { width: 90%; max-width: 280px; gap: 25px; }
+            .nav-links a { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header id="header">
+    <a href="#" class="logo"><span>Steph</span>food</a>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+    </div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#about" onclick="toggleMenu()">À propos</a></li>
+        <li><a href="#menu" onclick="toggleMenu()">Menu</a></li>
+        <li><a href="#wheel" onclick="toggleMenu()">La roue</a></li>
+        <li><a href="#experts" onclick="toggleMenu()">Experts</a></li>
+        <li><a href="#testimonials" onclick="toggleMenu()">Avis</a></li>
+        <li><a href="#gallery" onclick="toggleMenu()">Galerie</a></li>
+        <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+        <li><a href="restauration.html" class="btn-reserve-nav" onclick="toggleMenu()">Réserver</a></li>
+    </ul>
+</header>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <h1>L'authentique cuisine <span>togolaise</span></h1>
+        <p>Chez StephFood, chaque plat raconte une histoire. Découvrez les saveurs du Togo dans un cadre chaleureux et convivial.</p>
+        <div class="hero-buttons">
+            <a href="#menu" class="btn btn-primary"><i class="fas fa-utensils"></i> Notre Menu</a>
+            <a href="restauration.html" class="btn btn-outline"><i class="fas fa-calendar-check"></i> Réserver</a>
+        </div>
+    </div>
+</section>
+
+<!-- ========== ABOUT ========== -->
+<section class="about reveal" id="about">
+    <div class="about-grid">
+        <div class="about-text reveal-left">
+            <h2>Bienvenue chez <span>StephFood</span></h2>
+            <p>Consommons local ! Chez StephFood, nous mettons un point d'honneur à utiliser des ingrédients frais, locaux et de saison pour vous offrir une expérience culinaire authentique.</p>
+            <p>Notre équipe de chefs passionnés prépare chaque plat avec amour et savoir-faire, en respectant les traditions togolaises tout en y apportant une touche de modernité.</p>
+            <p>Que vous soyez amateur de saveurs épicées, de plats mijotés ou de douceurs exotiques, vous trouverez forcément votre bonheur chez nous.</p>
+            <a href="#menu" class="btn btn-primary" style="margin-top: 15px;"><i class="fas fa-arrow-right"></i> Découvrir le menu</a>
+        </div>
+        <div class="about-image reveal-right">
+            <img src="Image/photo7.jpg" alt="Notre restaurant">
+        </div>
+    </div>
+</section>
+
+<!-- ========== MENU ========== -->
+<section class="menu-section reveal" id="menu">
+    <h2 class="section-title">Notre <span>Menu</span></h2>
+    <p class="section-subtitle">Des plats traditionnels préparés avec des ingrédients locaux</p>
+    <div class="menu-grid">
+        <div class="menu-card">
+            <div class="menu-card-img">
+                <img src="Image/photo5.jpg" alt="Véyi de Nagan">
+                <span class="menu-badge">Populaire</span>
+                <span class="menu-price">5 000 FCFA</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>Véyi de Nagan</h3>
+                <p>Un délicieux plat traditionnel à base de poisson frais, accompagné de légumes locaux et d'épices togolaises.</p>
+                <div class="menu-card-footer">
+                    <span class="price">5 000 FCFA</span>
+                    <a href="restauration.html" class="btn-order">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="menu-card-img">
+                <img src="Image/photo11.jpg" alt="Spagho de Steph">
+                <span class="menu-price">3 500 FCFA</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>Spagho de Steph</h3>
+                <p>Des spaghetti préparés selon une recette secrète, sauce tomate maison et épices togolaises.</p>
+                <div class="menu-card-footer">
+                    <span class="price">3 500 FCFA</span>
+                    <a href="restauration.html" class="btn-order">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="menu-card-img">
+                <img src="Image/photo1.jpg" alt="Cantoné de Tassi">
+                <span class="menu-price">4 000 FCFA</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>Cantoné de Tassi</h3>
+                <p>Un plat mijoté avec des légumes frais, une spécialité qui réveille les papilles.</p>
+                <div class="menu-card-footer">
+                    <span class="price">4 000 FCFA</span>
+                    <a href="restauration.html" class="btn-order">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="menu-card-img">
+                <img src="Image/photo4.jpg" alt="Attiéké de Youpougon">
+                <span class="menu-badge">Plat léger</span>
+                <span class="menu-price">3 000 FCFA</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>Attiéké de Youpougon</h3>
+                <p>Attiéké traditionnel accompagné de poisson grillé et d'une sauce aux légumes.</p>
+                <div class="menu-card-footer">
+                    <span class="price">3 000 FCFA</span>
+                    <a href="restauration.html" class="btn-order">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="menu-card-img">
+                <img src="Image/photo6.jpg" alt="Pokoumè de Navi">
+                <span class="menu-price">4 500 FCFA</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>Pokoumè de Navi</h3>
+                <p>Pokoumè traditionnel servi avec une sauce à la tomate fraîche et des épices locales.</p>
+                <div class="menu-card-footer">
+                    <span class="price">4 500 FCFA</span>
+                    <a href="restauration.html" class="btn-order">Réserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="menu-card-img">
+                <img src="Image/photo13.jpg" alt="Ayimolou VIP">
+                <span class="menu-badge">Chef's Special</span>
+                <span class="menu-price">6 000 FCFA</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>Ayimolou VIP</h3>
+                <p>Notre plat signature revisité avec des ingrédients nobles pour une expérience gastronomique unique.</p>
+                <div class="menu-card-footer">
+                    <span class="price">6 000 FCFA</span>
+                    <a href="restauration.html" class="btn-order">Réserver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="menu-cta">
+        <a href="menu.html" class="btn btn-secondary"><i class="fas fa-eye"></i> Voir le menu complet</a>
+    </div>
+</section>
+
+<!-- ========== LA ROUE STEPHFOOD ========== -->
+<section class="wheel-section reveal" id="wheel">
+    <h2 class="section-title">La roue <span>StephFood</span></h2>
+    <p class="section-subtitle">Tentez votre chance et repartez peut-être avec une petite surprise gourmande !</p>
+    <div class="wheel-panel">
+        <div class="wheel-wrap" aria-hidden="true">
+            <div class="wheel-pointer"></div>
+            <div class="prize-wheel" id="prizeWheel">
+                <span class="wheel-label">Dessert</span>
+                <span class="wheel-label">Pas gagné</span>
+                <span class="wheel-label">Boisson</span>
+                <span class="wheel-label">Pas gagné</span>
+                <span class="wheel-label">-5 %</span>
+                <span class="wheel-label">Pas gagné</span>
+                <span class="wheel-label">Pas gagné</span>
+                <span class="wheel-label">Pas gagné</span>
+                <span class="wheel-center"><i class="fas fa-utensils"></i></span>
+            </div>
+        </div>
+        <div class="wheel-copy">
+            <h3>À vous de jouer !</h3>
+            <p>Faites tourner la roue : un dessert offert, une boisson ou une remise vous attendent peut-être.</p>
+            <p class="wheel-odds">3 cases gagnantes sur 8. Un tour par jour et par navigateur.</p>
+            <button type="button" class="btn btn-primary wheel-spin" id="spinWheel">
+                <i class="fas fa-sync-alt"></i> Lancer la roue
+            </button>
+            <p class="wheel-result" id="wheelResult" role="status" aria-live="polite">Bonne chance !</p>
+            <p class="wheel-terms">En cas de gain, présentez ce résultat à l'équipe StephFood lors de votre visite.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ========== EXPERTS ========== -->
+<section class="experts reveal" id="experts">
+    <h2 class="section-title">Nos <span>Experts</span></h2>
+    <p class="section-subtitle">Des chefs passionnés au service de votre palais</p>
+    <div class="experts-grid">
+        <div class="expert-card">
+            <img src="Image/photo30.jpg" alt="Chef Benedicte">
+            <h3>Chef Benedicte</h3>
+            <p>Spécialiste en cuisine traditionnelle togolaise</p>
+        </div>
+        <div class="expert-card">
+            <img src="Image/photo25.jpg" alt="Chef Sam">
+            <h3>Chef Sam</h3>
+            <p>Maître dans l'art des sauces et épices</p>
+        </div>
+        <div class="expert-card">
+            <img src="Image/photo21.jpg" alt="Chef Sandra">
+            <h3>Chef Sandra</h3>
+            <p>Experte en pâtisserie et desserts exotiques</p>
+        </div>
+    </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section class="testimonials reveal" id="testimonials">
+    <h2 class="section-title">Ils nous <span>recommandent</span></h2>
+    <p class="section-subtitle">Ce que nos clients disent de nous</p>
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <img src="Image/photo34.jpg" alt="SAKO Yaya">
+            <div class="stars">★★★★★</div>
+            <p>"Famille, venez chez StephFood ! Il y a de bons plats locaux ici, un accueil chaleureux et des saveurs authentiques."</p>
+            <h4>SAKO Yaya</h4>
+        </div>
+        <div class="testimonial-card">
+            <img src="Image/photo32.jpg" alt="LAMINE Yamal">
+            <div class="stars">★★★★★</div>
+            <p>"C'est ma première fois que je goûte à la nourriture togolaise et franchement, venez chez StephFood ! Une expérience inoubliable."</p>
+            <h4>LAMINE Yamal</h4>
+        </div>
+        <div class="testimonial-card">
+            <img src="Image/photo33.jpg" alt="Tiakola">
+            <div class="stars">★★★★★</div>
+            <p>"On ne connaît ni l'heure ni la date quand on mange ici, donc venez et régalez-vous !"</p>
+            <h4>Tiakola</h4>
+        </div>
+    </div>
+</section>
+
+<!-- ========== GALLERY ========== -->
+<section class="gallery reveal" id="gallery">
+    <h2 class="section-title">Notre <span>Galerie</span></h2>
+    <p class="section-subtitle">Quelques instants capturés dans notre restaurant</p>
+    <div class="gallery-grid">
+        <div class="gallery-item"><img src="Image/photo1.jpg" alt="Plat 1"><div class="overlay"><i class="fas fa-search-plus"></i></div></div>
+        <div class="gallery-item"><img src="Image/photo4.jpg" alt="Plat 2"><div class="overlay"><i class="fas fa-search-plus"></i></div></div>
+        <div class="gallery-item"><img src="Image/photo6.jpg" alt="Plat 3"><div class="overlay"><i class="fas fa-search-plus"></i></div></div>
+        <div class="gallery-item"><img src="Image/photo11.jpg" alt="Plat 4"><div class="overlay"><i class="fas fa-search-plus"></i></div></div>
+        <div class="gallery-item"><img src="Image/photo13.jpg" alt="Plat 5"><div class="overlay"><i class="fas fa-search-plus"></i></div></div>
+        <div class="gallery-item"><img src="Image/photo21.jpg" alt="Équipe"><div class="overlay"><i class="fas fa-search-plus"></i></div></div>
+    </div>
+</section>
+
+<!-- ========== CONTACT ========== -->
+<section class="contact-section reveal" id="contact">
+    <h2 class="section-title"><span>C</span>ontact</h2>
+    <p class="section-subtitle">Laissez-nous un message ou réservez directement</p>
+    <div class="contact-container">
+        <div class="contact-info">
+            <h3>Parlons de votre repas</h3>
+            <p>Que vous souhaitiez réserver une table, organiser un événement ou simplement nous donner votre avis, nous sommes à votre écoute.</p>
+            <div class="contact-details">
+                <div class="contact-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h4>Adresse</h4>
+                        <p>Lomé, Togo</p>
+                    </div>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-phone-alt"></i>
+                    <div>
+                        <h4>Téléphone</h4>
+                        <p>+228 99 14 53 69</p>
+                    </div>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h4>Email</h4>
+                        <p><a href="mailto:stephaneakomagbe@gmail.com" class="social-email">stephaneakomagbe@gmail.com</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-socials">
+                <a href="https://wa.me/22899145369" target="_blank" class="social-wa"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://instagram.com/stephaneakomagbe" target="_blank" class="social-ig"><i class="fab fa-instagram"></i></a>
+                <a href="tel:+22899145369" class="social-tel"><i class="fas fa-phone-alt"></i></a>
+                <a href="mailto:stephaneakomagbe@gmail.com" class="social-email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+        <div class="contact-form">
+            <h3>Envoyez-nous un message</h3>
+            <form id="contactFormSubmit">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="nom" id="contact-nom" placeholder="Votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" id="contact-email" placeholder="Votre email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="sujet" id="contact-sujet" placeholder="Sujet" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="message" id="contact-message" placeholder="Votre message..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; border:none; cursor:pointer;">
+                    <i class="fas fa-paper-plane"></i> Envoyer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Horaires + Maps -->
+    <div class="infos-wrapper">
+        <div class="horaires-box">
+            <h3><i class="fas fa-clock" style="color:var(--primary);"></i> Horaires d'ouverture</h3>
+            <div class="horaire-row">
+                <span class="day"><i class="fas fa-calendar-day" style="color:var(--primary); width:25px;"></i> Lundi – Vendredi</span>
+                <span class="time"><span>10h00</span> – <span>22h00</span></span>
+            </div>
+            <div class="horaire-row">
+                <span class="day"><i class="fas fa-calendar-day" style="color:var(--primary); width:25px;"></i> Samedi</span>
+                <span class="time"><span>10h00</span> – <span>23h00</span></span>
+            </div>
+            <div class="horaire-row">
+                <span class="day"><i class="fas fa-calendar-day" style="color:var(--primary); width:25px;"></i> Dimanche</span>
+                <span class="time"><span>12h00</span> – <span>20h00</span></span>
+            </div>
+        </div>
+        <div class="maps-box">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d1.226446!3d6.172497!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1021581b6b1b1b1b%3A0x1b1b1b1b1b1b1b1b!2sLom%C3%A9%2C+Togo!5e0!3m2!1sfr!2sfr!4v1"
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<!-- ========== BACK TO TOP ========== -->
+<button id="back-to-top" title="Retour en haut"><i class="fas fa-arrow-up"></i></button>
+
+<!-- ========== TOAST ========== -->
+<div id="toast-container"></div>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+    <div class="logo-footer"><span>Steph</span>food</div>
+    <div class="footer-links">
+        <a href="#about">À propos</a>
+        <a href="#menu">Menu</a>
+        <a href="#experts">Experts</a>
+        <a href="restauration.html">Réservation</a>
+        <a href="#contact">Contact</a>
+    </div>
+    <p>&copy; 2026 StephFood – Tous droits réservés. Fait avec <span style="color:var(--primary);">❤</span> par Stephane AKOMAGBE</p>
+</footer>
+
+<script>
+    // === TYPEWRITER EFFECT ON HERO TITLE ===
+    (function typewriterEffect() {
+        const heroH1 = document.querySelector('.hero h1');
+        if (!heroH1) return;
+        // Save original HTML (with the <span> inside)
+        const originalHTML = heroH1.innerHTML;
+        // Wrap the whole content in a .typewriter span, then wrap each character
+        let html = '<span class="typewriter">';
+        const text = heroH1.textContent;
+        const spanTagRegex = /<span[^>]*>.*?<\/span>/g;
+        // We'll process character by character, preserving the <span> tag
+        let tempDiv = document.createElement('div');
+        tempDiv.innerHTML = originalHTML;
+        function processNode(node) {
+            let result = '';
+            node.childNodes.forEach(child => {
+                if (child.nodeType === 3) { // text node
+                    const chars = child.textContent.split('');
+                    chars.forEach((ch, idx) => {
+                        if (ch === ' ') {
+                            result += '<span class="char space">&nbsp;</span>';
+                        } else {
+                            result += `<span class="char" style="animation-delay:${idx * 0.03}s">${ch}</span>`;
+                        }
+                    });
+                } else if (child.nodeType === 1) { // element node (the <span>)
+                    result += child.outerHTML; // keep it as-is
+                }
+            });
+            return result;
+        }
+        html += processNode(tempDiv);
+        html += '</span>';
+        heroH1.innerHTML = html;
+    })();
+
+    // === SCROLL REVEAL ANIMATIONS ===
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => observer.observe(el));
+
+    // === TOGGLE MENU ===
+    function toggleMenu() {
+        document.getElementById('hamburger').classList.toggle('active');
+        document.getElementById('navLinks').classList.toggle('open');
+    }
+
+    // === STICKY HEADER ===
+    window.addEventListener('scroll', function() {
+        const header = document.getElementById('header');
+        header.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // === BACK TO TOP ===
+    const backBtn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', function() {
+        backBtn.classList.toggle('visible', window.scrollY > 500);
+    });
+    backBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // === STEPHFOOD PRIZE WHEEL ===
+    const prizeWheel = document.getElementById('prizeWheel');
+    const spinWheelButton = document.getElementById('spinWheel');
+    const wheelResult = document.getElementById('wheelResult');
+    const wheelStorageKey = 'stephfood-wheel-last-spin';
+    const wheelCooldown = 24 * 60 * 60 * 1000;
+    const wheelPrizes = [
+        { label: 'Dessert offert', won: true },
+        { label: 'Pas cette fois', won: false },
+        { label: 'Boisson offerte', won: true },
+        { label: 'Pas cette fois', won: false },
+        { label: 'Remise de 5 %', won: true },
+        { label: 'Pas cette fois', won: false },
+        { label: 'Pas cette fois', won: false },
+        { label: 'Pas cette fois', won: false }
+    ];
+    const lastWheelSpin = Number(localStorage.getItem(wheelStorageKey));
+
+    if (lastWheelSpin && Date.now() - lastWheelSpin < wheelCooldown) {
+        spinWheelButton.disabled = true;
+        wheelResult.textContent = 'Vous avez déjà joué récemment. Revenez plus tard !';
+    }
+
+    spinWheelButton.addEventListener('click', function() {
+        if (this.disabled) return;
+
+        const prizeIndex = Math.floor(Math.random() * wheelPrizes.length);
+        const prize = wheelPrizes[prizeIndex];
+        const segmentCenter = prizeIndex * 45 + 22.5;
+        const finalRotation = 360 * 6 + (360 - segmentCenter);
+
+        this.disabled = true;
+        wheelResult.className = 'wheel-result';
+        wheelResult.textContent = 'La roue tourne...';
+        localStorage.setItem(wheelStorageKey, String(Date.now()));
+        prizeWheel.style.transform = `rotate(${finalRotation}deg)`;
+
+        prizeWheel.addEventListener('transitionend', function onWheelStopped(event) {
+            if (event.propertyName !== 'transform') return;
+            prizeWheel.removeEventListener('transitionend', onWheelStopped);
+            wheelResult.textContent = prize.won
+                ? `Bravo ! Vous avez gagné : ${prize.label}.`
+                : 'Pas de gain cette fois-ci. Merci d’avoir joué !';
+            wheelResult.classList.add(prize.won ? 'is-win' : 'is-loss');
+        });
+    });
+
+    // === TOAST ===
+    function showToast(msg, type) {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast ' + (type || 'success');
+        t.innerHTML = (type === 'error' ? '❌ ' : '✅ ') + msg;
+        c.appendChild(t);
+        setTimeout(() => t.remove(), 4000);
+    }
+
+    // === CONTACT FORM ===
+    document.getElementById('contactFormSubmit').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const n = document.getElementById('contact-nom').value.trim();
+        const em = document.getElementById('contact-email').value.trim();
+        const s = document.getElementById('contact-sujet').value.trim();
+        const m = document.getElementById('contact-message').value.trim();
+        if (!n || !em || !s || !m) return showToast('Veuillez remplir tous les champs.', 'error');
+        if (!em.includes('@') || !em.includes('.')) return showToast('Email invalide.', 'error');
+        showToast('Message envoyé ! Nous vous répondrons bientôt.', 'success');
+        this.reset();
+    });
+</script>
+
+</body>
+</html>

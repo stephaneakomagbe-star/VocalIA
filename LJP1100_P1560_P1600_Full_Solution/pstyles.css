@@ -1,0 +1,78 @@
+body {
+    color:#FFFFFF;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:16;
+    display:inline;
+}
+
+a:link {
+	color:#0000FF;
+}
+a:hover {
+	textDecoration:none;
+}
+
+title {
+    color:#FFFFFF;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:22;
+		textAlign:left;
+		display:inline;
+}
+
+mainButt {
+    color:#ffcc00;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:16;
+		display:inline;
+}
+
+topButt {
+    color:#FFFFFF;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:14;
+    fontWeight:bold;
+		display:inline;
+}
+
+prodName {
+    color:#FFFFFF;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:16;
+		display:inline;
+}
+beginButt {
+    color:#ffcc00;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:22;
+		textAlign:left;
+		display:inline;
+}
+
+c {
+      textAlign:center;
+}
+
+em {
+			display:inline;
+      font-style:italic;
+}
+
+wireless {
+    color:#FF0000;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:16;
+}
+
+examples {
+    color:#000000;
+    fontFamily:Arial,Helvetica,sans-serif;
+    fontSize:12;
+    fontWeight:bold;
+    font-style:italic;
+    textDecoration:underline;
+		textAlign:center;
+    marginLeft:15;
+    marginRight:0;
+    textIndent:0;
+}

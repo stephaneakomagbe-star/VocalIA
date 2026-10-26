@@ -8,3 +8,5 @@ __pycache__/
 audios/
 node_modules/
 *.pptx
+.vercel
+.env*

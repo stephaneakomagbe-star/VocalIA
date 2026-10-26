@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation - StephFood</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #fb911f;
+            --primary-dark: #d87710;
+            --secondary: #2a4963;
+            --bg-white: #ffffff;
+            --text-dark: #1a1a2e;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.08);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 20px;
+        }
+        .reservation-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 520px;
+            overflow: hidden;
+            animation: slideUp 0.6s ease;
+            border: 1px solid #f0f0f0;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-header {
+            background: #ffffff;
+            padding: 35px 40px 25px;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .card-header .back-link {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            color: #999;
+            font-size: 1.2em;
+            transition: var(--transition);
+        }
+        .card-header .back-link:hover { color: var(--primary); }
+        .card-header .logo-text {
+            font-family: var(--font-heading);
+            font-size: 2em;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+        .card-header .logo-text span { color: var(--primary); }
+        .card-header p {
+            color: #999;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+        .card-body { padding: 40px; }
+        .card-body h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--text-dark);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: var(--radius);
+            font-family: var(--font-body);
+            font-size: 0.95em;
+            outline: none;
+            transition: var(--transition);
+            background: #ffffff;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(251,145,31,0.1);
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: none;
+        }
+        .form-group.full { grid-column: 1 / -1; }
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(251,145,31,0.3);
+        }
+        @media (max-width: 500px) {
+            .form-row { grid-template-columns: 1fr; }
+            .card-body { padding: 25px; }
+            .card-header { padding: 25px; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .reservation-card { max-width: 100%; }
+            .card-header { padding: 20px; }
+            .card-header .back-link { font-size: 1em; top: 14px; left: 16px; }
+            .card-header .logo-text { font-size: 1.5em; }
+            .card-header p { font-size: 0.82em; }
+            .card-body { padding: 22px; }
+            .card-body h3 { font-size: 1.2em; margin-bottom: 18px; }
+            .form-group { margin-bottom: 14px; }
+            .form-group label { font-size: 0.78em; }
+            .form-group input, .form-group textarea { padding: 10px 14px; font-size: 0.88em; }
+            .btn-submit { padding: 13px; font-size: 0.9em; }
+            #toast-container { top: 15px; right: 12px; }
+            .toast { padding: 12px 20px; font-size: 0.85em; max-width: 300px; }
+        }
+        @media (max-width: 380px) {
+            body { padding: 8px; }
+            .card-header { padding: 16px; }
+            .card-header .logo-text { font-size: 1.2em; }
+            .card-header .back-link { font-size: 0.85em; top: 10px; left: 12px; }
+            .card-header p { font-size: 0.75em; }
+            .card-body { padding: 16px; }
+            .card-body h3 { font-size: 1em; }
+            .form-group input, .form-group textarea { padding: 8px 12px; font-size: 0.82em; }
+            .btn-submit { padding: 11px; font-size: 0.82em; }
+            .form-row { gap: 10px; }
+        }
+        #toast-container {
+            position: fixed;
+            top: 30px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            padding: 16px 28px;
+            border-radius: var(--radius);
+            color: #fff;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInRight 0.4s ease, fadeOutRight 0.4s ease 3.6s forwards;
+            max-width: 380px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOutRight {
+            to { opacity: 0; transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="reservation-card">
+        <div class="card-header">
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i></a>
+            <a href="index.html" class="logo-text"><span>Steph</span>food</a>
+            <p>Réservez votre table en quelques clics</p>
+        </div>
+        <div class="card-body">
+            <h3>Formulaire de réservation</h3>
+            <form id="reservationForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nom complet</label>
+                        <input type="text" name="nom" id="res-nom" placeholder="Jean KOSSI" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" name="telephone" id="res-tel" placeholder="99 999 999" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="date" id="res-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Heure</label>
+                        <input type="time" name="heure" id="res-heure" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nombre de personnes</label>
+                    <input type="number" name="nb_personnes" id="res-nb" placeholder="Ex: 4" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Message (optionnel)</label>
+                    <textarea name="message" id="res-message" placeholder="Précisions, allergies, demande spéciale..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check-circle"></i> Confirmer la réservation
+                </button>
+            </form>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            const icon = type === 'success' ? '✅' : '❌';
+            toast.innerHTML = icon + ' ' + message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        (function() {
+            const supabase = window.supabase.createClient(
+                'https://hmofudgrocrchbjjtcwl.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhtb2Z1ZGdyb2NyY2hiamp0Y3dsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2MzIzNjAsImV4cCI6MjA5ODIwODM2MH0.bMZnP5QV6OhcwYoIt4jH8JTiwULTauLXPAUFRCB-5TA'
+            );
+            document.getElementById('reservationForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const nom = document.getElementById('res-nom').value.trim();
+                const telephone = document.getElementById('res-tel').value.trim();
+                const date = document.getElementById('res-date').value;
+                const heure = document.getElementById('res-heure').value;
+                const nbPersonnes = document.getElementById('res-nb').value;
+                const message = document.getElementById('res-message').value.trim();
+                if (!nom || !telephone || !date || !heure || !nbPersonnes) {
+                    showToast('Veuillez remplir tous les champs obligatoires.', 'error');
+                    return;
+                }
+                const { error } = await supabase.from('reservations').insert({
+                    nom, telephone, date, heure, nb_personnes: nbPersonnes, message
+                });
+                if (error) {
+                    showToast("Erreur lors de la réservation. Réessayez.", 'error');
+                    console.log(error);
+                } else {
+                    showToast('Réservation confirmée ! Nous vous attendons', 'success');
+                    document.getElementById('reservationForm').reset();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

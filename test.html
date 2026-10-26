@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <button onclick="tester()">Tester connexion</button>
+    <script>
+(function(){
+    const supabase = window.supabase.createClient(
+        'https://hmofudgrocrchbjjtcwl.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhtb2Z1ZGdyb2NyY2hiamp0Y3dsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2MzIzNjAsImV4cCI6MjA5ODIwODM2MH0.bMZnP5QV6OhcwYoIt4jH8JTiwULTauLXPAUFRCB-5TA'
+    );
+
+    window.tester = async function(){
+        const { data, error } = await supabase.from('reservations').select('*');
+        if (error) {
+            alert("ERREUR : " + error.message);
+            console.log(error);
+        } else {
+            alert("OK ! Connexion réussie. " + data.length + " lignes trouvées.");
+        }
+    };
+})();
+</script>

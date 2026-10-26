@@ -1,0 +1,119 @@
+;/*++
+;
+;Module Name:
+;
+;    mvusbews.inf
+;
+;--*/
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=USB
+ClassGUID={36FC9E60-C465-11CF-8056-444553540000}
+Provider="Hewlett-Packard, Inc."
+DriverVer=08/31/2012,14.30.53.595
+CatalogFile=mvusbews.cat
+
+
+; ================= Device section =====================
+
+[Manufacturer]
+%MFG%=HP,NTx86,NTamd64
+
+; For Win2K
+[HP]
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_002A&MI_01
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_032A&MI_01
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_102A&MI_01
+"P1560 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_092A&MI_01
+"P1600 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_0A2A&MI_01
+"P1130 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_042A&MI_01
+"P1210 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_052A&MI_01
+
+
+; For x86 XP and later
+[HP.NTx86]
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_002A&MI_01
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_032A&MI_01
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_102A&MI_01
+"P1560 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_092A&MI_01
+"P1600 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_0A2A&MI_01
+"P1130 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_042A&MI_01
+"P1210 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_052A&MI_01
+
+
+; For x64 XP and later
+[HP.NTamd64]
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_002A&MI_01
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_032A&MI_01
+"P1100 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_102A&MI_01
+"P1560 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_092A&MI_01
+"P1600 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_0A2A&MI_01
+"P1130 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_042A&MI_01
+"P1210 USB EWS Device Driver"	= mvusbews.Dev, USB\VID_03F0&PID_052A&MI_01
+
+
+
+[mvusbews.Dev.NT]
+CopyFiles=mvusbews.Files.Ext
+
+
+[mvusbews.Dev.NT.Services]
+Addservice = mvusbews, %SPSVCINST_ASSOCSERVICE%, mvusbews.AddService
+
+[mvusbews.AddService]
+DisplayName    = %mvusbews.SvcDesc%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %10%\System32\Drivers\mvusbews.sys
+LoadOrderGroup = Base
+
+[mvusbews.Files.Ext]
+mvusbews.sys
+
+[SourceDisksNames.x86]
+1=%Disk_Description%,,,x32
+
+[SourceDisksNames.amd64]
+1=%Disk_Description%,,,x64
+
+[SourceDisksFiles]
+mvusbews.sys = 1
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+;-------------- WDF Coinstaller installation
+
+[DestinationDirs]
+CoInstaller_CopyFiles = 11
+
+[mvusbews.Dev.NT.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles
+
+[CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+mvusbews.dll
+
+[SourceDisksFiles]
+WdfCoInstaller01009.dll=1 ; make sure the number matches with SourceDisksNames
+mvusbews.dll=1
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+
+[mvusbews.Dev.NT.Wdf]
+KmdfService = mvusbews, mvusbews_wdfsect
+[mvusbews_wdfsect]
+KmdfLibraryVersion = 1.9
+
+;---------------------------------------------------------------;
+
+[Strings]
+MFG="HP"
+MfgName="mvusbews"
+Disk_Description="USB EWS Device Driver Installation Disk"
+mvusbews.SvcDesc="USB EWS Device"
+SPSVCINST_ASSOCSERVICE= 0x00000002

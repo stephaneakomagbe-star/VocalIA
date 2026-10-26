@@ -1,0 +1,307 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 65536 bytes. Error detail: Failed to commit metaspace.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   This process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Unscaled Compressed Oops mode in which the Java heap is
+#     placed in the first 4GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 4GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (virtualSpaceNode.cpp:113), pid=16268, tid=10472
+#
+# JRE version:  (21.0.12.1+1) (build )
+# Java VM: OpenJDK 64-Bit Server VM (21.0.12.1+1-LTS, mixed mode, tiered, compressed oops, compressed class ptrs, parallel gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: --add-modules=ALL-SYSTEM --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/sun.nio.fs=ALL-UNNAMED -Declipse.application=org.eclipse.jdt.ls.core.id1 -Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Djava.import.generatesMetadataFilesAtProjectRoot=false -Dm2e.project.cache.size=50 -DDetectVMInstallationsJob.disabled=true -Dfile.encoding=utf8 -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable -javaagent:c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\lombok\lombok-1.18.39-4050.jar -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=c:\Users\ACER\AppData\Roaming\Code\User\workspaceStorage\ce63b1d7b09725d05b5ff70fb3df8885\redhat.java -Daether.dependencyCollector.impl=bf c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\server\plugins\org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar -configuration c:\Users\ACER\AppData\Roaming\Code\User\globalStorage\redhat.java\1.56.0\config_win -data c:\Users\ACER\AppData\Roaming\Code\User\workspaceStorage\ce63b1d7b09725d05b5ff70fb3df8885\redhat.java\jdt_ws --pipe=\\.\pipe\lsp-d3aaa50cf532dab268ce1cb8088c3482-sock
+
+Host: AMD Ryzen 3 3250U with Radeon Graphics         , 4 cores, 5G,  Windows 11 , 64 bit Build 26100 (10.0.26100.8737)
+Time: Thu Sep 10 08:42:32 2026 Greenwich elapsed time: 0.126433 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x000001ab77c3cdf0):  JavaThread "Unknown thread" [_thread_in_vm, id=10472, stack(0x000000a586e00000,0x000000a586f00000) (1024K)]
+
+Stack: [0x000000a586e00000,0x000000a586f00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x6d83e9]
+V  [jvm.dll+0x8b5736]
+V  [jvm.dll+0x8b7cee]
+V  [jvm.dll+0x8b83d3]
+V  [jvm.dll+0x284596]
+V  [jvm.dll+0x8b147e]
+V  [jvm.dll+0x679ad4]
+V  [jvm.dll+0x679b3a]
+V  [jvm.dll+0x67c336]
+V  [jvm.dll+0x67c202]
+V  [jvm.dll+0x67a4ae]
+V  [jvm.dll+0x26e440]
+V  [jvm.dll+0x684715]
+V  [jvm.dll+0x21973e]
+V  [jvm.dll+0x219be5]
+V  [jvm.dll+0x21a5d8]
+V  [jvm.dll+0x20f80e]
+V  [jvm.dll+0x5b6a7f]
+V  [jvm.dll+0x2218ae]
+V  [jvm.dll+0x82ec5d]
+V  [jvm.dll+0x82fc8b]
+V  [jvm.dll+0x830254]
+V  [jvm.dll+0x82fee8]
+V  [jvm.dll+0x8b36e8]
+V  [jvm.dll+0x8b34c6]
+V  [jvm.dll+0x87dce7]
+V  [jvm.dll+0x87f60d]
+V  [jvm.dll+0x3c4ef9]
+V  [jvm.dll+0x868a4b]
+V  [jvm.dll+0x458071]
+V  [jvm.dll+0x459c61]
+C  [jli.dll+0x52dc]
+C  [ucrtbase.dll+0x2cd30]
+C  [KERNEL32.DLL+0x2e957]
+C  [ntdll.dll+0xaad6c]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x000001ab0f0dbc60, length=1, elements={
+0x000001ab77c3cdf0
+}
+
+Java Threads: ( => current thread )
+=>0x000001ab77c3cdf0 JavaThread "Unknown thread"             [_thread_in_vm, id=10472, stack(0x000000a586e00000,0x000000a586f00000) (1024K)]
+Total: 1
+
+Other Threads:
+  0x000001ab0f0dca10 WatcherThread "VM Periodic Task Thread"        [id=8652, stack(0x000000a587000000,0x000000a587100000) (1024K)]
+  0x000001ab77c5af00 WorkerThread "GC Thread#0"                     [id=2104, stack(0x000000a586f00000,0x000000a587000000) (1024K)]
+Total: 2
+
+Threads with active compile tasks:
+Total: 0
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007ffe3137d530] Metaspace_lock - owner thread: 0x000001ab77c3cdf0
+
+Heap address: 0x0000000080000000, size: 2048 MB, Compressed Oops mode: 32-bit
+
+CDS archive(s) not mapped
+Compressed class space mapped at: 0x0000000100000000-0x0000000140000000, reserved size: 1073741824
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 3, Narrow klass range: 0x140000000
+
+GC Precious Log:
+ CardTable entry size: 512
+ CPUs: 4 total, 4 available
+ Memory: 6081M
+ Large Page Support: Disabled
+ NUMA Support: Disabled
+ Compressed Oops: Enabled (32-bit)
+ Alignments: Space 512K, Generation 512K, Heap 2M
+ Heap Min Capacity: 100M
+ Heap Initial Capacity: 100M
+ Heap Max Capacity: 2G
+ Pre-touch: Disabled
+ Parallel Workers: 4
+
+Heap:
+ PSYoungGen      total 29696K, used 512K [0x00000000d5580000, 0x00000000d7680000, 0x0000000100000000)
+  eden space 25600K, 2% used [0x00000000d5580000,0x00000000d5600070,0x00000000d6e80000)
+  from space 4096K, 0% used [0x00000000d7280000,0x00000000d7280000,0x00000000d7680000)
+  to   space 4096K, 0% used [0x00000000d6e80000,0x00000000d6e80000,0x00000000d7280000)
+ ParOldGen       total 68608K, used 0K [0x0000000080000000, 0x0000000084300000, 0x00000000d5580000)
+  object space 68608K, 0% used [0x0000000080000000,0x0000000080000000,0x0000000084300000)
+ Metaspace       used 837K, committed 896K, reserved 1114112K
+  class space    used 69K, committed 128K, reserved 1048576K
+
+Card table byte_map: [0x000001ab77600000,0x000001ab77a10000] _byte_map_base: 0x000001ab77200000
+
+Marking Bits: (ParMarkBitMap*) 0x00007ffe313844a0
+ Begin Bits: [0x000001ab7b0f0000, 0x000001ab7d0f0000)
+ End Bits:   [0x000001ab7d0f0000, 0x000001ab7f0f0000)
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (4 events):
+Event: 0.044 Attempting to load shared library c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.dll
+Event: 0.044 Loaded shared library c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.dll
+Event: 0.052 Attempting to load shared library c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\zip.dll
+Event: 0.053 Loaded shared library c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\zip.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes loaded (20 events):
+Event: 0.123 Loading class jdk/internal/foreign/abi/ABIDescriptor done
+Event: 0.123 Loading class jdk/internal/foreign/abi/VMStorage
+Event: 0.123 Loading class jdk/internal/foreign/abi/VMStorage done
+Event: 0.123 Loading class jdk/internal/foreign/abi/UpcallLinker$CallRegs
+Event: 0.123 Loading class jdk/internal/foreign/abi/UpcallLinker$CallRegs done
+Event: 0.123 Loading class java/lang/invoke/ConstantCallSite
+Event: 0.123 Loading class java/lang/invoke/ConstantCallSite done
+Event: 0.123 Loading class java/lang/invoke/MutableCallSite
+Event: 0.123 Loading class java/lang/invoke/MutableCallSite done
+Event: 0.123 Loading class java/lang/invoke/VolatileCallSite
+Event: 0.123 Loading class java/lang/invoke/VolatileCallSite done
+Event: 0.123 Loading class java/lang/AssertionStatusDirectives
+Event: 0.123 Loading class java/lang/AssertionStatusDirectives done
+Event: 0.123 Loading class java/lang/StringBuffer
+Event: 0.124 Loading class java/lang/Appendable
+Event: 0.124 Loading class java/lang/Appendable done
+Event: 0.124 Loading class java/lang/AbstractStringBuilder
+Event: 0.124 Loading class java/lang/AbstractStringBuilder done
+Event: 0.124 Loading class java/lang/StringBuffer done
+Event: 0.124 Loading class java/lang/StringBuilder
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+ZGC Phase Switch (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Memory protections (0 events):
+No events
+
+Nmethod flushes (0 events):
+No events
+
+Events (1 events):
+Event: 0.050 Thread 0x000001ab77c3cdf0 Thread added: 0x000001ab77c3cdf0
+
+
+Dynamic libraries:
+0x00007ff6d2a60000 - 0x00007ff6d2a6e000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.exe
+0x00007ffeb1780000 - 0x00007ffeb19e6000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ffeaf670000 - 0x00007ffeaf739000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ffeaeb90000 - 0x00007ffeaef90000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ffeae9a0000 - 0x00007ffeaeaec000 	C:\Windows\System32\ucrtbase.dll
+0x00007ffe8c170000 - 0x00007ffe8c188000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\jli.dll
+0x00007ffeb0f80000 - 0x00007ffeb1147000 	C:\Windows\System32\USER32.dll
+0x00007ffeaf120000 - 0x00007ffeaf147000 	C:\Windows\System32\win32u.dll
+0x00007ffeb1230000 - 0x00007ffeb125b000 	C:\Windows\System32\GDI32.dll
+0x00007ffeaf2c0000 - 0x00007ffeaf3e9000 	C:\Windows\System32\gdi32full.dll
+0x00007ffeaf150000 - 0x00007ffeaf1f3000 	C:\Windows\System32\msvcp_win.dll
+0x00007ffe8be10000 - 0x00007ffe8be2e000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\VCRUNTIME140.dll
+0x00007ffe9a9a0000 - 0x00007ffe9ac32000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.8737_none_3e092eaee333b772\COMCTL32.dll
+0x00007ffeaf5c0000 - 0x00007ffeaf669000 	C:\Windows\System32\msvcrt.dll
+0x00007ffeb1400000 - 0x00007ffeb1432000 	C:\Windows\System32\IMM32.DLL
+0x00007ffea50a0000 - 0x00007ffea50ac000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\vcruntime140_1.dll
+0x00007ffe40e90000 - 0x00007ffe40f1d000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\msvcp140.dll
+0x00007ffe306c0000 - 0x00007ffe31462000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\server\jvm.dll
+0x00007ffeb0cc0000 - 0x00007ffeb0d77000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ffeb15d0000 - 0x00007ffeb167a000 	C:\Windows\System32\sechost.dll
+0x00007ffeb12b0000 - 0x00007ffeb13c8000 	C:\Windows\System32\RPCRT4.dll
+0x00007ffeb0e00000 - 0x00007ffeb0e80000 	C:\Windows\System32\WS2_32.dll
+0x00007ffeae800000 - 0x00007ffeae85e000 	C:\Windows\SYSTEM32\POWRPROF.dll
+0x00007ffea7e30000 - 0x00007ffea7e66000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ffea7e70000 - 0x00007ffea7e7b000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ffeae7e0000 - 0x00007ffeae7f4000 	C:\Windows\SYSTEM32\UMPDC.dll
+0x00007ffead680000 - 0x00007ffead69b000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007ffea4b00000 - 0x00007ffea4b0a000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\jimage.dll
+0x00007ffe630f0000 - 0x00007ffe63332000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007ffeafdd0000 - 0x00007ffeb0153000 	C:\Windows\System32\combase.dll
+0x00007ffeb1150000 - 0x00007ffeb1229000 	C:\Windows\System32\OLEAUT32.dll
+0x00007ffe945e0000 - 0x00007ffe9461b000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007ffeaf3f0000 - 0x00007ffeaf49c000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ffe96750000 - 0x00007ffe9675f000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\instrument.dll
+0x00007ffe84620000 - 0x00007ffe84640000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.dll
+0x00007ffe83880000 - 0x00007ffe83898000 	c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\zip.dll
+
+JVMTI agents:
+c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\lombok\lombok-1.18.39-4050.jar path:none, loaded, not initialized, instrumentlib options:none
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.8737_none_3e092eaee333b772;c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\server
+
+VM Arguments:
+jvm_args: --add-modules=ALL-SYSTEM --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/sun.nio.fs=ALL-UNNAMED -Declipse.application=org.eclipse.jdt.ls.core.id1 -Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Djava.import.generatesMetadataFilesAtProjectRoot=false -Dm2e.project.cache.size=50 -DDetectVMInstallationsJob.disabled=true -Dfile.encoding=utf8 -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable -javaagent:c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\lombok\lombok-1.18.39-4050.jar -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=c:\Users\ACER\AppData\Roaming\Code\User\workspaceStorage\ce63b1d7b09725d05b5ff70fb3df8885\redhat.java -Daether.dependencyCollector.impl=bf 
+java_command: c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\server\plugins\org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar -configuration c:\Users\ACER\AppData\Roaming\Code\User\globalStorage\redhat.java\1.56.0\config_win -data c:\Users\ACER\AppData\Roaming\Code\User\workspaceStorage\ce63b1d7b09725d05b5ff70fb3df8885\redhat.java\jdt_ws --pipe=\\.\pipe\lsp-d3aaa50cf532dab268ce1cb8088c3482-sock
+java_class_path (initial): c:\Users\ACER\.vscode\extensions\redhat.java-1.56.0-win32-x64\server\plugins\org.eclipse.equinox.launcher_1.8.0.v20260804-1928.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+    uintx AdaptiveSizePolicyWeight                 = 90                                        {product} {command line}
+     intx CICompilerCount                          = 3                                         {product} {ergonomic}
+    uintx GCTimeRatio                              = 4                                         {product} {command line}
+     bool HeapDumpOnOutOfMemoryError               = true                                   {manageable} {command line}
+    ccstr HeapDumpPath                             = c:\Users\ACER\AppData\Roaming\Code\User\workspaceStorage\ce63b1d7b09725d05b5ff70fb3df8885\redhat.java         {manageable} {command line}
+   size_t InitialHeapSize                          = 104857600                                 {product} {command line}
+   size_t MaxHeapSize                              = 2147483648                                {product} {command line}
+   size_t MaxNewSize                               = 715653120                                 {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 524288                                    {product} {ergonomic}
+   size_t MinHeapSize                              = 104857600                                 {product} {command line}
+   size_t NewSize                                  = 34603008                                  {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 5832780                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122912730                              {pd product} {ergonomic}
+   size_t OldSize                                  = 70254592                                  {product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122912730                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 2147483648                             {manageable} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+     bool UseParallelGC                            = true                                      {product} {command line}
+
+Logging:
+Log output configuration:
+ #0: stdout all=off uptime,level,tags foldmultilines=false
+ #1: stderr all=off uptime,level,tags foldmultilines=false
+
+Release file:
+<release file has not been read>
+Environment Variables:
+PATH=C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\ffmpeg\bin;C:\Program Files (x86)\cloudflared\;C:\Users\ACER\AppData\Local\Microsoft\WindowsApps;C:\Users\ACER\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\ACER\AppData\Local\Python\bin;C:\Users\ACER\AppData\Roaming\npm;C:\Users\ACER\AppData\Local\Programs\cursor\resources\app\bin
+USERNAME=ACER
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=AMD64 Family 23 Model 24 Stepping 1, AuthenticAMD
+TMP=C:\Users\ACER\AppData\Local\Temp
+TEMP=C:\Users\ACER\AppData\Local\Temp
+
+
+
+
+Periodic native trim disabled
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 26100 (10.0.26100.8737)
+OS uptime: 0 days 9:17 hours
+
+CPU: total 4 (initial active 4) (4 cores per cpu, 2 threads per core) family 23 model 24 stepping 1 microcode 0x8108109, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4a, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, clmul, bmi1, bmi2, adx, sha, fma, vzeroupper, clflush, clflushopt, rdtscp, f16c
+Processor Information for the first 4 processors :
+  Max Mhz: 2600, Current Mhz: 2600, Mhz Limit: 2600
+
+Memory: 4k page, system-wide physical 6081M (674M free)
+TotalPageFile size 9401M (AvailPageFile size 2M)
+current process WorkingSet (physical memory assigned to process): 17M, peak: 17M
+current process commit charge ("private bytes"): 182M, peak: 184M
+
+vm_info: OpenJDK 64-Bit Server VM (21.0.12.1+1-LTS) for windows-amd64 JRE (21.0.12.1+1-LTS), built on 2026-08-18T00:00:00Z by "admin" with MS VC++ 17.12 (VS2022)
+
+END.

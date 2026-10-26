@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emploi Togo</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+            font-family: poppins, sans-serif;
+            scroll-behavior: smooth;
+        }
+        .header{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            padding: 20px;
+            width: 100%;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.5s;
+            background-color: #fff;
+        }
+        .nav-bar{
+            display: flex;
+            position: relative;
+        }
+        .logo{
+            color: #000;
+            font-size: 2em;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .logo span{
+            color: #fb911f;
+        }
+        .nav-bar{
+            display: flex;
+            position: relative;
+        }
+        .nav-bar li{
+            list-style: none;
+        }
+        .nav-bar a{
+            color: #000;
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 300;
+        }
+        .btn-connexion{
+            padding: 10px 20px;
+            background-color:#fff;
+            margin-top: -10px;
+            text-transform: uppercase;
+            border-radius: 30px;
+        }
+        .btn-connexion:hover{
+            background: #fff;
+            transition: ease-out;
+        }
+        .nav-bar a:hover{
+            color:#fff;
+            border-bottom: 2px solid #fff;
+        }
+        .btn-compte{
+            padding: 10px 20px;
+            background-color:#fb911f;
+            margin-top: -10px;
+            text-transform: uppercase;
+            border-radius: 30px;
+        }
+        .btn-compte:hover{
+            background: #d87710;
+            transition: ease-out;
+        }
+        .nav-bar a:hover{
+            color:#fb911f;
+            border-bottom: 2px solid #fb911f;
+        }
+        .baniere{
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+        }
+        .baniere .contenu{
+            color: #000;
+            max-width: 70%;
+            text-align: center;
+            }
+        .baniere .contenu h1{
+                font-size: 1em;             
+            }
+        .baniere .contenu h2{
+            color: #000;
+            font-size: 3em;
+            text-transform: capitalize;
+        }
+        .contenu p:nth-child(2){
+            color: #000;
+            font-size: 1.5em;
+        }
+        .num{
+            padding: 8px;
+            background-color: rgba(255, 111, 10, 0.1);
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            bottom: 40px;
+        }
+        .contentnum{
+            padding: 40px;
+        }
+            .btn1{
+            font-size: 1em;
+            color: #fff;
+            background: #fb911f;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-top: 20px;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: 0.5s;
+            margin-left: 10px;  
+            border-radius: 10px;     
+        }
+        .btn1:hover{
+            letter-spacing: 4px;
+        }
+        .btn2{
+            font-size: 1em;
+            color: #fff;
+            background: #1376b8;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-top: 20px;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: 0.5s;
+            margin-left: 10px;  
+            border-radius: 10px;     
+        }
+        .btn2:hover{
+            letter-spacing: 4px;
+        }
+        .apropos{
+            background-size: cover;
+            font-size: 50;
+            text-align:center;
+            background-color: gray;
+        }
+        .apropos .contenu{
+            display: flex;
+            margin-top:40px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+        .apropos .contenu .box{
+            width: 340px;
+            margin: 20px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-radius: 15px;
+            padding: 40px;
+        }
+        .apropos .contenu .box .imbox{
+            width: 80px;
+            height: 80px;
+            border-radius: 50px;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .apropos .contenu .box .imbox img{
+            position: relative;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            object-fit: cover;
+            justify-content: center;
+            align-items: center;
+        }
+        .apropos .contenu .box .text{
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .apropos .contenu .box .text h3{
+            color: #fb911f;
+            margin-top: 20px;
+            font-size: 1em;
+            font-weight: 600px;
+        }
+        .titre-texte{
+            color: #000;
+            font-size: 2em;
+            font-weight:300px;
+            text-transform:capitalize;
+        }
+        .titre-texte span{
+            color:#fb911f;
+            font-size:1.5em;
+            font-weight:700px;
+        }
+        section{
+            padding: 100px;
+        }
+        .offres{
+            background-color:#1376b8;
+        }
+        .offre{
+            position:relative;
+            width:100%;
+            display:flex;
+            justify-content:space-between;
+            color: #fff;
+            font-size: 1em;
+            font-weight: 100px;
+            text-transform:capitalize;
+        }
+        .offre h3{
+            text-align: center;
+        }
+        .questions{
+            background-color:gray;
+        }
+        .question{
+            text-align: center;
+        }
+        .questions{
+            background-size: cover;
+            font-size: 50;
+            text-align:center;
+            background-color: gray;
+        }
+        .questions .contenu{
+            display: flex;
+            margin-top:40px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+        .questions .contenu .box{
+            width: 340px;
+            margin: 20px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-radius: 15px;
+            padding: 40px;
+        }
+        .questions .contenu .box .imbox{
+            width: 80px;
+            height: 80px;
+            border-radius: 50px;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .questions .contenu .box .imbox img{
+            position: relative;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            object-fit: cover;
+            justify-content: center;
+            align-items: center;
+        }
+        .questions .contenu .box .text{
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .questions .contenu .box .text h3{
+            color: #fb911f;
+            margin-top: 20px;
+            font-size: 1em;
+            font-weight: 600px;
+        }
+        démarche{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="#" class="logo"><span>E</span>mploi+</a>
+        <ul class="nav-bar">
+            <li><a href="#" class="btn-connexion">Se connecter</a></li>
+            <li><a href="#" class="btn-compte">Créer un compte</a></li>
+        </ul>
+    </header>
+    <section class="baniere" id="baniere">
+        <div class="contenu">
+            <div class="contentnum">
+                <span class="num">La plateforme #1 de recrutement au Togo</span>
+            </div>
+            <p>Connectons les talents togolais avec les meilleures opportunités</p>
+            <br>
+            <p>EMPLOI+ facilite la rencontre entre chercheurs d'emploi et entreprises au Togo. <br>
+            Trouvez votre prochain emploi ou recrutez les meilleurs talents locaux en quelques clics.</p>
+            <br>
+        <div>
+            <a href="#" class="btn1">Je cherche un emploi</a>
+            <a href="#" class="btn2">Je recrute des talents</a>
+        </div>
+        </div>
+    </section>
+    <section class="apropos" id="apropos">
+        <div class="titre blanc">
+            <h3 class="titre-texte"><span>A</span> propos d'Emploi+</h3>
+            <p>EMPLOI+ est la première plateforme de recrutement dédiée exclusivement au marché togolais. <br>
+                Notre mission est de transformer le paysage de l'emploi au Togo en créant des connexions <br>
+                significatives entre les talents locaux et les entreprises qui recherchent les meilleures compétences.</p>
+        </div>
+        <div class="contenu">
+            <div class="box">
+                <div class="imbox">
+            <img src="Image/photo38.jpg" alt="Image" width="500px">
+        </div>
+        <div class="text">
+            <h3>Recherche Intelligente</h3>
+            <br>
+            <p>Filtres avancés pour trouver l'opportunité parfaite.</p>
+        </div>
+            </div>
+                    <div class="box">
+                <div class="imbox">
+            <img src="Image/photo37.jpg" alt="Image" width="500px">
+        </div>
+        <div class="text">
+            <h3>100% Local</h3>
+            <br>
+            <p>Toutes les villes du Togo : Lomé, Kara, Sokodé...</p>
+        </div>
+                    </div>
+                    <div class="box">
+                <div class="imbox">
+            <img src="Image/photo36.jpg" alt="Image" width="500px">
+        </div>
+        <div class="text">
+            <h3>Contact Direct</h3>
+            <br>
+            <p>Échangez directement avec les recruteurs</p>
+        </div>
+        </div>
+        </div>
+    </section>
+    <section class="offres" id="offres">
+        <div class="offre">
+                <div class="offre-content">
+                <h3>1000+</h3>
+                <br>
+                <p>Offres d'emploi actives</p>
+            </div>
+            <div class="offre-content">
+                <h3>5000+</h3>
+                <br>
+                <p>Chercheurs d'emploi inscrits</p>
+            </div>
+            <div>
+                <h3>200+</h3>
+                <br>
+                <p>Entreprises partenaires</p>
+            </div>
+        </div>
+    </section>
+    <section class="questions" id="questions">
+        <div class="question">
+            <h3>Pourquoi choisir EMPLOI+ ?</h3>
+            <br>
+            <p>Une plateforme moderne conçue spécifiquement pour le marché de l'emploi togolais</p>
+        </div>
+        <div class="contenu">
+            <div class="box">
+                <div class="imbox">
+                    <img src="Image/photo38.jpg">
+                </div>
+                <div class="text">
+                    <h3>Recherche simplifiée</h3>
+                    <br>
+                    <p>Trouvez rapidement les offres <br>
+                        qui correspondent à votre profil <br>
+                        avec nos filtres avancés</p>
+                </div>
+            </div>
+            <div class="box">
+                <div class="imbox">
+                    <img src="Image/photo37.jpg">
+                </div>
+                <div class="text">
+                    <h3>Emplois locaux</h3>
+                    <br>
+                    <p>Accédez aux opportunités dans <br> 
+                    toutes les régions du Togo : <br>
+                    Lomé, Kara, Sokodé, Atakpamé...</p>
+                </div>
+            </div>
+            <div class="box">
+                <div class="imbox">
+                    <img src="Image/photo40.jpg">
+                </div>
+                <div class="text">
+                    <h3>Tous les secteurs</h3>
+                    <br>
+                    <p>IT, Santé, Éducation, Commerce,<br>
+                     BTP, Hôtellerie et bien plus encore</p>
+                </div>
+            </div>
+            </div>
+            <br>
+            <div class="démarche">
+                <h3>Comment ça marche ?</h3>
+                <br>
+            </div>
+            <div class="profil">
+            </div>
+    </section>
+</body>

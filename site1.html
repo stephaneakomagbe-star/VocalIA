@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon site</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        header{
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            width: 70%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px auto;
+            padding: 5px 10px;
+            background-color: goldenrod;
+            background-position: center;
+            display: flex;
+        }
+        nav a{
+            margin: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            color: rgb(22, 5, 255);
+            font-weight: 700;
+            text-align: center;
+        }
+        section.nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+        }
+        section.nav-bar img{
+            margin-left: 60px;
+
+        }
+
+        .inmage{
+            width: 70px;
+            height: 70px;
+        }
+        .btn a{
+            text-decoration: none;
+        }
+        .btn{
+            padding: 6px;
+            background-color: red;
+            border-radius: 5px;
+            color: white;
+
+        }
+        .btn:hover{
+            color: green;
+        }
+        .acc a{
+            font-size: 17px;
+            color: black;
+        }
+        .acc a:hover{
+            color: green;                  
+        }
+        .nav-bar{
+            background-color: bisque;
+            left: 50px;
+            right: 100px;
+            position: relative;
+        }
+        body{
+            background-image:url("inmage IAI/emploi.jpg") ;
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-position: center;
+            height: 300vh;
+            overflow-x: hidden ;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a class="btn">Information Urgentes</a>
+            <a href="#">Actualités</a>
+            <a href="#">Opportunités</a>
+        </nav>
+            <a class="btn1">Me connecter</a>
+    </header>
+        <br>
+        <section class="nav-bar">
+            <img class="inmage" src="inmage IAI/logo.jpeg" alt="logoafrique">
+            <nav class="acc">
+                <a href="#">Accueil</a>
+                <a href="#">A propos</a>
+                <a href="#">Admission</a>
+                <a href="#">Formations</a>
+                <a href="#">Administration</a>
+                <a href="#">Galerie</a>
+                <a href="#">Contact</a>
+            </nav>
+        </section>
+        
+</body>
+</html>

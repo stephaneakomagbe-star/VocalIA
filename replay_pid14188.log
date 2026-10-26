@@ -1,0 +1,623 @@
+version 2
+JvmtiExport can_access_local_variables 0
+JvmtiExport can_hotswap_or_post_breakpoint 1
+JvmtiExport can_post_on_exceptions 0
+# 199 ciObject found
+instanceKlass java/util/jar/Manifest
+ciInstanceKlass java/lang/Cloneable 1 0 7 100 1 100 1 1 1
+instanceKlass  @bci jdk/internal/reflect/MethodHandleObjectFieldAccessorImpl set (Ljava/lang/Object;Ljava/lang/Object;)V 29 <adapter> ; # java/lang/invoke/LambdaForm$MH+0x000001794f138400
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f138000
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f136400
+instanceKlass  @bci org/eclipse/osgi/util/NLS <clinit> ()V 7 <appendix> argL0 ; # org/eclipse/osgi/util/NLS$$Lambda+0x000001794f12fb30
+instanceKlass org/eclipse/osgi/util/NLS
+instanceKlass org/apache/aries/spifly/WeavingData
+instanceKlass org/apache/aries/spifly/ConsumerRestriction
+instanceKlass org/apache/aries/spifly/MethodRestriction
+instanceKlass org/apache/aries/spifly/ArgRestrictions
+instanceKlass org/apache/aries/spifly/BundleDescriptor
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator addConsumerWeavingData (Lorg/osgi/framework/Bundle;Ljava/lang/String;)V 177 <appendix> member <vmtarget> ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f132e38
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator addConsumerWeavingData (Lorg/osgi/framework/Bundle;Ljava/lang/String;)V 161 <appendix> member <vmtarget> ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f132be0
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator addConsumerWeavingData (Lorg/osgi/framework/Bundle;Ljava/lang/String;)V 149 <appendix> argL0 ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f1329c0
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator addConsumerWeavingData (Lorg/osgi/framework/Bundle;Ljava/lang/String;)V 141 <appendix> argL0 ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f132780
+instanceKlass org/apache/aries/spifly/ConsumerBundleTrackerCustomizer
+instanceKlass java/util/Formattable
+instanceKlass java/time/LocalTime$1
+instanceKlass sun/util/locale/provider/LocaleResources
+instanceKlass  @bci sun/util/locale/provider/JRELocaleProviderAdapter getDecimalFormatSymbolsProvider ()Ljava/text/spi/DecimalFormatSymbolsProvider; 8 <appendix> member <vmtarget> ; # sun/util/locale/provider/JRELocaleProviderAdapter$$Lambda+0x800000065
+instanceKlass java/text/DecimalFormatSymbols
+instanceKlass sun/util/resources/Bundles$2
+instanceKlass sun/util/resources/Bundles$CacheKeyReference
+instanceKlass  @bci sun/util/cldr/CLDRLocaleProviderAdapter applyAliases (Ljava/util/Locale;)Ljava/util/Locale; 4 <appendix> argL0 ; # sun/util/cldr/CLDRLocaleProviderAdapter$$Lambda+0x80000005e
+instanceKlass sun/util/resources/LocaleData$LocaleDataResourceBundleProvider
+instanceKlass java/util/spi/ResourceBundleProvider
+instanceKlass sun/util/resources/Bundles$CacheKey
+instanceKlass sun/util/resources/Bundles
+instanceKlass sun/util/resources/LocaleData$LocaleDataStrategy
+instanceKlass sun/util/resources/Bundles$Strategy
+instanceKlass sun/util/resources/LocaleData$1
+instanceKlass sun/util/resources/LocaleData
+instanceKlass java/util/Locale$Builder
+instanceKlass sun/util/locale/provider/CalendarDataUtility
+instanceKlass sun/util/locale/provider/AvailableLanguageTags
+instanceKlass  @bci sun/util/locale/provider/JRELocaleProviderAdapter getDateFormatSymbolsProvider ()Ljava/text/spi/DateFormatSymbolsProvider; 8 <appendix> member <vmtarget> ; # sun/util/locale/provider/JRELocaleProviderAdapter$$Lambda+0x800000064
+instanceKlass sun/util/resources/cldr/provider/CLDRLocaleDataMetaInfo
+instanceKlass jdk/internal/module/ModulePatcher$PatchedModuleReader
+instanceKlass  @bci sun/util/cldr/CLDRLocaleProviderAdapter <init> ()V 4 <appendix> argL0 ; # sun/util/cldr/CLDRLocaleProviderAdapter$$Lambda+0x800000060
+instanceKlass sun/util/locale/BaseLocale$Key
+instanceKlass sun/util/locale/InternalLocaleBuilder$CaseInsensitiveChar
+instanceKlass sun/util/locale/InternalLocaleBuilder
+instanceKlass sun/util/locale/StringTokenIterator
+instanceKlass sun/util/locale/ParseStatus
+instanceKlass sun/util/locale/LanguageTag
+instanceKlass sun/util/cldr/CLDRBaseLocaleDataMetaInfo
+instanceKlass sun/util/locale/provider/LocaleDataMetaInfo
+instanceKlass sun/util/locale/provider/ResourceBundleBasedAdapter
+instanceKlass sun/util/locale/provider/LocaleProviderAdapter
+instanceKlass java/util/spi/LocaleServiceProvider
+instanceKlass java/text/DateFormatSymbols
+instanceKlass java/time/LocalDate$1
+instanceKlass java/time/ZonedDateTime$1
+instanceKlass java/util/Calendar
+instanceKlass java/util/Formatter$FixedString
+instanceKlass java/util/Formatter$DateTime
+instanceKlass java/util/Formatter$Flags
+instanceKlass java/util/Formatter$FormatSpecifier
+instanceKlass java/util/Formatter$FormatString
+instanceKlass java/util/Formatter$Conversion
+instanceKlass  @bci java/util/regex/Pattern Range (II)Ljava/util/regex/Pattern$CharPredicate; 23 <appendix> member <vmtarget> ; # java/util/regex/Pattern$$Lambda+0x800000029
+instanceKlass java/util/Formatter
+instanceKlass  @bci java/util/ResourceBundle$ResourceBundleProviderHelper loadPropertyResourceBundle (Ljava/lang/Module;Ljava/lang/Module;Ljava/lang/String;Ljava/util/Locale;)Ljava/util/ResourceBundle; 14 <appendix> member <vmtarget> ; # java/util/ResourceBundle$ResourceBundleProviderHelper$$Lambda+0x000001794f0da198
+instanceKlass  @bci java/util/ResourceBundle$ResourceBundleProviderHelper newResourceBundle (Ljava/lang/Class;)Ljava/util/ResourceBundle; 22 <appendix> member <vmtarget> ; # java/util/ResourceBundle$ResourceBundleProviderHelper$$Lambda+0x80000000f
+instanceKlass  @bci java/util/ResourceBundle$ResourceBundleProviderHelper loadResourceBundle (Ljava/lang/Module;Ljava/lang/Module;Ljava/lang/String;Ljava/util/Locale;)Ljava/util/ResourceBundle; 13 <appendix> member <vmtarget> ; # java/util/ResourceBundle$ResourceBundleProviderHelper$$Lambda+0x000001794f0d9850
+instanceKlass java/util/ResourceBundle$ResourceBundleProviderHelper
+instanceKlass java/util/ResourceBundle$3
+instanceKlass  @bci java/util/ResourceBundle getLoader (Ljava/lang/Module;)Ljava/lang/ClassLoader; 6 <appendix> member <vmtarget> ; # java/util/ResourceBundle$$Lambda+0x000001794f0d93f0
+instanceKlass java/util/ResourceBundle$CacheKeyReference
+instanceKlass java/util/ResourceBundle$CacheKey
+instanceKlass sun/util/locale/LocaleObjectCache
+instanceKlass java/util/ResourceBundle$Control
+instanceKlass java/util/logging/Level$RbAccess
+instanceKlass  @bci java/util/logging/LogRecord inferCaller ()V 18 <appendix> member <vmtarget> ; # java/util/logging/LogRecord$$Lambda+0x000001794f0d8930
+instanceKlass java/lang/StackStreamFactory$FrameBuffer
+instanceKlass java/lang/StackStreamFactory
+instanceKlass  @bci java/util/logging/LogRecord$CallerFinder get ()Ljava/util/Optional; 4 <appendix> member <vmtarget> ; # java/util/logging/LogRecord$CallerFinder$$Lambda+0x000001794f0d7130
+instanceKlass  @bci org/eclipse/osgi/util/NLS <clinit> ()V 7 <bsm> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f136000
+instanceKlass  @bci java/util/logging/LogRecord$CallerFinder <clinit> ()V 0 <appendix> argL0 ; # java/util/logging/LogRecord$CallerFinder$$Lambda+0x000001794f0d6f10
+instanceKlass java/util/logging/LogRecord$CallerFinder
+instanceKlass java/time/zone/Ser
+instanceKlass java/io/Externalizable
+instanceKlass java/time/zone/ZoneRulesProvider$1
+instanceKlass java/time/zone/ZoneRulesProvider
+instanceKlass sun/util/calendar/ZoneInfoFile$ZoneOffsetTransitionRule
+instanceKlass sun/util/calendar/ZoneInfoFile$1
+instanceKlass sun/util/calendar/ZoneInfoFile
+instanceKlass java/util/TimeZone
+instanceKlass java/util/logging/LogManager$CloseOnReset
+instanceKlass java/util/logging/StreamHandler$1
+instanceKlass java/util/logging/Handler$1
+instanceKlass java/util/logging/ErrorManager
+instanceKlass jdk/internal/logger/SimpleConsoleLogger$Formatting
+instanceKlass  @bci java/util/logging/SimpleFormatter <init> ()V 5 <appendix> argL0 ; # java/util/logging/SimpleFormatter$$Lambda+0x000001794f0d4ad0
+instanceKlass java/util/logging/Formatter
+instanceKlass java/time/Clock
+instanceKlass java/time/InstantSource
+instanceKlass java/util/logging/LogRecord
+instanceKlass org/apache/aries/spifly/ProviderServiceFactory
+instanceKlass ch/qos/logback/classic/spi/LogbackServiceProvider
+instanceKlass org/slf4j/spi/SLF4JServiceProvider
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxBundle$ResolvedModuleClassLoader
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxBundle$1
+instanceKlass org/apache/aries/spifly/ProviderBundleTrackerCustomizer$ServiceDetails
+instanceKlass org/eclipse/osgi/storage/bundlefile/ZipBundleFile$1
+instanceKlass  @bci org/eclipse/osgi/storage/bundlefile/ZipBundleFile getPaths ()Ljava/lang/Iterable; 1 <appendix> member <vmtarget> ; # org/eclipse/osgi/storage/bundlefile/ZipBundleFile$$Lambda+0x000001794f12ea88
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator registerProviderBundle (Ljava/lang/String;Lorg/osgi/framework/Bundle;Ljava/util/Map;)V 33 <appendix> member <vmtarget> ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f131e90
+instanceKlass org/apache/aries/spifly/Pair
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator registerProviderBundle (Ljava/lang/String;Lorg/osgi/framework/Bundle;Ljava/util/Map;)V 5 <appendix> argL0 ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f131a30
+instanceKlass  @bci org/osgi/framework/FrameworkUtil <clinit> ()V 27 <appendix> member <vmtarget> ; # org/osgi/framework/FrameworkUtil$$Lambda+0x000001794f12e850
+instanceKlass org/osgi/framework/connect/FrameworkUtilHelper
+instanceKlass  @bci org/osgi/framework/FrameworkUtil <clinit> ()V 8 <appendix> argL0 ; # org/osgi/framework/FrameworkUtil$$Lambda+0x000001794f12e430
+instanceKlass org/osgi/framework/FrameworkUtil
+instanceKlass  @bci aQute/bnd/header/Attrs mergeWith (LaQute/bnd/header/Attrs;Z)V 4 <adapter> ; # java/lang/invoke/LambdaForm$MH+0x000001794f134c00
+# instanceKlass java/lang/invoke/LambdaForm$DMH+0x000001794f134800
+instanceKlass  @bci aQute/bnd/header/Attrs mergeWith (LaQute/bnd/header/Attrs;Z)V 4 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f134400
+instanceKlass  @bci aQute/bnd/header/Attrs mergeWith (LaQute/bnd/header/Attrs;Z)V 4 <appendix> member <vmtarget> ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f1317f8
+instanceKlass  @cpi aQute/bnd/header/Attrs 639 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f134000
+instanceKlass  @bci org/apache/aries/spifly/ProviderBundleTrackerCustomizer getFromAutoProviderProperty (Lorg/osgi/framework/Bundle;Ljava/util/Map;)Ljava/util/Map$Entry; 58 <appendix> argL0 ; # org/apache/aries/spifly/ProviderBundleTrackerCustomizer$$Lambda+0x000001794f1315d8
+instanceKlass  @bci org/apache/aries/spifly/ProviderBundleTrackerCustomizer getFromAutoProviderProperty (Lorg/osgi/framework/Bundle;Ljava/util/Map;)Ljava/util/Map$Entry; 50 <appendix> member <vmtarget> ; # org/apache/aries/spifly/ProviderBundleTrackerCustomizer$$Lambda+0x000001794f131390
+instanceKlass java/util/AbstractMap$SimpleImmutableEntry
+instanceKlass  @bci aQute/bnd/stream/EntryPipeline values ()Ljava/util/stream/Stream; 4 <appendix> argL0 ; # aQute/bnd/stream/EntryPipeline$$Lambda+0x000001794f131150
+instanceKlass  @bci aQute/bnd/stream/EntryPipeline filterKey (Ljava/util/function/Predicate;)LaQute/bnd/stream/MapStream; 14 <appendix> member <vmtarget> ; # aQute/bnd/stream/EntryPipeline$$Lambda+0x000001794f130ef8
+instanceKlass  @bci org/apache/aries/spifly/ProviderBundleTrackerCustomizer getFromAutoProviderProperty (Lorg/osgi/framework/Bundle;Ljava/util/Map;)Ljava/util/Map$Entry; 27 <appendix> member <vmtarget> ; # org/apache/aries/spifly/ProviderBundleTrackerCustomizer$$Lambda+0x000001794f130ca0
+instanceKlass sun/invoke/util/VerifyAccess$1
+instanceKlass aQute/bnd/stream/EntryPipeline
+instanceKlass  @bci org/apache/aries/spifly/ProviderBundleTrackerCustomizer getFromAutoProviderProperty (Lorg/osgi/framework/Bundle;Ljava/util/Map;)Ljava/util/Map$Entry; 15 <appendix> argL0 ; # org/apache/aries/spifly/ProviderBundleTrackerCustomizer$$Lambda+0x000001794f130640
+instanceKlass  @bci org/apache/aries/spifly/ProviderBundleTrackerCustomizer getFromAutoProviderProperty (Lorg/osgi/framework/Bundle;Ljava/util/Map;)Ljava/util/Map$Entry; 7 <appendix> argL0 ; # org/apache/aries/spifly/ProviderBundleTrackerCustomizer$$Lambda+0x000001794f130400
+instanceKlass aQute/bnd/stream/MapStream
+instanceKlass org/apache/aries/spifly/SpiFlyConstants
+instanceKlass org/apache/aries/spifly/ConsumerHeaderProcessor
+instanceKlass  @bci aQute/bnd/header/OSGiHeader parseHeader (Ljava/lang/String;LaQute/service/reporter/Reporter;LaQute/bnd/header/Parameters;)LaQute/bnd/header/Parameters; 437 <appendix> member <vmtarget> ; # aQute/bnd/header/OSGiHeader$$Lambda+0x000001794f128800
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 72 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12bc10
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 64 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12b9f0
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 56 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12b7d0
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 48 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12b5b0
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 40 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12b390
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 32 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12b170
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 24 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12af50
+instanceKlass  @bci aQute/bnd/header/Attrs <clinit> ()V 16 <appendix> argL0 ; # aQute/bnd/header/Attrs$$Lambda+0x000001794f12ad30
+instanceKlass aQute/bnd/header/Attrs$DataType
+instanceKlass aQute/bnd/header/Attrs
+instanceKlass aQute/libg/qtokens/QuotedTokenizer
+instanceKlass  @bci java/util/regex/Pattern union (Ljava/util/regex/Pattern$CharPredicate;Ljava/util/regex/Pattern$CharPredicate;Z)Ljava/util/regex/Pattern$CharPredicate; 6 <appendix> member <vmtarget> ; # java/util/regex/Pattern$$Lambda+0x800000031
+instanceKlass  @bci java/util/regex/CharPredicates ASCII_WORD ()Ljava/util/regex/Pattern$BmpCharPredicate; 0 <appendix> argL0 ; # java/util/regex/CharPredicates$$Lambda+0x000001794f0d2fa0
+instanceKlass aQute/bnd/header/OSGiHeader
+instanceKlass org/eclipse/osgi/framework/util/CaseInsensitiveDictionaryMap$CaseInsentiveEntry
+instanceKlass org/eclipse/osgi/framework/util/CaseInsensitiveDictionaryMap$EntryIterator
+instanceKlass org/eclipse/osgi/framework/util/CaseInsensitiveDictionaryMap$KeyIterator
+instanceKlass java/util/ResourceBundle$1
+instanceKlass jdk/internal/access/JavaUtilResourceBundleAccess
+instanceKlass java/util/ResourceBundle
+instanceKlass  @bci org/eclipse/osgi/storage/Storage lambda$7 (Ljava/util/List;Ljava/lang/String;)Ljava/util/stream/Stream; 7 <appendix> member <vmtarget> ; # org/eclipse/osgi/storage/Storage$$Lambda+0x000001794f12c000
+instanceKlass org/eclipse/osgi/internal/container/InternalUtils$1
+instanceKlass  @bci org/eclipse/osgi/storage/Storage findEntries (Ljava/util/List;Ljava/lang/String;Ljava/lang/String;I)Ljava/util/Enumeration; 101 <appendix> argL0 ; # org/eclipse/osgi/storage/Storage$$Lambda+0x000001794f127a80
+instanceKlass  @bci org/eclipse/osgi/storage/Storage findEntries (Ljava/util/List;Ljava/lang/String;Ljava/lang/String;I)Ljava/util/Enumeration; 91 <appendix> member <vmtarget> ; # org/eclipse/osgi/storage/Storage$$Lambda+0x000001794f127838
+instanceKlass org/eclipse/osgi/storage/ManifestLocalization$BundleResourceBundle
+instanceKlass org/eclipse/osgi/storage/ManifestLocalization
+instanceKlass org/apache/aries/spifly/ProviderBundleTrackerCustomizer
+instanceKlass org/osgi/util/tracker/BundleTracker
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator start (Lorg/osgi/framework/BundleContext;Ljava/lang/String;)V 46 <appendix> argL0 ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f129668
+instanceKlass  @bci org/apache/aries/spifly/BaseActivator start (Lorg/osgi/framework/BundleContext;Ljava/lang/String;)V 20 <appendix> argL0 ; # org/apache/aries/spifly/BaseActivator$$Lambda+0x000001794f129428
+instanceKlass aQute/bnd/header/Parameters
+instanceKlass java/util/AbstractList$Itr
+instanceKlass  @bci org/eclipse/osgi/internal/weaving/WovenClassImpl notifyWovenClassListeners ()V 1 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/weaving/WovenClassImpl$$Lambda+0x000001794f126c90
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistrationImpl$FrameworkHookRegistration getSafeService (Lorg/eclipse/osgi/internal/framework/BundleContextImpl;Lorg/eclipse/osgi/internal/serviceregistry/ServiceConsumer;)Ljava/lang/Object; 17 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/serviceregistry/ServiceRegistrationImpl$FrameworkHookRegistration$$Lambda+0x000001794f126a38
+instanceKlass org/apache/aries/spifly/Util
+instanceKlass org/objectweb/asm/Opcodes
+instanceKlass org/objectweb/asm/ClassVisitor
+instanceKlass org/apache/aries/spifly/dynamic/ClientWeavingHook
+instanceKlass java/util/logging/Logger$SystemLoggerHelper$1
+instanceKlass java/util/logging/Logger$SystemLoggerHelper
+instanceKlass java/util/logging/LogManager$4
+instanceKlass jdk/internal/logger/BootstrapLogger$BootstrapExecutors
+instanceKlass jdk/internal/logger/LoggerFinderLoader
+instanceKlass  @bci java/lang/System$LoggerFinder accessProvider ()Ljava/lang/System$LoggerFinder; 8 <appendix> argL0 ; # java/lang/System$LoggerFinder$$Lambda+0x000001794f0d1650
+instanceKlass  @bci java/util/logging/Level$KnownLevel findByName (Ljava/lang/String;Ljava/util/function/Function;)Ljava/util/Optional; 29 <appendix> argL0 ; # java/util/logging/Level$KnownLevel$$Lambda+0x800000022
+instanceKlass  @bci java/util/logging/Level findLevel (Ljava/lang/String;)Ljava/util/logging/Level; 13 <appendix> argL0 ; # java/util/logging/Level$$Lambda+0x800000010
+instanceKlass java/util/logging/LogManager$LoggerContext$1
+instanceKlass java/util/logging/LogManager$VisitedLoggers
+instanceKlass java/util/logging/LogManager$2
+instanceKlass java/util/logging/LogManager$LoggingProviderAccess
+instanceKlass java/util/logging/LogManager$LogNode
+instanceKlass java/util/logging/LogManager$LoggerContext
+instanceKlass java/util/logging/LogManager$1
+instanceKlass java/util/logging/LogManager
+instanceKlass java/util/logging/Logger$ConfigurationData
+instanceKlass java/util/logging/Logger$LoggerBundle
+instanceKlass  @bci java/util/logging/Level$KnownLevel add (Ljava/util/logging/Level;)V 49 <appendix> argL0 ; # java/util/logging/Level$KnownLevel$$Lambda+0x800000021
+instanceKlass  @bci java/util/logging/Level$KnownLevel add (Ljava/util/logging/Level;)V 19 <appendix> argL0 ; # java/util/logging/Level$KnownLevel$$Lambda+0x800000020
+instanceKlass java/util/logging/Level
+instanceKlass java/util/logging/Handler
+instanceKlass java/util/logging/Logger
+instanceKlass org/osgi/util/tracker/BundleTrackerCustomizer
+instanceKlass org/eclipse/osgi/internal/loader/ModuleClassLoader$DefineClassResult
+instanceKlass org/apache/aries/spifly/BaseActivator
+instanceKlass org/eclipse/osgi/internal/weaving/WeavingHookConfigurator$WovenClassContext
+instanceKlass org/eclipse/osgi/internal/weaving/WovenClassImpl
+instanceKlass org/osgi/framework/hooks/weaving/WovenClass
+instanceKlass org/eclipse/osgi/internal/loader/classpath/ClasspathManager$DefineContext
+instanceKlass org/eclipse/osgi/internal/loader/BundleLoader$3
+instanceKlass org/eclipse/osgi/container/ModuleContainer$ContainerStartLevel$2
+instanceKlass java/util/concurrent/CountDownLatch
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxContainerAdaptor$1$1
+instanceKlass  @bci org/eclipse/osgi/internal/framework/EquinoxEventPublisher notifyEventHooksPrivileged (Lorg/osgi/framework/BundleEvent;Ljava/util/Collection;)V 98 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/framework/EquinoxEventPublisher$$Lambda+0x000001794f122970
+instanceKlass org/eclipse/osgi/container/ModuleResolutionReport
+instanceKlass  @bci java/util/stream/StreamSpliterators$WrappingSpliterator forEachRemaining (Ljava/util/function/Consumer;)V 33 <appendix> member <vmtarget> ; # java/util/stream/StreamSpliterators$WrappingSpliterator$$Lambda+0x000001794f0d0750
+instanceKlass  @cpi java/util/stream/StreamSpliterators$WrappingSpliterator 151 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f124000
+instanceKlass  @bci java/util/stream/Collectors toList ()Ljava/util/stream/Collector; 14 <appendix> argL0 ; # java/util/stream/Collectors$$Lambda+0x000001794f0d0508
+instanceKlass  @bci java/util/stream/Collectors toList ()Ljava/util/stream/Collector; 9 <appendix> argL0 ; # java/util/stream/Collectors$$Lambda+0x000001794f0d02d8
+instanceKlass  @bci java/util/stream/Collectors toList ()Ljava/util/stream/Collector; 4 <appendix> argL0 ; # java/util/stream/Collectors$$Lambda+0x000001794f0d00b8
+instanceKlass  @bci org/apache/felix/resolver/Candidates$FaultyResourcesReport getUnresolvedRequirements ()Ljava/util/Collection; 38 <appendix> argL0 ; # org/apache/felix/resolver/Candidates$FaultyResourcesReport$$Lambda+0x000001794f121bc8
+instanceKlass  @bci org/apache/felix/resolver/Candidates$FaultyResourcesReport getUnresolvedRequirements ()Ljava/util/Collection; 14 <appendix> argL0 ; # org/apache/felix/resolver/Candidates$FaultyResourcesReport$$Lambda+0x000001794f121988
+instanceKlass java/util/concurrent/ConcurrentLinkedQueue$Node
+instanceKlass org/apache/felix/resolver/EnhancedExecutor
+instanceKlass org/apache/felix/resolver/PackageSpaces
+instanceKlass org/apache/felix/resolver/Backlog
+instanceKlass  @bci org/apache/felix/resolver/Candidates prepare ()Lorg/apache/felix/resolver/ResolutionError; 924 <appendix> argL0 ; # org/apache/felix/resolver/Candidates$$Lambda+0x000001794f119730
+instanceKlass org/apache/felix/resolver/util/CandidateSelector
+instanceKlass org/apache/felix/resolver/util/OpenHashMap$MapEntry
+instanceKlass org/apache/felix/resolver/util/OpenHashMap$MapIterator
+instanceKlass org/apache/felix/resolver/util/OpenHashMap$1
+instanceKlass org/eclipse/osgi/container/ModuleResolutionReport$EntryImpl
+instanceKlass org/eclipse/osgi/report/resolution/ResolutionReport$Entry
+instanceKlass  @bci org/eclipse/osgi/internal/framework/FilterImpl$Equal compare_Version (Lorg/osgi/framework/Version;)Z 3 <appendix> argL0 ; # org/eclipse/osgi/internal/framework/FilterImpl$Equal$$Lambda+0x000001794f11ac58
+instanceKlass org/apache/felix/resolver/Candidates$PopulateResult
+instanceKlass org/apache/felix/resolver/util/OpenHashMap
+instanceKlass org/osgi/service/resolver/HostedCapability
+instanceKlass org/apache/felix/resolver/Candidates
+instanceKlass org/apache/felix/resolver/Util
+instanceKlass org/apache/felix/resolver/ResolveSession
+instanceKlass org/eclipse/osgi/container/ModuleResolver$ResolveProcess$DynamicFragments
+instanceKlass  @bci org/eclipse/osgi/container/ModuleResolver$ResolveProcess removeSubstituted (Ljava/util/List;)V 2 <appendix> member <vmtarget> ; # org/eclipse/osgi/container/ModuleResolver$ResolveProcess$$Lambda+0x000001794f11dbf0
+instanceKlass  @bci org/eclipse/osgi/container/ModuleResolver removeNonEffectiveCapabilities (Ljava/util/Collection;)V 2 <appendix> member <vmtarget> ; # org/eclipse/osgi/container/ModuleResolver$$Lambda+0x000001794f11d998
+instanceKlass  @bci org/eclipse/osgi/container/ModuleResolver$ResolveProcess filterDisabled (Ljava/util/List;)V 2 <appendix> member <vmtarget> ; # org/eclipse/osgi/container/ModuleResolver$ResolveProcess$$Lambda+0x000001794f11d740
+instanceKlass java/util/Collections$ReverseComparator2
+instanceKlass java/util/Collections$ReverseComparator
+instanceKlass  @bci org/eclipse/osgi/container/ModuleResolver$ResolveProcess resolveNonPayLoadFragments ()Ljava/util/Map; 84 <appendix> argL0 ; # org/eclipse/osgi/container/ModuleResolver$ResolveProcess$$Lambda+0x000001794f11d500
+instanceKlass org/eclipse/osgi/internal/framework/OSGiFrameworkHooks$CoreResolverHookFactory$CoreResolverHook
+instanceKlass org/eclipse/osgi/report/resolution/ResolutionReport$Listener
+instanceKlass  @bci org/eclipse/osgi/internal/framework/OSGiFrameworkHooks$CoreResolverHookFactory getHookReferences (Lorg/eclipse/osgi/internal/serviceregistry/ServiceRegistry;Lorg/eclipse/osgi/internal/framework/BundleContextImpl;)[Lorg/eclipse/osgi/internal/serviceregistry/ServiceReferenceImpl; 2 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/framework/OSGiFrameworkHooks$CoreResolverHookFactory$$Lambda+0x000001794f11ca18
+instanceKlass org/eclipse/osgi/container/ModuleResolutionReport$Builder
+instanceKlass org/osgi/service/resolver/ResolveContext
+instanceKlass org/eclipse/osgi/container/ModuleDatabase$1
+instanceKlass org/eclipse/osgi/container/ModuleContainer$ResolutionLock$Permits
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f118400
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f118000
+instanceKlass org/eclipse/osgi/framework/eventmgr/EventManager$EventThread$Queued
+instanceKlass  @bci org/eclipse/osgi/framework/eventmgr/EventManager getEventThread ()Lorg/eclipse/osgi/framework/eventmgr/EventManager$EventThread; 24 <appendix> member <vmtarget> ; # org/eclipse/osgi/framework/eventmgr/EventManager$$Lambda+0x000001794f1175a8
+instanceKlass org/eclipse/osgi/container/ModuleContainer$ContainerWiring$1
+instanceKlass org/osgi/dto/DTO
+instanceKlass  @bci org/eclipse/osgi/internal/framework/BundleContextImpl notifyFindHooksPriviledged (Lorg/eclipse/osgi/internal/framework/BundleContextImpl;Ljava/util/Collection;)V 73 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/framework/BundleContextImpl$$Lambda+0x000001794f1153c8
+instanceKlass org/eclipse/osgi/framework/util/FilePath
+instanceKlass sun/nio/ch/FileChannelImpl$Closer
+instanceKlass sun/nio/fs/WindowsChannelFactory$Flags
+instanceKlass sun/nio/fs/WindowsChannelFactory$1
+instanceKlass sun/nio/fs/WindowsChannelFactory
+instanceKlass org/eclipse/core/runtime/internal/adaptor/ConsoleManager
+instanceKlass org/eclipse/core/runtime/internal/adaptor/DefaultStartupMonitor
+instanceKlass org/eclipse/osgi/service/runnable/StartupMonitor
+instanceKlass java/lang/Thread$Builder$OfVirtual
+instanceKlass java/lang/Thread$Builder$OfPlatform
+instanceKlass java/lang/Thread$Builder
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceFactoryUse$1
+instanceKlass java/util/LinkedList$ListItr
+instanceKlass org/eclipse/osgi/service/resolver/ExportPackageDescription
+instanceKlass org/eclipse/osgi/service/resolver/NativeCodeSpecification
+instanceKlass org/eclipse/osgi/service/resolver/NativeCodeDescription
+instanceKlass org/eclipse/osgi/service/resolver/ImportPackageSpecification
+instanceKlass org/eclipse/osgi/internal/resolver/StateImpl
+instanceKlass org/eclipse/osgi/service/resolver/GenericSpecification
+instanceKlass org/eclipse/osgi/service/resolver/BundleDescription
+instanceKlass org/eclipse/osgi/service/resolver/GenericDescription
+instanceKlass org/eclipse/osgi/service/resolver/BaseDescription
+instanceKlass org/eclipse/osgi/service/resolver/HostSpecification
+instanceKlass org/eclipse/osgi/service/resolver/BundleSpecification
+instanceKlass org/eclipse/osgi/service/resolver/VersionConstraint
+instanceKlass org/eclipse/osgi/internal/resolver/StateObjectFactoryImpl
+instanceKlass org/eclipse/osgi/service/resolver/Resolver
+instanceKlass org/eclipse/osgi/service/resolver/State
+instanceKlass org/eclipse/osgi/service/resolver/StateObjectFactory
+instanceKlass org/eclipse/osgi/compatibility/state/PlatformAdminImpl
+instanceKlass org/eclipse/osgi/service/resolver/PlatformAdmin
+instanceKlass org/eclipse/osgi/compatibility/state/Activator
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceConsumer$2
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceConsumer$1
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceConsumer
+instanceKlass org/eclipse/osgi/service/security/TrustEngine
+instanceKlass org/eclipse/osgi/internal/signedcontent/SignedContentConstants
+instanceKlass org/eclipse/osgi/internal/signedcontent/SignedBundleHook$1
+instanceKlass org/eclipse/osgi/internal/framework/XMLParsingServiceFactory
+instanceKlass org/eclipse/osgi/storage/BundleLocalizationImpl
+instanceKlass org/eclipse/osgi/service/localization/BundleLocalization
+instanceKlass org/eclipse/osgi/storage/url/BundleURLConverter
+instanceKlass org/eclipse/osgi/service/urlconversion/URLConverter
+instanceKlass org/apache/felix/resolver/Logger
+instanceKlass org/apache/felix/resolver/ResolutionError
+instanceKlass org/apache/felix/resolver/ResolverImpl
+instanceKlass org/osgi/service/resolver/Resolver
+instanceKlass org/eclipse/osgi/internal/framework/legacy/StartLevelImpl
+instanceKlass org/eclipse/osgi/internal/framework/legacy/PackageAdminImpl
+instanceKlass org/osgi/service/condition/ConditionImpl
+instanceKlass org/osgi/service/condition/Condition
+instanceKlass  @bci org/eclipse/equinox/plurl/impl/PlurlImpl add (Ljava/net/ContentHandlerFactory;)V 13 <appendix> argL0 ; # org/eclipse/equinox/plurl/impl/PlurlImpl$$Lambda+0x000001794f10f730
+instanceKlass  @bci org/eclipse/equinox/plurl/impl/PlurlImpl$5 getContent ()Ljava/util/function/Consumer; 155 <appendix> member <vmtarget> ; # org/eclipse/equinox/plurl/impl/PlurlImpl$5$$Lambda+0x000001794f10f298
+instanceKlass  @bci org/eclipse/equinox/plurl/impl/PlurlImpl add (Ljava/net/URLStreamHandlerFactory;)V 13 <appendix> argL0 ; # org/eclipse/equinox/plurl/impl/PlurlImpl$$Lambda+0x000001794f10f048
+instanceKlass org/eclipse/equinox/plurl/impl/PlurlImpl$PlurlFactoryHolder
+instanceKlass  @bci org/eclipse/equinox/plurl/impl/PlurlImpl$5 getContent ()Ljava/util/function/Consumer; 141 <appendix> member <vmtarget> ; # org/eclipse/equinox/plurl/impl/PlurlImpl$5$$Lambda+0x000001794f10e960
+instanceKlass org/eclipse/osgi/internal/url/ContentHandlerFactoryImpl
+instanceKlass org/eclipse/osgi/internal/url/URLStreamHandlerFactoryImpl
+instanceKlass org/eclipse/equinox/plurl/impl/PlurlImpl$PlurlContentHandlerFactory
+instanceKlass org/eclipse/equinox/plurl/impl/PlurlImpl$LegacyFactory
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f109000
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f108c00
+instanceKlass org/eclipse/equinox/plurl/impl/StackWalkerCallStack
+instanceKlass sun/awt/www/content/MultimediaContentHandlers
+instanceKlass  @bci org/eclipse/equinox/plurl/impl/PlurlImpl <init> ()V 126 <appendix> member <vmtarget> ; # org/eclipse/equinox/plurl/impl/PlurlImpl$$Lambda+0x000001794f10d378
+instanceKlass org/eclipse/equinox/plurl/impl/URLToHandler
+instanceKlass java/net/UrlDeserializedState
+instanceKlass java/net/InetAddress
+instanceKlass org/eclipse/equinox/plurl/PlurlStreamHandler$PlurlSetter
+instanceKlass java/net/ContentHandler
+instanceKlass org/eclipse/equinox/plurl/impl/CallStack
+instanceKlass org/eclipse/equinox/plurl/impl/PlurlImpl
+instanceKlass org/eclipse/osgi/internal/log/ConfigAdminListener
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyFindHooksPrivileged (Lorg/eclipse/osgi/internal/framework/BundleContextImpl;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Collection;)V 101 <adapter> ; # java/lang/invoke/LambdaForm$MH+0x000001794f108800
+# instanceKlass java/lang/invoke/LambdaForm$DMH+0x000001794f108400
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyFindHooksPrivileged (Lorg/eclipse/osgi/internal/framework/BundleContextImpl;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Collection;)V 101 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f108000
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyFindHooksPrivileged (Lorg/eclipse/osgi/internal/framework/BundleContextImpl;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Collection;)V 101 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/serviceregistry/ServiceRegistry$$Lambda+0x000001794f101cc8
+instanceKlass  @cpi org/eclipse/osgi/internal/serviceregistry/ServiceRegistry 1105 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f100400
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ShrinkableCollection
+instanceKlass org/eclipse/osgi/internal/framework/FilterImpl$Parser
+instanceKlass org/eclipse/osgi/internal/framework/FilterImpl
+instanceKlass org/osgi/util/tracker/AbstractTracked
+instanceKlass org/osgi/util/tracker/ServiceTracker
+instanceKlass org/eclipse/osgi/internal/log/EventAdminAdapter
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceRegistry$2
+instanceKlass org/eclipse/osgi/framework/eventmgr/CopyOnWriteIdentityMap$Snapshot$SnapshotIterator
+instanceKlass org/eclipse/osgi/framework/eventmgr/ListenerQueue
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyEventListenerHooksPrivileged (Lorg/osgi/framework/ServiceEvent;Ljava/util/Map;)V 77 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/serviceregistry/ServiceRegistry$$Lambda+0x000001794f106c28
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyEventHooksPrivileged (Lorg/osgi/framework/ServiceEvent;Ljava/util/Collection;)V 77 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/serviceregistry/ServiceRegistry$$Lambda+0x000001794f106640
+instanceKlass org/eclipse/osgi/framework/eventmgr/CopyOnWriteIdentityMap$Snapshot
+instanceKlass org/osgi/framework/PrototypeServiceFactory
+instanceKlass org/eclipse/osgi/framework/util/CaseInsensitiveDictionaryMap$CaseInsensitiveKey
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceReferenceImpl
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceUse
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyListenerHooksPrivileged (Ljava/util/Collection;Z)V 106 <appendix> form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f100000
+instanceKlass  @bci org/eclipse/osgi/internal/serviceregistry/ServiceRegistry notifyListenerHooksPrivileged (Ljava/util/Collection;Z)V 106 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/serviceregistry/ServiceRegistry$$Lambda+0x000001794f0bdcc8
+instanceKlass  @cpi org/eclipse/osgi/internal/serviceregistry/ServiceRegistry 1128 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f0bcc00
+instanceKlass org/eclipse/osgi/internal/serviceregistry/HookContext
+instanceKlass org/osgi/framework/UnfilteredServiceListener
+instanceKlass org/eclipse/osgi/internal/serviceregistry/FilteredServiceListener
+instanceKlass org/osgi/framework/hooks/service/ListenerHook$ListenerInfo
+instanceKlass org/eclipse/osgi/framework/eventmgr/CopyOnWriteIdentityMap$Entry
+instanceKlass org/eclipse/osgi/framework/eventmgr/CopyOnWriteIdentityMap
+instanceKlass org/eclipse/osgi/internal/log/OrderedExecutor
+instanceKlass org/eclipse/osgi/internal/framework/BundleContextImpl$2
+instanceKlass org/osgi/service/startlevel/StartLevel
+instanceKlass org/osgi/service/packageadmin/PackageAdmin
+instanceKlass org/eclipse/equinox/plurl/PlurlContentHandlerFactory
+instanceKlass java/net/ContentHandlerFactory
+instanceKlass org/eclipse/equinox/plurl/PlurlStreamHandlerFactory
+instanceKlass org/eclipse/equinox/plurl/PlurlFactory
+instanceKlass org/eclipse/equinox/plurl/Plurl
+instanceKlass org/eclipse/osgi/internal/framework/SystemBundleActivator
+instanceKlass org/eclipse/osgi/internal/loader/classpath/TitleVersionVendor
+instanceKlass org/eclipse/osgi/internal/loader/classpath/ManifestPackageAttributes
+instanceKlass org/eclipse/osgi/internal/loader/classpath/ClasspathEntry$PDEData
+instanceKlass org/eclipse/osgi/internal/loader/classpath/ClasspathEntry
+instanceKlass org/eclipse/osgi/internal/loader/classpath/FragmentClasspath
+instanceKlass org/eclipse/osgi/internal/loader/classpath/ClasspathManager
+instanceKlass org/eclipse/osgi/internal/loader/ModuleClassLoader$ClassNameLock$1
+instanceKlass org/eclipse/osgi/internal/loader/ModuleClassLoader$ClassNameLock
+instanceKlass org/eclipse/osgi/internal/container/KeyBasedLockStore
+instanceKlass org/eclipse/osgi/internal/loader/BundleLoaderSources
+instanceKlass org/eclipse/osgi/internal/loader/BundleLoader$1
+instanceKlass org/eclipse/osgi/internal/loader/sources/PackageSource
+instanceKlass java/util/concurrent/ForkJoinPool$2
+instanceKlass jdk/internal/access/JavaUtilConcurrentFJPAccess
+instanceKlass java/util/concurrent/ForkJoinPool$DefaultForkJoinWorkerThreadFactory
+instanceKlass java/lang/ApplicationShutdownHooks$1
+instanceKlass java/lang/ApplicationShutdownHooks
+instanceKlass java/util/concurrent/ForkJoinPool$WorkQueue
+instanceKlass java/util/concurrent/ForkJoinPool$ForkJoinWorkerThreadFactory
+instanceKlass org/eclipse/osgi/internal/framework/StorageSaver$StorageSaverTask
+instanceKlass org/eclipse/osgi/internal/framework/StorageSaver
+instanceKlass java/util/concurrent/Executors$RunnableAdapter
+instanceKlass java/util/concurrent/FutureTask$WaitNode
+instanceKlass java/util/concurrent/FutureTask
+instanceKlass jdk/internal/vm/ThreadContainers
+instanceKlass jdk/internal/vm/StackableScope
+instanceKlass java/util/concurrent/RunnableScheduledFuture
+instanceKlass java/util/concurrent/ScheduledFuture
+instanceKlass java/util/concurrent/Delayed
+instanceKlass java/util/concurrent/RunnableFuture
+instanceKlass java/util/concurrent/Future
+instanceKlass java/util/concurrent/ThreadPoolExecutor$AbortPolicy
+instanceKlass java/util/concurrent/AbstractExecutorService
+instanceKlass java/util/concurrent/ScheduledExecutorService
+instanceKlass java/util/concurrent/ExecutorService
+instanceKlass java/util/concurrent/Executors
+instanceKlass java/util/HashMap$HashMapSpliterator
+instanceKlass  @bci java/lang/SecurityManager nonExportedPkgs (Ljava/lang/module/ModuleDescriptor;)Ljava/util/Set; 92 <appendix> member <vmtarget> ; # java/lang/SecurityManager$$Lambda+0x000001794f0c79a0
+instanceKlass  @bci java/lang/SecurityManager nonExportedPkgs (Ljava/lang/module/ModuleDescriptor;)Ljava/util/Set; 76 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c7760
+instanceKlass  @bci java/lang/SecurityManager nonExportedPkgs (Ljava/lang/module/ModuleDescriptor;)Ljava/util/Set; 66 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c7510
+instanceKlass  @bci java/lang/SecurityManager nonExportedPkgs (Ljava/lang/module/ModuleDescriptor;)Ljava/util/Set; 47 <appendix> member <vmtarget> ; # java/lang/SecurityManager$$Lambda+0x000001794f0c72d8
+instanceKlass  @bci java/lang/SecurityManager nonExportedPkgs (Ljava/lang/module/ModuleDescriptor;)Ljava/util/Set; 31 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c7098
+instanceKlass  @bci java/lang/SecurityManager nonExportedPkgs (Ljava/lang/module/ModuleDescriptor;)Ljava/util/Set; 21 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c6e48
+instanceKlass  @cpi java/lang/SecurityManager 539 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f0bc800
+instanceKlass  @bci java/lang/SecurityManager addNonExportedPackages (Ljava/lang/ModuleLayer;)V 59 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c6c18
+instanceKlass  @cpi java/lang/SecurityManager 535 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f0bc400
+instanceKlass  @bci java/lang/SecurityManager addNonExportedPackages (Ljava/lang/ModuleLayer;)V 49 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c69d8
+instanceKlass  @bci java/lang/SecurityManager addNonExportedPackages (Ljava/lang/ModuleLayer;)V 39 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c6798
+instanceKlass  @bci java/lang/SecurityManager addNonExportedPackages (Ljava/lang/ModuleLayer;)V 29 <appendix> member <vmtarget> ; # java/lang/SecurityManager$$Lambda+0x000001794f0c6540
+instanceKlass  @cpi java/lang/SecurityManager 518 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f0bc000
+instanceKlass  @bci java/lang/SecurityManager addNonExportedPackages (Ljava/lang/ModuleLayer;)V 17 <appendix> argL0 ; # java/lang/SecurityManager$$Lambda+0x000001794f0c6300
+instanceKlass org/eclipse/osgi/internal/framework/ContextFinder$1
+instanceKlass org/osgi/framework/ServiceObjects
+instanceKlass org/eclipse/osgi/internal/framework/BundleContextImpl
+instanceKlass org/osgi/framework/hooks/weaving/WovenClassListener
+instanceKlass org/osgi/framework/hooks/weaving/WeavingHook
+instanceKlass org/osgi/framework/hooks/service/FindHook
+instanceKlass org/osgi/framework/hooks/service/EventListenerHook
+instanceKlass org/osgi/framework/hooks/service/EventHook
+instanceKlass org/osgi/framework/hooks/bundle/FindHook
+instanceKlass org/osgi/framework/hooks/bundle/EventHook
+instanceKlass org/osgi/framework/hooks/bundle/CollisionHook
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceRegistry$FrameworkHookHolder
+instanceKlass org/osgi/framework/hooks/service/ListenerHook
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceRegistrationImpl
+instanceKlass org/osgi/framework/ServiceRegistration
+instanceKlass org/eclipse/osgi/internal/serviceregistry/ServiceRegistry
+instanceKlass org/eclipse/osgi/framework/eventmgr/EventManager
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxEventPublisher
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b5c00
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b5800
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b5400
+instanceKlass org/eclipse/osgi/storage/bundlefile/BundleEntry
+instanceKlass org/eclipse/osgi/container/ModuleDatabase$2
+instanceKlass java/util/ArrayList$SubList$1
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b5000
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b4c00
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b4800
+# instanceKlass java/lang/invoke/LambdaForm$MH+0x000001794f0b4400
+# instanceKlass java/lang/invoke/LambdaForm$DMH+0x000001794f0b4000
+instanceKlass java/lang/reflect/AnnotatedType
+instanceKlass java/lang/reflect/TypeVariable
+instanceKlass org/eclipse/osgi/container/ModuleWiring$LoaderInitializer
+instanceKlass org/eclipse/osgi/container/ModuleWiring
+instanceKlass org/eclipse/osgi/container/ModuleWire
+instanceKlass org/osgi/framework/wiring/BundleWire
+instanceKlass java/util/Collections$UnmodifiableMap$UnmodifiableEntrySet$UnmodifiableEntry
+instanceKlass java/util/Collections$UnmodifiableMap$UnmodifiableEntrySet$1
+instanceKlass org/eclipse/osgi/internal/container/Capabilities$NamespaceSet
+instanceKlass org/eclipse/osgi/container/ModuleRequirement
+instanceKlass org/osgi/framework/wiring/BundleRequirement
+instanceKlass org/eclipse/osgi/container/ModuleRevision$2
+instanceKlass org/eclipse/osgi/internal/container/NamespaceList$Builder$8
+instanceKlass org/eclipse/osgi/container/ModuleCapability
+instanceKlass org/osgi/framework/wiring/BundleCapability
+instanceKlass org/osgi/resource/Capability
+instanceKlass org/eclipse/osgi/internal/container/NamespaceList$3
+instanceKlass org/eclipse/osgi/internal/container/NamespaceList$2
+instanceKlass org/eclipse/osgi/internal/container/NamespaceList$1
+instanceKlass org/eclipse/osgi/internal/container/NamespaceList
+instanceKlass org/eclipse/osgi/container/ModuleRevision$1
+instanceKlass org/osgi/framework/wiring/BundleWiring
+instanceKlass org/osgi/resource/Wiring
+instanceKlass org/eclipse/osgi/container/ModuleRevision
+instanceKlass org/eclipse/osgi/container/ModuleRevisions
+instanceKlass org/osgi/framework/wiring/BundleRevisions
+instanceKlass org/lombokweb/asm/Opcodes
+instanceKlass org/lombokweb/asm/Handler
+instanceKlass lombok/patcher/MethodLogistics
+instanceKlass org/lombokweb/asm/Label
+instanceKlass org/lombokweb/asm/Type
+instanceKlass org/lombokweb/asm/Frame
+instanceKlass org/lombokweb/asm/Context
+instanceKlass org/lombokweb/asm/Attribute
+instanceKlass lombok/patcher/scripts/ExitFromMethodEarlyScript$1
+instanceKlass org/lombokweb/asm/ByteVector
+instanceKlass org/lombokweb/asm/Symbol
+instanceKlass org/lombokweb/asm/SymbolTable
+instanceKlass org/lombokweb/asm/FieldVisitor
+instanceKlass org/lombokweb/asm/MethodVisitor
+instanceKlass org/lombokweb/asm/AnnotationVisitor
+instanceKlass org/lombokweb/asm/ModuleVisitor
+instanceKlass org/lombokweb/asm/RecordComponentVisitor
+instanceKlass org/lombokweb/asm/ClassReader
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxBundle
+instanceKlass org/eclipse/osgi/internal/container/NamespaceList$Builder$2
+instanceKlass org/eclipse/osgi/container/ModuleRevisionBuilder$GenericInfo$1
+instanceKlass org/eclipse/osgi/container/ModuleRevisionBuilder$GenericInfo
+instanceKlass org/eclipse/osgi/container/ModuleRevisionBuilder
+instanceKlass org/osgi/resource/Wire
+instanceKlass org/eclipse/osgi/container/ModuleDatabase$Persistence
+instanceKlass org/eclipse/osgi/container/ModuleContainer$ContainerStartLevel
+instanceKlass org/eclipse/osgi/container/ModuleContainer$ContainerWiring
+instanceKlass org/eclipse/osgi/container/ModuleResolver
+instanceKlass org/eclipse/osgi/container/ModuleContainer$ResolutionLock
+instanceKlass org/eclipse/osgi/internal/container/LockSet
+instanceKlass org/osgi/resource/Requirement
+instanceKlass org/osgi/framework/wiring/FrameworkWiring
+instanceKlass org/osgi/framework/startlevel/FrameworkStartLevel
+instanceKlass org/eclipse/osgi/report/resolution/ResolutionReport
+instanceKlass org/eclipse/osgi/container/ModuleContainer
+instanceKlass org/eclipse/osgi/internal/container/Capabilities
+instanceKlass org/eclipse/osgi/container/Module
+instanceKlass org/osgi/framework/startlevel/BundleStartLevel
+instanceKlass org/eclipse/osgi/container/ModuleDatabase
+instanceKlass java/util/concurrent/LinkedBlockingQueue$Node
+instanceKlass java/util/concurrent/RejectedExecutionHandler
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxContainerAdaptor$1
+instanceKlass java/util/concurrent/LinkedTransferQueue$DualNode
+instanceKlass java/util/concurrent/TransferQueue
+instanceKlass java/util/concurrent/atomic/AtomicReference
+instanceKlass org/eclipse/osgi/internal/container/AtomicLazyInitializer
+instanceKlass org/eclipse/osgi/internal/framework/OSGiFrameworkHooks$BundleCollisionHook
+instanceKlass org/osgi/framework/ServiceReference
+instanceKlass org/osgi/framework/hooks/resolver/ResolverHook
+instanceKlass org/eclipse/osgi/internal/framework/OSGiFrameworkHooks$CoreResolverHookFactory
+instanceKlass org/osgi/framework/hooks/resolver/ResolverHookFactory
+instanceKlass org/eclipse/osgi/container/ModuleCollisionHook
+instanceKlass org/eclipse/osgi/internal/framework/OSGiFrameworkHooks
+instanceKlass org/eclipse/osgi/container/ModuleContainerAdaptor$1
+instanceKlass org/eclipse/osgi/container/ModuleLoader
+instanceKlass java/util/concurrent/Callable
+instanceKlass java/util/concurrent/BlockingQueue
+instanceKlass java/util/concurrent/Executor
+instanceKlass org/eclipse/osgi/internal/permadmin/SecurityRow
+instanceKlass org/eclipse/osgi/internal/permadmin/PermissionAdminTable
+instanceKlass org/osgi/service/permissionadmin/PermissionInfo
+instanceKlass org/osgi/service/condpermadmin/ConditionalPermissionInfo
+instanceKlass org/osgi/service/condpermadmin/ConditionalPermissionUpdate
+instanceKlass org/eclipse/osgi/internal/permadmin/SecurityAdmin
+instanceKlass org/osgi/service/condpermadmin/ConditionalPermissionAdmin
+instanceKlass org/osgi/service/permissionadmin/PermissionAdmin
+instanceKlass org/eclipse/osgi/storage/PermissionData
+instanceKlass  @bci org/eclipse/osgi/storage/Storage connectPersistentBundles (Ljava/util/List;)V 2 <appendix> member <vmtarget> ; # org/eclipse/osgi/storage/Storage$$Lambda+0x000001794f0a0c30
+instanceKlass  @cpi java/util/logging/LogRecord 420 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f0a4000
+instanceKlass org/eclipse/osgi/storage/BundleInfo$Generation
+instanceKlass org/eclipse/osgi/storage/BundleInfo
+instanceKlass org/eclipse/osgi/framework/util/ObjectPool
+instanceKlass jdk/internal/util/ByteArray
+instanceKlass org/eclipse/osgi/storagemanager/StorageManager$Entry
+instanceKlass org/eclipse/osgi/framework/internal/reliablefile/ReliableFile$CacheInfo
+instanceKlass java/util/ComparableTimSort
+instanceKlass java/lang/Shutdown$Lock
+instanceKlass java/lang/Shutdown
+instanceKlass java/io/DeleteOnExitHook$1
+instanceKlass java/io/DeleteOnExitHook
+instanceKlass  @bci org/eclipse/osgi/framework/internal/reliablefile/ReliableFile createTempFile (Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)Ljava/io/File; 61 <appendix> argL0 ; # org/eclipse/osgi/framework/internal/reliablefile/ReliableFile$$Lambda+0x000001794f099270
+instanceKlass org/eclipse/osgi/framework/internal/reliablefile/ReliableFile
+instanceKlass sun/nio/ch/FileKey
+instanceKlass sun/nio/ch/FileLockTable
+instanceKlass sun/nio/ch/NativeThread
+instanceKlass java/nio/channels/FileLock
+instanceKlass sun/nio/ch/NativeThreadSet
+instanceKlass sun/nio/ch/IOUtil
+instanceKlass sun/nio/ch/NativeDispatcher
+instanceKlass java/nio/file/attribute/FileAttribute
+instanceKlass java/nio/channels/spi/AbstractInterruptibleChannel
+instanceKlass java/nio/channels/InterruptibleChannel
+instanceKlass java/nio/channels/ScatteringByteChannel
+instanceKlass java/nio/channels/GatheringByteChannel
+instanceKlass java/nio/channels/SeekableByteChannel
+instanceKlass java/nio/channels/ByteChannel
+instanceKlass java/nio/channels/WritableByteChannel
+instanceKlass java/nio/channels/ReadableByteChannel
+instanceKlass java/nio/channels/Channel
+instanceKlass org/eclipse/osgi/internal/location/Locker_JavaNio
+instanceKlass org/eclipse/osgi/storagemanager/StorageManager
+instanceKlass org/eclipse/osgi/storage/FrameworkExtensionInstaller
+instanceKlass org/eclipse/osgi/storage/bundlefile/MRUBundleFileList
+instanceKlass org/eclipse/osgi/framework/eventmgr/EventDispatcher
+instanceKlass org/osgi/framework/Filter
+instanceKlass org/eclipse/osgi/storage/bundlefile/BundleFile
+instanceKlass org/eclipse/osgi/storage/ContentProvider
+instanceKlass org/eclipse/osgi/container/ModuleContainerAdaptor
+instanceKlass org/eclipse/osgi/storage/Storage
+instanceKlass  @bci org/eclipse/osgi/internal/cds/CDSHookConfigurator addHooks (Lorg/eclipse/osgi/internal/hookregistry/HookRegistry;)V 77 <appendix> argL0 ; # org/eclipse/osgi/internal/cds/CDSHookConfigurator$$Lambda+0x000001794f09def8
+instanceKlass org/eclipse/osgi/signedcontent/SignedContent
+# instanceKlass java/lang/invoke/LambdaForm$DMH+0x000001794f098400
+instanceKlass java/lang/invoke/MethodHandle$1
+instanceKlass org/eclipse/osgi/internal/hookregistry/StorageHookFactory$StorageHook
+instanceKlass org/eclipse/osgi/internal/hookregistry/StorageHookFactory
+instanceKlass org/osgi/framework/BundleActivator
+instanceKlass org/eclipse/osgi/internal/cds/CDSHookConfigurator
+instanceKlass org/eclipse/osgi/internal/signedcontent/SignedBundleHook
+instanceKlass org/eclipse/osgi/signedcontent/SignedContentFactory
+instanceKlass org/eclipse/osgi/internal/hookregistry/ActivatorHookFactory
+instanceKlass org/osgi/framework/wiring/BundleRevision
+instanceKlass org/osgi/resource/Resource
+instanceKlass org/eclipse/osgi/internal/connect/ConnectHookConfigurator
+instanceKlass org/eclipse/osgi/internal/hookregistry/HookConfigurator
+instanceKlass java/net/URLClassLoader$3$1
+instanceKlass java/net/URLClassLoader$3
+instanceKlass org/eclipse/osgi/internal/framework/EquinoxContainer$ConnectModules
+instanceKlass  @bci org/eclipse/osgi/internal/log/ExtendedLogServiceImpl applyLogLevels (Lorg/eclipse/osgi/internal/log/ExtendedLogServiceFactory$EquinoxLoggerContext;)V 20 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/log/ExtendedLogServiceImpl$$Lambda+0x000001794f097518
+instanceKlass  @bci org/eclipse/osgi/internal/log/ExtendedLogServiceImpl applyLogLevels (Lorg/eclipse/osgi/internal/log/ExtendedLogServiceFactory$EquinoxLoggerContext;)V 5 <appendix> member <vmtarget> ; # org/eclipse/osgi/internal/log/ExtendedLogServiceImpl$$Lambda+0x000001794f0972e0
+instanceKlass  @cpi org/eclipse/osgi/internal/log/ExtendedLogServiceImpl 376 form vmentry <vmtarget> ; # java/lang/invoke/LambdaForm$DMH+0x000001794f098000
+instanceKlass org/eclipse/osgi/internal/log/ExtendedLogServiceFactory$EquinoxLoggerContext
+instanceKlass org/eclipse/osgi/internal/log/EquinoxLogFactory$1
+instanceKlass org/eclipse/osgi/framework/log/FrameworkLog
+instanceKlass org/eclipse/osgi/internal/log/EquinoxLogFactory
+instanceKlass org/osgi/service/log/FormatterLogger
+instanceKlass org/eclipse/osgi/internal/log/LoggerImpl
+instanceKlass org/eclipse/osgi/internal/log/ExtendedLogServiceImpl
+instanceKlass org/eclipse/osgi/internal/log/ExtendedLogServiceFactory$EquinoxLoggerAdmin
+instanceKlass org/osgi/service/log/admin/LoggerContext
+instanceKlass org/eclipse/osgi/internal/log/LoggerContextTargetMap
+instanceKlass org/eclipse/osgi/internal/log/LogServiceManager$MockSystemBundle
+instanceKlass org/osgi/service/log/admin/LoggerAdmin
+instanceKlass org/eclipse/osgi/internal/log/ExtendedLogServiceFactory
+instanceKlass org/eclipse/osgi/framework/util/ArrayMap
+instanceKlass java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock
+instanceKlass java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock

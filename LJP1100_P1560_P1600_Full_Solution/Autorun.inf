@@ -1,0 +1,4 @@
+[autorun]
+label=HP LaserJet P1100-P1560-P1600 Series Install
+open=P1100_P1560_P1600.exe
+icon=P1100_P1560_P1600.exe,0

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formation</title>
+    <style>
+        body{
+            background-color: #f0f0f0;
+        }
+        *{
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+            font-family: poppins, sans-serif;
+            scroll-behavior: smoth;
+        }
+        header{
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            padding: 20px;
+            width: 100%;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.5s;
+            background-color: #000;
+        }
+        .logo{
+            color:#fff;
+            font-size: 2em;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .logo span{
+            color:blue
+        }
+        .nav-bar{
+            display: flex;
+            position: relative;
+        }
+        .nav-bar li{
+            list-style: none;
+        }
+        .nav-bar a{
+            color: #fff;
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 300;
+        }
+        .btn-1{
+            padding: 10px 20px;
+            background-color:blue;
+            margin-top: -10px;
+            text-transform: uppercase;
+            border-radius: 12px;
+            text-decoration: #fff;
+            
+        }
+        .btn-1{
+            background: blue;
+            transition: ease-out;
+        }
+        .btn-2{
+            padding: 10px 20px;
+            background-color:blue;
+            margin-top: -10px;
+            text-transform: uppercase;
+            border-radius: 12px;
+            text-decoration: #fff;
+            
+        }
+        .btn-2{
+            background: blue;
+            transition: ease-out;
+        }
+        .formation{
+            min-height: 100vh;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 100px;
+            text-align: center;
+        }
+        .formation .content{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .formation .content h1{
+            font-size: 2.5em;
+            font-weight:bold;
+            color: #000; 
+            line-height:1.3;
+            margin-bottom: 20px;
+        }
+        .paragraphe{
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #444;
+            max-width: 700px;
+            margin: 0 autoé  ;
+        }
+        .appropos{
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+            padding-top: 120px;
+            padding-bottom: 60px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .appropos .contenu{
+            width: 100%;
+        }
+        .appropos .titre .titre-text{
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .appropos .titre .titre-text span{
+            color: blue;
+            font-size: 2.5em;
+        }
+        .appropos .contenus{
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .appropos .contenus .box{
+            width: 280px;
+            background-color:blue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px;
+            text-align:center;
+            color: #fff;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            font-size: 0.85em ;
+        }
+        .appropos .contenus .box .text{
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .nos-formations{
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+            padding-top: 120px;
+            padding-bottom: 60px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .nos-formations .text .titre-texte{
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .nos-formations .text .titre-texte span{
+            color: blue;
+            font-size: 2.5em;
+        }
+        .nos-formations .contenu{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .nos-formations .contenu .contenus{
+            display: flex;
+            margin-top: 40px;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nos-formations .contenu .contenus .box{
+            width: 340px;
+            margin: 20px;
+            background-color: blue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px;
+            text-align: center;
+            color: #fff;
+            font-style: normal;
+            font-size: 0.9em;
+            border-radius: 50px;
+            position: relative;
+        }
+        .nos-formations .contenu .contenus .box .texte{
+            font-weight: bold;
+            font-size: 2em;
+        }
+        .nos-formations .contenu .contenus .box .acheter{
+            display: flex;
+            justify-content: right;
+            color: #fff;
+            font-weight: bold;
+        }
+        .nos-formations .contenu .contenus .box .btn-2{
+            padding: 10px 20px;
+            background-color: #fff;
+            color: #000;
+            border-radius: 12px;
+            justify-content:left;
+        }
+        footer{
+            background-color: #000;
+            color: #f0f0f0;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9em;
+            position:relative;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo"><span>Forma</span>Pro</a>
+        <div class="menu">
+            <ul class="nav-bar">
+                <li><a href="#">Accueil</a></li>
+                <li><a href="#">A propos</a></li>
+                <li><a href="#">Contact</a></li>
+                <br>
+                <a href="#" class="btn-1">Connexion</a>
+                <a href="#" class="btn-2">Inscription</a>
+            </ul>
+        </div>
+    </header>
+    <section class="formation">
+        <div class="content">
+            <h1>
+                Bienvenue sur <span style="color: blue">FormaPro</span>  <br>
+                la plateforme qui <span style="color: blue;">booste vos compétences.</span>
+            </h1>
+            <br>
+            <p class="paragraphe">
+                Bonjour et bienvenue !<br>
+                Vous êtes sur la plateforme officielle où vous pouvez accéder à toutes les formations conçues par notre formateur. <br>
+                Ici, fini les envois de fichiers par WhatsApp ou par e-mail tout est centralisé en un seul endroit, disponible 24h/24.
+            </p>
+        </div>
+    </section>
+    <section class="appropos" id="appropos">
+        <div class="titre">
+            <h2 class="titre-text"><span>C</span>omment ça marche ?</h2>
+        </div>
+        <div class="contenu">
+            <div class="contenus">
+                <div class="box">
+                        <h3 class="text">Etape 1:</h3>
+                    <br>
+                    <h3>Choisissez votre formation</h3>
+                    <br>
+                    <p>Sélectionnez le catalogue de la formation qui vous correspond.
+                    </p>
+                </div>
+
+                <div class="box">
+                    <h3 class="text">Etape 2:</h3>
+                    <br>
+                    <h3>Payez en toute sécurité</h3>
+                    <br>
+                    <p>Réglez par Mobile Money ou carte bancaire en quelques secondes.</p>
+                </div>
+
+                <div class="box">
+                    <h3 class="text">Etape 3:</h3>
+                    <br>
+                    <h3>Accédez à vos fichiers</h3>
+                    <br>
+                    <p>Téléchargez tous vos supports de formation immédiatement, à vie.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section class="nos-formations" id="formation">
+        <div class="text">
+            <h2 class="titre-texte"><span>N</span>os formations</h2>
+        </div>
+        <div class="contenu">
+            <div class="contenus">
+                <div class="box">
+                        <h3 class="texte">Marketing</h3>
+                    <br>
+                    <h3>Formation Marketing Digital</h3>
+                    <br>
+                    <p>
+                        Maîtrisez les réseaux sociaux,<br>
+                        la publicité et le contenu digital.
+                    </p>
+                    <br>
+                <div class="acheter">
+                    <p>15 000 FCFA</p>
+                </div>
+                <br>
+                    <a href="#" class="btn-2">Acheter</a>
+                </div>
+            </div>
+            <div class="contenus">
+                <div class="box">
+                        <h3 class="texte">Gestion</h3>
+                    <br>
+                    <h3>Gestion de Projet</h3>
+                    <br>
+                    <p>
+                        Apprenez à planifier, organiser et <br>
+                        livrer vos projets efficacement.  
+                    </p>
+                    <br>
+                <div class="acheter">
+                    <p>20 000 FCFA</p>
+                </div>
+                <br>
+                    <a href="#" class="btn-2">Acheter</a>
+                </div>
+            </div>
+                <div class="contenus">
+                    <div class="box">
+                            <h3 class="texte">Business</h3>
+                        <br>
+                        <h3>Entrepreneuriat & Finance</h3>
+                        <br>
+                        <p>
+                            Les bases pour lancer et financer votre activité.
+                        </p>
+                        <br>
+                    <div class="acheter">
+                        <p>25 000 FCFA</p>
+                    </div>
+                    <br>
+                        <a href="#" class="btn-2">Acheter</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="platforme">
+        <div class="titre">
+            <h2><span>P</span>ourquoi notre plateforme ?</h2>
+            <br>
+            <p>Une expérience simple et sécurisée pour vous et vos apprenants</p>
+        </div>
+        <div class="contenu">
+            <div class="contenus">
+                <div class="box">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <footer>
+        <p>&copy; 2026 FormaPro. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>

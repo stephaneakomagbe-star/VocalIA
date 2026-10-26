@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+Html Configuration Utility File for P1100w Series
+-->
+<htmlconfig>
+  <globalparams>
+    <param name="viewonly" type="string"></param>
+  </globalparams>
+  
+  <devices>
+    <!-- HP LaserJet P1100w Series -->
+    <device name="HP LaserJet Professional P1100w" type="printer">
+      <deviceparams>
+        <param name="port" type="string">8080</param>
+      </deviceparams>
+      <viewpane>
+        <topic name="WirelessInfo" title="Wireless" href="/SSI/Auth/ip_wireless.htm?hideMenu=1">
+          <page name="Wireless" title="Wireless" href="/SSI/Auth/ip_wireless.htm?hideMenu=1"/>
+          <page name="Configuration" title="Configuration" href="/SSI/Auth/ip_configuration.htm?hideMenu=1"/>
+        </topic>
+      </viewpane>
+      <drivers>
+        <driver name="HP LaserJet Professional P1102w"/>
+        <driver name="HP LaserJet Professional P 1102w"/>
+        <driver name="HP LaserJet Professional P1104w"/>
+        <driver name="HP LaserJet Professional P1106w"/>
+        <driver name="HP LaserJet Professional P1107w"/>
+        <driver name="HP LaserJet Professional P1108w"/>
+        <driver name="HP LaserJet Professional P1109w"/>
+      </drivers>
+      <redirects>
+      </redirects>
+    </device>
+  </devices>
+
+  <globalredirects>
+    <redirect href="/SSI/index.htm">/SSI/index.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/info_configuration.htm">/SSI/info_configuration.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/supply_status.htm">/SSI/supply_status.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/info_internalPages.htm">/SSI/info_internalPages.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/driver.htm">/SSI/driver.htm?hideMenu=1</redirect>
+    
+    <redirect href="/SSI/Auth/set_config_paper_handling.htm">/SSI/Auth/set_config_paper_handling.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/set_config_print.htm">/SSI/Auth/set_config_print.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/set_config_paper_types.htm">/SSI/Auth/set_config_paper_types.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/set_config_pcl.htm">/SSI/Auth/set_config_pcl.htm?hideMenu=1</redirect>
+    
+    <redirect href="/SSI/Auth/ip_configuration.htm">/SSI/Auth/ip_configuration.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/ipv6.htm">/SSI/Auth/ipv6.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/ip_advanced.htm">/SSI/Auth/ip_advanced.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/ip_bonjour.htm">/SSI/Auth/ip_bonjour.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/ip_password.htm">/SSI/Auth/ip_password.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/ip_snmp.htm">/SSI/Auth/ip_snmp.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/Auth/ip_wireless.htm">/SSI/Auth/ip_wireless.htm?hideMenu=1</redirect>
+    <redirect href="/SSI/network_summary.htm">/SSI/network_summary.htm?hideMenu=1</redirect>
+
+    <redirect href="/cgi-bin/internalPages_result.htm">/cgi-bin/internalPages_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/config_paper_handling_result.htm">/cgi-bin/config_paper_handling_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/config_print_result.htm">/cgi-bin/config_print_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/config_paper_types_result.htm">/cgi-bin/config_paper_types_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ip_config_result.htm">/cgi-bin/ip_config_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ipv6_result.htm">/cgi-bin/ipv6_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ip_advanced_result.htm">/cgi-bin/ip_advanced_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ip_bonjour_result.htm">/cgi-bin/ip_bonjour_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ip_password_result.htm">/cgi-bin/ip_password_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ip_snmp_result.htm">/cgi-bin/ip_snmp_result.htm?hideMenu=1</redirect>
+    <redirect href="/cgi-bin/ip_wireless_result.htm">/cgi-bin/ip_wireless_result.htm?hideMenu=1</redirect>
+  </globalredirects>
+
+</htmlconfig>

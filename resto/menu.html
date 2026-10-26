@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu complet - StephFood</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #fb911f;
+            --bg-cream: #f5ead9;
+            --bg-white: #ffffff;
+            --secondary: #2a4963;
+            --radius-lg: 20px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-cream);
+            color: #1a1a2e;
+        }
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a3344 100%);
+            padding: 40px 20px 50px;
+            text-align: center;
+            position: relative;
+        }
+        header .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+        header .back-home:hover { color: var(--primary); }
+        header .logo-menu {
+            font-family: var(--font-heading);
+            font-size: 2.5em;
+            color: #fff;
+            text-decoration: none;
+        }
+        header .logo-menu span { color: var(--primary); }
+        header p { color: rgba(255,255,255,0.7); margin-top: 10px; font-size: 1.1em; }
+        .menu-container {
+            max-width: 1200px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        .menu-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+        }
+        .menu-card .card-img {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+        .menu-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.6s;
+        }
+        .menu-card:hover .card-img img { transform: scale(1.1); }
+        .menu-card .card-img .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary);
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .menu-card .card-body { padding: 25px; }
+        .menu-card .card-body h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+        .menu-card .card-body .desc {
+            color: #777;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .menu-card .card-body .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu-card .card-body .price {
+            font-family: var(--font-heading);
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .menu-card .card-body .order-btn {
+            padding: 8px 20px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .menu-card .card-body .order-btn:hover { background: #d87710; }
+        .btn-actions {
+            text-align: center;
+            padding: 20px 0 50px;
+        }
+        .btn-actions a {
+            display: inline-block;
+            padding: 14px 36px;
+            margin: 0 10px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .btn-actions .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-actions .btn-primary:hover {
+            background: #d87710;
+        }
+        .btn-actions .btn-outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-actions .btn-outline:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        @media (max-width: 768px) {
+            header { padding: 30px 15px 40px; }
+            header .logo-menu { font-size: 1.8em; }
+            .menu-container { grid-template-columns: 1fr; }
+            .btn-actions a { display: block; margin: 10px 0; }
+        }
+        @media (max-width: 480px) {
+            header { padding: 25px 12px 35px; }
+            header .back-home { font-size: 0.85em; top: 12px; left: 12px; }
+            header .logo-menu { font-size: 1.4em; }
+            header p { font-size: 0.9em; }
+            .menu-container { padding: 0 12px; gap: 18px; }
+            .menu-card .card-img { height: 170px; }
+            .menu-card .card-body { padding: 18px; }
+            .menu-card .card-body h3 { font-size: 1.1em; }
+            .menu-card .card-body .desc { font-size: 0.82em; }
+            .menu-card .card-body .price { font-size: 1.2em; }
+            .menu-card .card-body .order-btn { padding: 6px 16px; font-size: 0.78em; }
+            .btn-actions { padding: 15px 0 35px; }
+            .btn-actions a { padding: 11px 24px; font-size: 0.85em; }
+            footer { padding: 20px; font-size: 0.85em; }
+        }
+        @media (max-width: 380px) {
+            header .logo-menu { font-size: 1.15em; }
+            header p { font-size: 0.8em; }
+            .menu-card .card-img { height: 140px; }
+            .menu-card .card-body { padding: 14px; }
+            .menu-card .card-body h3 { font-size: 1em; }
+            .menu-card .card-body .price { font-size: 1.05em; }
+            .btn-actions a { padding: 9px 18px; font-size: 0.78em; margin: 6px 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="resto.html" class="back-home"><i class="fas fa-arrow-left"></i> Retour</a>
+        <a href="resto.html" class="logo-menu"><span>Steph</span>food</a>
+        <p>Découvrez notre carte complète</p>
+    </header>
+    <div class="menu-container">
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo5.jpg" alt="Veyi de Nagan">
+                <span class="badge">Populaire</span>
+            </div>
+            <div class="card-body">
+                <h3>Veyi de Nagan</h3>
+                <p class="desc">Un delicieux plat traditionnel a base de poisson frais, accompagne de legumes locaux.</p>
+                <div class="card-footer">
+                    <span class="price">5 000 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo11.jpg" alt="Spagho de Steph">
+            </div>
+            <div class="card-body">
+                <h3>Spagho de Steph</h3>
+                <p class="desc">Des spaghetti prepares selon une recette secrete, sauce tomate maison et epices togolaises.</p>
+                <div class="card-footer">
+                    <span class="price">3 500 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo1.jpg" alt="Cantone de Tassi">
+            </div>
+            <div class="card-body">
+                <h3>Cantone de Tassi</h3>
+                <p class="desc">Un plat mijote avec des legumes frais, une specialite qui reveille les papilles.</p>
+                <div class="card-footer">
+                    <span class="price">4 000 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo4.jpg" alt="Attieke de Youpougon">
+            </div>
+            <div class="card-body">
+                <h3>Attieke de Youpougon</h3>
+                <p class="desc">Attieke traditionnel accompagne de poisson grille et d une sauce aux legumes.</p>
+                <div class="card-footer">
+                    <span class="price">3 000 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo6.jpg" alt="Pokoume de Navi">
+            </div>
+            <div class="card-body">
+                <h3>Pokoume de Navi</h3>
+                <p class="desc">Pokoume traditionnel servi avec une sauce a la tomate fraiche et des epices locales.</p>
+                <div class="card-footer">
+                    <span class="price">4 500 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo13.jpg" alt="Ayimolou VIP">
+                <span class="badge">Chef s Special</span>
+            </div>
+            <div class="card-body">
+                <h3>Ayimolou VIP</h3>
+                <p class="desc">Notre plat signature revisite avec des ingredients nobles pour une experience gastronomique unique.</p>
+                <div class="card-footer">
+                    <span class="price">6 000 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo3.jpg" alt="Assiette Decouverte">
+            </div>
+            <div class="card-body">
+                <h3>Assiette Decouverte</h3>
+                <p class="desc">Selection de plusieurs plats pour decouvrir toute la richesse de la cuisine togolaise.</p>
+                <div class="card-footer">
+                    <span class="price">7 500 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="card-img">
+                <img src="Image/photo14.jpg" alt="Dessert Togolais">
+            </div>
+            <div class="card-body">
+                <h3>Dessert Togolais</h3>
+                <p class="desc">Dessert traditionnel a base de fruits locaux, de miel et de noix de coco.</p>
+                <div class="card-footer">
+                    <span class="price">2 500 FCFA</span>
+                    <a href="restauration.html" class="order-btn">Reserver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-actions">
+        <a href="resto.html" class="btn-primary">Retour a l accueil</a>
+        <a href="restauration.html" class="btn-outline">Reserver une table</a>
+    </div>
+    <footer>
+        <p>&copy; 2025 StephFood - Tous droits reserves</p>
+    </footer>
+</body>
+</html>
+

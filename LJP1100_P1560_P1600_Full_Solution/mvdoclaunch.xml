@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <langs>
+        <lang id="0x0009" abbrev="en">English</lang>
+        <lang id="0x000c" abbrev="fr">Francais</lang>
+        <lang id="0x0010" abbrev="it">Italiano</lang>
+        <lang id="0x0007" abbrev="de">Deutsch</lang>
+        <lang id="0x000a" abbrev="es">Espanol</lang>
+        <lang id="0x0006" abbrev="da">Dansk</lang>
+        <lang id="0x0013" abbrev="nl">Nederlands</lang>
+        <lang id="0x000b" abbrev="fi">Suomi</lang>
+        <lang id="0x0014" abbrev="no">Norsk</lang>
+        <lang id="0x001d" abbrev="sv">Svenska</lang>
+        <lang id="0x0019" abbrev="ru">Russian</lang>
+        <lang id="0x001f" abbrev="tr">Turkce</lang>
+        <lang id="0x0015" abbrev="pl">Polski</lang>
+        <lang id="0x0005" abbrev="cs">Cestina</lang>
+        <lang id="0x000e" abbrev="hu">Magyar</lang>
+        <lang id="0x0016" abbrev="pt">Portugues</lang>
+        <lang id="0x0012" abbrev="ko">Korean</lang>
+        <lang id="0x0804" abbrev="zhcn">Simplified_Chinese</lang>
+        <lang id="0x0404" abbrev="zhtw">Traditional_Chinese</lang>
+        <lang id="0x001e" abbrev="th">Thai</lang>
+        <lang id="0x0003" abbrev="ca">Catalan</lang>
+        <lang id="0x0018" abbrev="ro">Romanian</lang>
+        <lang id="0x0001" abbrev="ar">Arabic</lang>
+        <lang id="0x0008" abbrev="el">Greek</lang>
+        <lang id="0x000d" abbrev="he">Hebrew</lang>
+        <lang id="0x041a" abbrev="hr">Hrvatski</lang>
+        <lang id="0x101a" abbrev="hr">Hrvatski</lang>
+        <lang id="0x081a" abbrev="sr">Srpski</lang>
+        <lang id="0x001a" abbrev="sr">Srpski</lang>
+        <lang id="0x0024" abbrev="sl">Slovenian</lang>
+        <lang id="0x001b" abbrev="sk">Slovak</lang>
+        <lang id="0x0021" abbrev="id">Indonesian</lang>
+        <lang id="0x003f" abbrev="kk">Kazakh</lang>
+        <lang id="0x0002" abbrev="bg">Bulgarian</lang>
+        <lang id="0x0022" abbrev="uk">Ukrainian</lang>
+        <lang id="0x0027" abbrev="lt">Lietuviskai</lang>
+        <lang id="0x0025" abbrev="et">Eesti</lang>
+        <lang id="0x0026" abbrev="lv">Latviski</lang>
+        <lang id="0x002a" abbrev="vi">Viet_Nam</lang>
+    </langs>
+    <manual_dir_name>Manuals</manual_dir_name>
+</config>

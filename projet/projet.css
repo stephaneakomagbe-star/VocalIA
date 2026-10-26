@@ -1,0 +1,30 @@
+body {
+    background-color: #f4f4f4;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    align: center;
+}
+
+h1 {
+    color: #d9534f;
+    padding: 20px;
+}
+
+section {
+    background: white;
+    margin: 20px auto;
+    padding: 15px;
+    width: 80%; 
+    border-radius: 8px;
+    box-shadow: 4px 8px rgba(0,0,0,0,1);
+}
+
+ul {
+    list-style: nome;
+    padding: 0;
+}
+
+li {
+    padding: 10px;
+    border-bottom: 1px dashed #ccc;
+}

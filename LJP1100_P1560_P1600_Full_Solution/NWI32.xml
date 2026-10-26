@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+Network installer wizard configurable settings.
+-->
+<nwi_config>
+  <msi_name>PortMonitorInstaller32.msi</msi_name>
+  <discovery_dll>Mvdiscov_slp.dll</discovery_dll>
+</nwi_config>
