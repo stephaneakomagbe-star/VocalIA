@@ -9,3 +9,4 @@ audios/
 node_modules/
 *.pptx
 .vercel
+mobile-expo/
