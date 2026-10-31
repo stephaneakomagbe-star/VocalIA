@@ -182,6 +182,7 @@ export default function App() {
       changerUrl,
       verifierServeur,
       deconnecter,
+      allerA: setVue,
     }),
     [session, serveur, apiUrl, googleClientId, prefs, majPref, theme, changerTheme, changerUrl, deconnecter, verifierServeur],
   );

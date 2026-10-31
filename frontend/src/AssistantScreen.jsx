@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mic, Send, Square, Volume2 } from "lucide-react";
 import { envoyerFormulaire } from "./api";
 import { BoutonsPartage } from "./partage";
+import { creerAssistantVocal, vocalDisponible } from "./voixTempsReel";
 
 const EXEMPLES = [
   "Quels points retenir d’une prédication sur la persévérance ?",
@@ -17,15 +18,31 @@ function lire(texte) {
   window.speechSynthesis.speak(phrase);
 }
 
-export default function AssistantScreen() {
+export default function AssistantScreen({ allerA }) {
   const [messages, setMessages] = useState([]);
   const [saisie, setSaisie] = useState("");
   const [occupe, setOccupe] = useState(false);
   const [erreur, setErreur] = useState("");
   const [info, setInfo] = useState("");
   const [ecoute, setEcoute] = useState(false);
+  const [etatVocal, setEtatVocal] = useState("ferme");
+  const [niveau, setNiveau] = useState(0);
+  const [parle, setParle] = useState(false);
+
   const finRef = useRef(null);
   const recRef = useRef(null);
+  const vocalRef = useRef(null);
+  const messagesRef = useRef([]);
+  const actionsRef = useRef([]);
+  const allerARef = useRef(allerA);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    allerARef.current = allerA;
+  }, [allerA]);
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -33,12 +50,67 @@ export default function AssistantScreen() {
 
   useEffect(() => () => {
     window.speechSynthesis?.cancel();
+    vocalRef.current?.fermer();
     if (recRef.current && recRef.current.state !== "inactive") {
       recRef.current.onstop = null;
       recRef.current.stop();
       recRef.current.stream?.getTracks().forEach((piste) => piste.stop());
     }
   }, []);
+
+  function executerActions(actions) {
+    actions.forEach((action) => {
+      if (action.action === "ouvrir_ecran" && allerARef.current) allerARef.current(action.ecran);
+    });
+  }
+
+  function lireReponse(texte) {
+    const fin = () => {
+      setParle(false);
+      const actions = actionsRef.current;
+      actionsRef.current = [];
+      executerActions(actions);
+    };
+    if (!window.speechSynthesis) {
+      fin();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const phrase = new SpeechSynthesisUtterance(texte);
+    phrase.lang = "fr-FR";
+    phrase.onend = fin;
+    phrase.onerror = fin;
+    setParle(true);
+    window.speechSynthesis.speak(phrase);
+  }
+
+  function arreterParole() {
+    actionsRef.current = [];
+    window.speechSynthesis?.cancel();
+    setParle(false);
+  }
+
+  function obtenirVocal() {
+    if (!vocalRef.current) {
+      vocalRef.current = creerAssistantVocal({
+        onEtat: setEtatVocal,
+        onNiveau: setNiveau,
+        getHistorique: () => messagesRef.current.slice(-10),
+        onTranscription: (texte) => {
+          setMessages((liste) => [...liste, { role: "user", texte }]);
+        },
+        onAction: (action) => {
+          actionsRef.current.push(action);
+        },
+        onReponse: (reponse) => {
+          setMessages((liste) => [...liste, { role: "assistant", texte: reponse.texte }]);
+          lireReponse(reponse.texte);
+        },
+        onErreur: (message) => setErreur(message),
+      });
+    }
+    return vocalRef.current;
+  }
 
   async function envoyerTexte(texte) {
     const contenu = texte.trim();
@@ -87,11 +159,7 @@ export default function AssistantScreen() {
     }
   }
 
-  async function basculerMicro() {
-    if (ecoute && recRef.current) {
-      recRef.current.stop();
-      return;
-    }
+  async function demarrerClassique() {
     try {
       const flux = await navigator.mediaDevices.getUserMedia({ audio: true });
       const rec = new MediaRecorder(flux);
@@ -112,6 +180,36 @@ export default function AssistantScreen() {
     } catch {
       setErreur("Micro indisponible. Vérifiez l’autorisation du navigateur.");
     }
+  }
+
+  async function basculerMicro() {
+    setErreur("");
+    setInfo("");
+
+    if (parle) arreterParole();
+
+    if (ecoute && recRef.current) {
+      recRef.current.stop();
+      return;
+    }
+
+    if (vocalDisponible()) {
+      const vocal = obtenirVocal();
+      const etat = vocal.etat();
+      if (etat === "ecoute") {
+        vocal.terminerEcoute();
+        return;
+      }
+      if (etat === "traitement" || etat === "connexion") return;
+      try {
+        await vocal.ecouter();
+        return;
+      } catch (e) {
+        console.warn("[vocal] temps réel indisponible :", e);
+        setInfo("Mode temps réel indisponible, mode classique utilisé.");
+      }
+    }
+    await demarrerClassique();
   }
 
   async function archiver() {
@@ -150,10 +248,33 @@ export default function AssistantScreen() {
     }
   }
 
+  const vocalActif = etatVocal === "ecoute";
+  const micOccupe = occupe || etatVocal === "connexion" || etatVocal === "traitement";
+
   return (
     <section className="chat">
       {erreur && <div className="banner error" role="alert">{erreur}</div>}
       {info && <div className="banner ok">{info}</div>}
+      {etatVocal === "connexion" && <div className="banner info">Connexion vocale…</div>}
+      {vocalActif && (
+        <div className="banner info" aria-live="polite">
+          Je vous écoute. Parlez, je m’arrête quand vous vous taisez.
+          <div
+            aria-hidden="true"
+            style={{
+              marginTop: 8,
+              height: 4,
+              borderRadius: 2,
+              background: "currentColor",
+              opacity: 0.6,
+              width: `${Math.min(100, niveau * 600)}%`,
+              transition: "width 80ms",
+            }}
+          />
+        </div>
+      )}
+      {etatVocal === "traitement" && <div className="banner info" aria-live="polite">Je réfléchis…</div>}
+      {parle && <div className="banner info">Lecture de la réponse. Touchez le micro pour interrompre.</div>}
 
       <div className="thread">
         {messages.length === 0 && (
@@ -200,21 +321,21 @@ export default function AssistantScreen() {
 
       <div className="composer">
         <button
-          className={`icon-btn${ecoute ? " live" : ""}`}
+          className={`icon-btn${ecoute || vocalActif ? " live" : ""}`}
           type="button"
           onClick={basculerMicro}
-          disabled={occupe}
-          aria-label={ecoute ? "Arrêter et envoyer" : "Parler"}
+          disabled={micOccupe}
+          aria-label={ecoute || vocalActif ? "Arrêter et envoyer" : "Parler"}
         >
-          {ecoute ? <Square size={16} /> : <Mic size={18} />}
+          {ecoute || vocalActif ? <Square size={16} /> : <Mic size={18} />}
         </button>
         <textarea
           rows={1}
-          placeholder={ecoute ? "Écoute en cours…" : "Écrivez votre message…"}
+          placeholder={ecoute || vocalActif ? "Écoute en cours…" : "Écrivez votre message…"}
           value={saisie}
           onChange={(e) => setSaisie(e.target.value)}
           onKeyDown={touche}
-          disabled={ecoute}
+          disabled={ecoute || vocalActif}
         />
         <button
           className="icon-btn primary"
